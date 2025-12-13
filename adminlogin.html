@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">    
+    <head>  
+        <title>DuaBakes</title> 
+        <link rel="stylesheet" type="text/css" href="signup.css">
+    </head>
+    <body>
+        <header>
+            <h1>
+                Welcome to DuaBakes
+            </h1>
+            <h2>
+                Admin Login
+            </h2>
+        </head>
+        </header>
+        <form id="adminLoginForm">
+            <table>
+                    <tr>
+                        <td>
+                            <label for ="email">Email:</label>
+                        </td>
+                        <td>
+                            <input type="email" name ="email" id ="email" placeholder="your email" required>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for "password">Password</label>
+                        </td>
+                        <td>
+                             <input type="password" name ="password" id ="password" placeholder="your secret" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button type ="submit">Login</button>
+                    </tr>
+                
+                
+                
+
+                </table>
+        </form>
+        <script src="api.js"></script>
+        <script>
+            document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const result = await adminLogin(email, password);
+                alert(result.status || 'Admin login completed');
+            });
+        </script>
+    </body>
+
+</html>

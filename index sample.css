@@ -1,0 +1,133 @@
+
+
+#nav-links {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+ .announcebox {
+    background-color: #5F3340;
+    text-align:10px;
+    padding: 10px;
+    border-radius: 1px;
+    width: 1518px;
+    height: 25px;
+    margin-left: -10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    height: 15x;
+    justify-content: flex-start;
+    align-items:left;
+    margin-top: -10px;
+    }
+
+#announcetext p {
+    margin: 0px;
+    padding: 0px;
+    font-family: karala;
+    color: #D8B451;
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+#logo {
+    height: 100px;
+    width: 10px;
+    margin-left: -60px;
+    padding-left: 0px;
+    padding-top: 0px;
+    margin-bottom: 0px;
+    image-resolution: from-image;
+    margin-top: 0px;
+}
+.nav-tab {
+    display: inline-flex;
+    align-items: center;
+    margin: 40px;
+    padding-left: 20px;
+    background-color: white;
+    
+}
+#search-bar {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding-left: 10px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 1px;
+    height: 25px;
+    width: 400px;
+    border-radius: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: transparent;
+    
+}
+.searchicon {
+    position: absolute;
+    left: 400px;
+    top: 55%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+.searchbarout {
+    display: inline-flex;
+    align-items: center;
+    margin: 45px;
+    padding-left: 1px;
+    background-color: rgb(243, 241, 239);
+    position: relative;
+    border: 1px solid #ccc;
+    border-radius: 200px;
+    height: 35px;
+    margin-left: 180px;
+}
+
+/* // Categories section DOM */
+
+
+#categories {
+    display: flex;
+    justify-content: space-around;
+    margin: auto;
+    
+}
+
+#categories > div > img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    cursor: pointer;
+}
+#categories > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 30px;
+    text-align: center;
+    font-size: 20px;
+    font-style: karla;
+    font-weight: 500;
+    color: #11656D;
+    justify-content: space-around;
+}
+
+#categories > div:hover {
+    transform: scale(1.1);
+    transition: transform 0.1s ease-in-out;
+}
+#categories > div > p {
+    margin-top: 10px;
+}
+
+/* End of Categories section DOM */
