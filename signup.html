@@ -5,70 +5,52 @@
 
         </title> 
         <link rel="stylesheet" type="text/css" href="signup.css">
+        <link rel="stylesheet" type="text/css" href="index sample.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
+        <div id="navbar"></div>
         <header>
-            <h1>
-                Welcome to DuaBakes
+            <h1 class ="header-title">
+                SIGNUP
             </h1>
-            <h2>
-                Signup
-            </h2>
-        </head>
         </header>
-        <form id="signupForm">
-            <table>
-                    <tr>
-                        <td>
-                             <label for ="firstName">FirstName:</label>
-                        </td>
-                        <td>
-                            <input type ="text" name ="firstName" id ="firstName" placeholder="Dua" autocomplete ="on" required autofocus>
-                        </td>
-                    </tr>
-                <tr>
-                    <td>
-                    <label for ="lastName">LastName:</label></td>
-                   <td> <input type ="text" name ="lastName" id ="lastName" placeholder="Bakes" autocomplete="on" required></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for ="email">Email:</label>
-                        </td>
-                        <td>
-                            <input type="email" name ="email" id ="email" placeholder="your email" required>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for "password">Password</label>
-                        </td>
-                        <td>
-                             <input type="password" name ="password" id ="password" placeholder="your secret" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                             <label for ="phone">PhoneNumber:</label>
-                        </td>
-                        <td>
-                            <input type ="tel" name ="phone" id ="phone" placeholder ="+91 1234567890" pattern ="[0-9]{10,}" required> 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button type ="submit">Signup</button>
-
-                        </td>
-                        <td><a href="Login.html"><button type ="button"> Login</button></a></td>
-                    </tr>
+        
+        <div class="signup-box">
+            <form id="signupForm">
+                <div>
+                    <input type ="text" name ="firstName" id ="firstName" placeholder="First Name" autocomplete ="on" required autofocus>
+                </div> <br>
+                <div>
+                    <input type ="text" name ="lastName" id ="lastName" placeholder="Last Name" autocomplete="on" required>
+                </div> <br>
+                <div>
+                    <input type="email" name ="email" id ="email" placeholder="Your Email" required>
+                </div> <br>
+                <div>
+                    <input type="password" name ="password" id ="password" placeholder="Your Password" required>
+                </div> <br>
+                <div>
+                    <input type ="tel" name ="phone" id ="phone" placeholder ="+91 1234567890" pattern ="[0-9]{10,}" required>
+                </div> <br>
+                <div>
+                    <button type ="submit">Signup</button>
+                </div><br>
                 
-                
-                
-
-                </table>
+                <div>
+                    <a href="Login.html"><button type ="button"> Login</button></a>
+                </div>
+                <div>
+                    <p> Already have an account? Login here</a> </p>
+                </div>
         </form>
+        </div>
+        
+        <div id="navbar"></div>
+        
+
+
+
         <script src="api.js"></script>
         <script>
             document.getElementById('signupForm').addEventListener('submit', async (e) => {
@@ -88,6 +70,12 @@
                 }
             });
         </script>
+        <script>
+    $(document).ready(function() {
+    // Load the Navbar.html content into the #navbar div
+    $("#navbar").load("./Navbar.html");
+});
+</script>
     </body>
 
 </html>

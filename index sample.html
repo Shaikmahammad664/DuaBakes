@@ -5,43 +5,27 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>DuaBakes</title>
         <link rel="stylesheet" type="text/css" href="index%20sample.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
-        <div class = "announcebox">
-            <div id="announcetext">
-                <p> we bake freshly when you order!!! </p></div>
-        </div>
 
-        <nav id="nav-links" class="nav-links">
-            <div id ="logo"><img src = "dua bakes logo f.png" width="160" height="110" alt="DuaBakes Logo"></div>
-                
-            <div class = "searchbarout">
-                    <span class = "searchicon">
-                        <svg width="20" height="20" class="" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><title>Search Icon</title><path d="M10.5 18C14.6421 18 18 14.6421 18 10.5C18 6.35786 14.6421 3 10.5 3C6.35786 3 3 6.35786 3 10.5C3 14.6421 6.35786 18 10.5 18Z" stroke="#717478" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 16L21 21" stroke="#717478" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                    </span>
-                    <span>
-                        <input type="text" id="search-bar" name="search" placeholder="Search for products...">
-                    </span>
-                </div>
-                <div class = "nav-tab" >3</div>
-                <div class = "nav-tab" >4</div>
-                <div class = "nav-tab" >5</div>
-                
-
-            </div>
-
-        </nav>
+        <div id="navbar"></div>
+  
         <!-- list of categories -->
         <section id = "categories"> </section>
         
 
         
     </body>
-
+ 
 </html>
-<script src = "./index.js"></script>
-
-
+<script>
+    $(document).ready(function() {
+    // Load the Navbar.html content into the #navbar div
+    $("#navbar").load("./Navbar.html");
+});
+</script>
+<script src = "./index.js"> </script>
 
 
 

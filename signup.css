@@ -1,10 +1,106 @@
-table{
-    margin: 20px auto;
-}   
+  
 header{
     text-align: center;
     font-size: 20px;
 }
 body{
-    background-color:antiquewhite;
+    background-color:rgb(255, 255, 255);
 }
+
+.signup-box {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: -10px;
+}
+
+.header-title{
+    font-family: karala;
+    font-size: 24px;
+    color: #0A6169;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    display: inline-block;
+    padding-top: 10px;
+    padding-bottom: 0px;
+    position: relative;
+    font-weight: 10;
+    margin-left: 0px;
+}
+
+.header-title:hover {
+    color: #e6452d;
+    transition: color 0.3s ease-in-out;
+}
+
+.header-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px; 
+    left: -110px; 
+    width: 300px; 
+    height: 1px; 
+    background-color: #E38F82;
+}
+
+button{
+    background-color: #0A6169;
+    color: rgb(255, 255, 255);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 5px;
+    width: 500px;
+    margin-left: 55px;
+    text-align: center;
+    font-family: karala ,sans-serif;
+    font-size: 18px;
+
+}
+
+button:hover {
+    background-color: #c35c5c;
+}
+
+p{
+    font-family: karala ,sans-serif;
+    font-size: 16px;
+    margin-left: 150px;
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="tel"] {
+    outline: none;
+    font-size: 16px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 1px;
+    height: 15px;
+    width: 500px;
+    border-radius: 8px;
+    font-family: karala ,sans-serif;
+    background: transparent;
+    margin-left: 40px;
+    border: 1px solid #ccc;
+}
+input::placeholder {
+    font-family: karala ,sans-serif;
+    font-size: 16px;
+    color: #888;
+}
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, input[type="tel"]:focus {
+    border: 2px solid #0A6169;
+}
+
+#signupForm div {
+    margin-bottom: -7px;
+    margin-top: 0px;
+    
+}
+
