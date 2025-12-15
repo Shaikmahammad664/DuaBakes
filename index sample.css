@@ -53,12 +53,16 @@
     transform: translateY(-50%);
     z-index: 10;
     background-color: white; 
+    cursor: pointer;
     
 }
 .carticon > img:hover {
     transform: scale(1.1);
     transition: transform 0.2s ease-in-out;
 }
+
+
+
 
 .accounticon {
     position: absolute;
@@ -68,6 +72,7 @@
     z-index: 10;
     background-color: white;   
     padding-left: 10px;
+    cursor: pointer;
    
     
 }
