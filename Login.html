@@ -1,51 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">    
     <head>  
-        <title>DuaBakes
-
-        </title> 
-        <link rel="stylesheet" type="text/css" href="signup.css">
+        <title> DuaBakes</title>
+        <link rel="stylesheet" type="text/css" href="Login.css">
+        <link rel="stylesheet" type="text/css" href="index sample.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        
     </head>
     <body>
+        <div id="navbar"></div>
         <header>
-            <h1>
-                Welcome to DuaBakes
+            <h1 class = "header-title">
+                LOGIN
             </h1>
-            <h2>
-                Login
-            </h2>
-        </head>
         </header>
-        <form id="loginForm">
-            <table>
-                    <tr>
-                        <td>
-                            <label for ="email">Email:</label>
-                        </td>
-                        <td>
-                            <input type="email" name ="email" id ="email" placeholder="your email" required>
 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for "password">Password</label>
-                        </td>
-                        <td>
-                             <input type="password" name ="password" id ="password" placeholder="your secret" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button type ="submit">Login</button>
-                    </tr>
+        <div class="login-box">
+         <form id="loginForm">
+             <div>
+                    <input type="email" name ="email" id ="email" placeholder="Your Email" required>
+                </div> <br>
+                <div>
+                    <input type="password" name ="password" id ="password" placeholder="Your Password" required>
+                </div> <br>
+                <div>
+                    <div>
+                        <button type = "submit" >Login</button>
+                    </div>
+                <div class="signup-button">
+                    <a href="signup.html"><button type ="button"> Signup</button></a>
+                </div>
+                <div>
+                    <p> Don't have an account? Signup here</p>
+                </div>
                 
                 
                 
 
-                </table>
-                </table>
+                
         </form>
+        </div>
         <script src="api.js"></script>
         <script>
             document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -56,6 +50,12 @@
                 alert(result.status || 'Login completed');
             });
         </script>
+        <script>
+    $(document).ready(function() {
+    // Load the Navbar.html content into the #navbar div
+    $("#navbar").load("./Navbar.html");
+});
+</script>
     </body>
 
 </html>
