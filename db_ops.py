@@ -33,10 +33,10 @@
 #     return True
 
 import os
+import uuid
 import mysql.connector
 from loguru import logger
 from dotenv import load_dotenv
-from bson import ObjectId
 
 load_dotenv()
 
@@ -52,10 +52,22 @@ cursor= connection.cursor(dictionary=True)
 # to store user data in my sql
 def store_user(user_data):
     try:
-        user_id= str(ObjectId())        
+        existing = fetch_user({"Email": user_data["Email"]})
+        if existing:
+            logger.warning(f"User already exists: {user_data['Email']}")
+            return False
+
+        user_id = uuid.uuid4().hex
         logger.info(f"Registering user with id: {user_id}")
-        query = "INSERT INTO users (User_Id,FirstName,LastName, Email,Password,phoneNumber) VALUES (%s, %s, %s, %s, %s, %s)"
-        values = (user_id,user_data['FirstName'], user_data['LastName'], user_data['Email'], user_data['Password'], user_data['PhoneNumber'])
+        query = "INSERT INTO users (User_Id, FirstName, LastName, Email, Password, phoneNumber) VALUES (%s, %s, %s, %s, %s, %s)"
+        values = (
+            user_id,
+            user_data['FirstName'],
+            user_data['LastName'],
+            user_data['Email'],
+            user_data['Password'],
+            user_data['PhoneNumber'],
+        )
         cursor.execute(query, values)
         connection.commit()
         return True
@@ -67,51 +79,90 @@ def store_user(user_data):
 
 def fetch_user(query, table="users"):
     try:
-        logger.info(f"{query} : {table}")
-        sql_query = f"SELECT * FROM {table} WHERE Email = %s"
-        cursor.execute(sql_query, (query['Email'],))
+        logger.info(f"Fetching user with query {query} from {table}")
+        if 'Password' in query:
+            sql_query = f"SELECT * FROM {table} WHERE Email = %s AND Password = %s"
+            values = (query['Email'], query['Password'])
+        else:
+            sql_query = f"SELECT * FROM {table} WHERE Email = %s"
+            values = (query['Email'],)
+
+        cursor.execute(sql_query, values)
         user = cursor.fetchone()
-        logger.debug(f"User {user['User_Id']} logged in sucessfully.")
+        if user:
+            logger.debug(f"User {user.get('User_Id')} found in {table}.")
         return user
     except Exception as e:
         logger.error(f"Error fetching user: {e}")
         return None
 # to update the password from reset password 
 
-def update_user(query, update_password, table="users"):
+def update_user(query, update_data, table="users"):
     try:
-        sql_query = f"UPDATE {table} SET Password = %s WHERE Email = %s"
-        cursor.execute(sql_query, (update_password['Password'], query['Email']))
+        set_clauses = []
+        values = []
+        for key, value in update_data.items():
+            set_clauses.append(f"{key} = %s")
+            values.append(value)
+        values.append(query['Email'])
+        sql_query = f"UPDATE {table} SET {', '.join(set_clauses)} WHERE Email = %s"
+        cursor.execute(sql_query, tuple(values))
         connection.commit()
-        logger.info(f"User with Email {query['Email']} Updated successfully.")
+        logger.info(f"User with Email {query['Email']} updated successfully.")
         return True
     except Exception as e:
-        logger.info(f"Error Updating User Password : {e}")
+        logger.error(f"Error updating user: {e}")
         return False
 
 # admin login page 
 
 def fetch_admin(item:dict):
-
     try:
-        user= fetch_user(item, table="Admin")
+        user = fetch_user(item, table="Admin")
         return user
     except Exception as e:
-        logger.error("Error Fetching admin {e}")
+        logger.error(f"Error fetching admin: {e}")
         return None
 
 # to store products in sql 
 
 def store_products(products_data):
     try:
-        product_id = str(ObjectId())[:7]
-        logger.info(f"Inserting product {product_id} ")
-        query = "INSERT into products (ProductId, ProductName, Description, Category, ImageUrl, Price, StockQuantity, Weight) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (product_id,products_data['ProductName'],products_data['Description'],products_data['Category'],products_data['ImageUrl'],products_data['Price'],products_data['StockQuantity'],products_data['Weight'])
-        cursor.execute(query, values) 
+        product_id = uuid.uuid4().hex[:12]
+        logger.info(f"Inserting product {product_id}")
+        query = "INSERT INTO products (ProductId, ProductName, Description, Category, ImageUrl, Price, StockQuantity, Weight) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        values = (
+            product_id,
+            products_data['ProductName'],
+            products_data['Description'],
+            products_data['Category'],
+            products_data['ImageUrl'],
+            products_data['Price'],
+            products_data['StockQuantity'],
+            products_data['Weight'],
+        )
+        cursor.execute(query, values)
         connection.commit()
         return True
     except Exception as e:
         logger.error(f"Error storing products: {e}")
         return False
+
+
+def fetch_products():
+    try:
+        cursor.execute("SELECT * FROM products")
+        return cursor.fetchall()
+    except Exception as e:
+        logger.error(f"Error fetching products: {e}")
+        return []
+
+
+def fetch_product_by_id(product_id):
+    try:
+        cursor.execute("SELECT * FROM products WHERE ProductId = %s", (product_id,))
+        return cursor.fetchone()
+    except Exception as e:
+        logger.error(f"Error fetching product by id: {e}")
+        return None
 

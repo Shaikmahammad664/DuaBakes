@@ -11,9 +11,10 @@ Usage notes for Render:
 
 Environment variables to set in Render's dashboard (example):
 
-- `MONGO_URL` — your MongoDB connection string
-- `DB_NAME` — database name (e.g. DuaBakes)
-- `USER_COLLECTION` — collection name for users
+- `DB_HOST` — database host (e.g. `localhost` or a Render-managed database host)
+- `DB_USER` — database user
+- `DB_PASSWORD` — database password
+- `DB_NAME` — database name (e.g. `duabakes`)
 - `SENDER_EMAIL` — email address used to send password reset emails
 - `EMAIL_PASSWORD` — password or app password for the sender email
 

@@ -13,8 +13,7 @@ RUN apt-get update \
 COPY . .
 
 # install Python dependencies required to run the app
-# (explicit list so build doesn't depend on an external requirements file)
-RUN pip install --no-cache-dir fastapi uvicorn pymongo python-dotenv loguru dnspython
+RUN pip install --no-cache-dir fastapi uvicorn mysql-connector-python python-dotenv loguru
 
 ENV PYTHONUNBUFFERED=1
 

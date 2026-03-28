@@ -1,73 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">    
-    <head>  
-        <title> DuaBakes</title>
-        <link rel="stylesheet" type="text/css" href="Login.css">
-        <link rel="stylesheet" type="text/css" href="index sample.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        
-    </head>
-    <body>
-        <div id="navbar"></div>
-        <header>
-            <h1 class = "header-title">
-                LOG IN
-            </h1>
-        </header>
-
-        <div class="login-box">
-         <form id="loginForm">
-             <div>
-                    <input type="email" name ="email" id ="email" placeholder="Your Email" title="Enter your email address" required>
-                </div> <br>
-                <div>
-                    <input type="password" name ="password" id ="password" placeholder="Your Password" title="Enter your password" required>
-                </div> <br>
-                 <div class = "Forgot">
-                    <p>
-                        <a href = "Forgot your password? ">Forgot your password?</a>
-                    </p>
-                </div>
-                <div>
-                    <div>
-                        <button type = "submit" title = "Click to Sign in">SIGN IN</button>
+    <!DOCTYPE html>
+    <html lang="en">    
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>DuaBakes</title>
+            <link rel="stylesheet" type="text/css" href="Login.css">
+            <link rel="stylesheet" type="text/css" href="Navbar.css">
+            <link rel="stylesheet" type="text/css" href="index sample.css">
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        </head>
+        <body>
+            <div id="navbar">
+                <div class="announcebox">
+                    <div id="announcetext">
+                        <marquee id="msg1" behavior="scroll" direction="left" scrollamount="6" style="display:block;">
+                            <p>Welcome to DuaBakes! We bake freshly when you order.</p>
+                        </marquee>
                     </div>
-                <div class="signup-button">
-                    <a href="signup.html"><button type ="button" title = "Click to Sign up"> SIGN UP</button></a>
                 </div>
-                <div>
-                    <p> Don't have an account? Signup here</p>
+
+                <nav class="nav-bar">
+                    <div class="brand">
+                        <img src="dua bakes logo f.png" alt="DuaBakes Logo" title="DuaBakes Logo">
+                    </div>
+                </nav>
+            </div>
+            <main class="page-content">
+                <header>
+                    <h1 class="header-title">
+                        LOG IN
+                    </h1>
+                </header>
+
+                <div class="login-box">
+                <form id="loginForm">
+                    <div>
+                        <input type="email" name ="email" id ="email" placeholder="Your Email" title="Enter your email address" required>
+                    </div>
+                    <div>
+                        <input type="password" name ="password" id ="password" placeholder="Your Password" title="Enter your password" required>
+                    </div>
+                    <div class="forgot-link">
+                        <a href="#">Forgot your password?</a>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" title="Click to Sign in">SIGN IN</button>
+                        <a href="signup.html" class="secondary-link">SIGN UP</a>
+                    </div>
+                    <div>
+                        <p>Don't have an account? Signup here</p>
+                    </div>
+                </form>
                 </div>
-               
-                
-                
-                
+            </main>
+            <script src="api.js"></script>
+            <script>
+                document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = {
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value
+                    };
+                    const result = await login(formData);
+                    alert(result.status || 'Login completed');
+                    if (result.status === 'Success') {
+                        document.getElementById('loginForm').reset();
+                        window.location.href = 'index sample.html';
+                    }
+                });
+            </script>
+        </body>
 
-                
-        </form>
-        </div>
-        <script src="api.js"></script>
-        <script>
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = {
-                    email: document.getElementById('email').value,
-                    password : document.getElementById('password').value
-                }; 
-                const result = await login(formData);
-                alert(result.status || 'Login completed');
-                if (result.status === 'Success') {
-                    document.getElementById('loginForm').reset();
-                    window.location.href = 'index sample.html';
-                }
-            });
-        </script>
-        <script>
-    $(document).ready(function() {
-    // Load the Navbar.html content into the #navbar div
-    $("#navbar").load("./Navbar.html");
-});
-</script>
-    </body>
-
-</html>
+    </html>

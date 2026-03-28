@@ -1,0 +1,136 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+.announcebox {
+    background-color: #5f3340;
+    color: #d8b451;
+    padding: 0.8rem 1rem;
+    text-align: center;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+}
+
+#announcetext p {
+    margin: 0;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem 1.25rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(16, 24, 40, 0.08);
+    min-height: 96px;
+}
+
+.brand img {
+    max-height: 72px;
+    width: auto;
+    object-fit: contain;
+}
+
+.searchbarout {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(720px, calc(100% - 320px));
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #f3f1ef;
+}
+
+.searchbarout input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1rem;
+    color: #111827;
+}
+
+.searchicon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #717478;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon-btn {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    min-height: 72px;
+    border-radius: 999px;
+    border: 1px solid rgba(16, 24, 40, 0.18);
+    background: #f8fafc;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.icon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 28px rgba(15, 23, 42, 0.12);
+}
+
+.icon-btn img {
+    width: 36px;
+    height: 36px;
+}
+
+@media (max-width: 760px) {
+    .nav-bar {
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        padding: 1rem 1rem 1.25rem;
+    }
+
+    .searchbarout {
+        position: static;
+        transform: none;
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .nav-actions {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 520px) {
+    .searchbarout {
+        padding: 0.75rem 0.9rem;
+    }
+}

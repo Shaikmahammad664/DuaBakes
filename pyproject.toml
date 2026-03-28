@@ -9,7 +9,6 @@ dependencies = [
     "fastapi>=0.120.2",
     "loguru>=0.7.3",
     "mysql-connector-python>=9.5.0",
-    "pymongo>=4.15.3",
     "python-dotenv>=1.2.1",
     "uvicorn>=0.38.0",
 ]

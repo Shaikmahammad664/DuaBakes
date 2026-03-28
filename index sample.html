@@ -1,31 +1,43 @@
 <!DOCTYPE html>
-<html lang = "en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>DuaBakes</title>
-        <link rel="stylesheet" type="text/css" href="index%20sample.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    </head>
-    <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DuaBakes</title>
+    <link rel="stylesheet" type="text/css" href="index sample.css">
+    <link rel="stylesheet" type="text/css" href="Navbar.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div id="navbar"></div>
 
-        <div id="navbar"></div>
-  
-        <!-- list of categories -->
-        <section id = "categories"> </section>
-        
+    <main class="page-content">
+        <section class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">Freshly baked on demand</p>
+                <h1>Discover your favorite bakery treats</h1>
+                <p class="hero-text">From cakes and cupcakes to donuts, breads, and cookies — order the sweetest snacks with fast delivery and daily freshness.</p>
+            </div>
+        </section>
 
-        
-    </body>
- 
+        <section class="categories-section">
+            <div class="section-heading">
+                <p class="eyebrow">Shop by category</p>
+                <h2>Browse our bakery collections</h2>
+                <p class="section-copy">Tap any category below to explore delicious products made fresh for you.</p>
+            </div>
+            <div id="categories"></div>
+        </section>
+    </main>
+
+    <script>
+        $(document).ready(function() {
+            $("#navbar").load("./Navbar.html");
+        });
+    </script>
+    <script src="./index.js"></script>
+</body>
 </html>
-<script>
-    $(document).ready(function() {
-    // Load the Navbar.html content into the #navbar div
-    $("#navbar").load("./Navbar.html");
-});
-</script>
-<script src = "./index.js"> </script>
 
 
 

@@ -1,38 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">    
-    <head>  
-        <title>DuaBakes
-
-        </title> 
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DuaBakes</title>
         <link rel="stylesheet" type="text/css" href="signup.css">
-        <link rel="stylesheet" type="text/css" href="index sample.css">
+        <link rel="stylesheet" type="text/css" href="index.css">
         <link rel="stylesheet" type="text/css" href="Navbar.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
-        <div id="navbar">
-            <div class="announcebox">
-                <div id="announcetext">
-                    <marquee id="msg1" behavior="scroll" direction="left" scrollamount="6" style="display:block;">
-                        <p>Welcome to DuaBakes! We bake freshly when you order.</p>
-                    </marquee>
-                </div>
-            </div>
-
-            <nav class="nav-bar">
-                <div class="brand">
-                    <img src="dua bakes logo f.png" alt="DuaBakes Logo" title="DuaBakes Logo">
-                </div>
-            </nav>
-        </div>
-        <header>
-            <h1 class ="header-title">
-                SIGN UP
-            </h1>
-        </header>
-        
-        <div class="signup-box">
-            <form id="signupForm">
+        <main class="page-content">
+            <div id="navbar"></div>
+            <header>
+                <h1 class ="header-title">
+                    SIGN UP
+                </h1>
+            </header>
+            
+            <div class="signup-box">
+                <form id="signupForm">
                 <div>
                     <input type ="text" name ="firstName" id ="firstName" placeholder="First Name" autocomplete ="on" title = "Enter your Firstname" autofocus>
                 </div> <br>
@@ -53,13 +40,14 @@
                 </div><br>
                 
                 <div>
-                    <a href="Login.html"><button type ="button" title = " Click to Log in"> LOG IN</button></a>
+                    <a href="Login.html" class="secondary-link">LOG IN</a>
                 </div>
                 <div>
-                    <p> Already have an account? Login here</a> </p>
+                    <p>Already have an account? Login here</p>
                 </div>
-        </form>
-        </div>
+            </form>
+            </div>
+        </main>
         
         
         
@@ -86,10 +74,10 @@
             });
         </script>
         <script>
-    // This page uses a simplified navbar without the shared search and action icons.
     $(document).ready(function() {
-        // Navbar content is already included above; do not overwrite it.
-    });
+    // Load the Navbar.html content into the #navbar div
+    $("#navbar").load("./Navbar.html");
+});
 </script>
     </body>
 

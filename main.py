@@ -1,10 +1,18 @@
 
 import os
-from  fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
-from db_ops import store_user, fetch_user, fetch_admin, store_products,update_user
+from db_ops import (
+    store_user,
+    fetch_user,
+    fetch_admin,
+    store_products,
+    update_user,
+    fetch_products,
+    fetch_product_by_id,
+)
 from dotenv import load_dotenv
 from loguru import logger
 import smtplib
@@ -82,21 +90,23 @@ async def base():
 
 @app.post("/signup")
 async def signup(item:SignUpRequest):
+    existing_user = fetch_user({"Email": item.Email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
 
     user_data = item.model_dump()
     logger.info(f"Signing up user: {user_data}")
-    res=store_user(user_data)
+    res = store_user(user_data)
     if not res:
-        return {"status": "Error signing up user"}
-    return {"status": "User signed up successfully"}
+        raise HTTPException(status_code=500, detail="Error signing up user")
+    return {"status": "Success", "message": "User signed up successfully"}
 
 @app.post("/login")
 async def login(item:LoginModel):
-    
     existing_user = fetch_user({"Email": item.Email, "Password": item.Password})
     if not existing_user:
-        return {"status": "Invalid email or password"}
-    return {"status": "Login successful"}
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    return {"status": "Success", "message": "Login successful"}
 
 @app.post("/forgot-password")
 async def forgot_password(item:ForgotPasswordModel):
@@ -120,17 +130,38 @@ async def reset_password(item:ResetPasswordModel):
 async def admin_login(item:AdminLoginModel):
     existing_admin = fetch_admin(item.model_dump())
     if not existing_admin:
-        return {"status": "Your are not ADMIN"}
-    return {"status": "Login Successful."}
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    return {"status": "Success", "message": "Admin login successful"}
 
 @app.post("/AddProducts")
 async def add_products(item:Product):
     products_data = item.model_dump()
     logger.info(f"Adding Products : {products_data}")
-    res= store_products(products_data)
+    res = store_products(products_data)
     if not res:
-        return {"status": "Error adding products"}
-    return {"status": "Products added successfully."}
+        raise HTTPException(status_code=500, detail="Error adding products")
+    return {"status": "Success", "message": "Product added successfully"}
+
+@app.post("/products")
+async def create_product(item:Product):
+    products_data = item.model_dump()
+    logger.info(f"Creating product: {products_data}")
+    res = store_products(products_data)
+    if not res:
+        raise HTTPException(status_code=500, detail="Error adding product")
+    return {"status": "Success", "message": "Product added successfully"}
+
+@app.get("/products")
+async def get_products():
+    products = fetch_products()
+    return {"status": "Success", "products": products or []}
+
+@app.get("/products/{product_id}")
+async def get_product(product_id: str):
+    product = fetch_product_by_id(product_id)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"status": "Success", "product": product}
 
 
 
