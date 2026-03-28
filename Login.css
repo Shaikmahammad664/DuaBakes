@@ -157,20 +157,21 @@ button:hover {
     text-decoration: underline;
     color: #e6452d;
     transition: color 0.3s ease-in-out;
+}
 
-    p {
-        margin: 0;
-        text-align: center;
-        color: #5f5f5f;
-        font-size: 0.95rem;
+p {
+    margin: 0;
+    text-align: center;
+    color: #5f5f5f;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 520px) {
+    .login-box {
+        padding: 1.5rem 1rem;
     }
 
-    @media (max-width: 520px) {
-        .login-box {
-            padding: 1.5rem 1rem;
-        }
-
-        .header-title {
-            font-size: 1.75rem;
-        }
+    .header-title {
+        font-size: 1.75rem;
     }
+}
