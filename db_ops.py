@@ -166,6 +166,3 @@ def fetch_product_by_id(product_id):
         logger.error(f"Error fetching product by id: {e}")
         return None
 
-
-
-# used to commit
