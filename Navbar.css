@@ -13,6 +13,11 @@ textarea {
 }
 
 .announcebox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
     background-color: #5f3340;
     color: #d8b451;
     padding: 0.8rem 1rem;
@@ -28,9 +33,11 @@ textarea {
 }
 
 .nav-bar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    position: fixed;
+    top: 3.5rem;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -38,7 +45,9 @@ textarea {
     background-color: #ffffff;
     border-bottom: 1px solid rgba(16, 24, 40, 0.08);
     min-height: 96px;
+    width: 100%;
 }
+
 
 .brand img {
     max-height: 72px;
@@ -46,11 +55,21 @@ textarea {
     object-fit: contain;
 }
 
-.searchbarout {
+.search-nav {
     position: absolute;
-    left: 50%;
+    left: 40%;
     transform: translateX(-50%);
-    width: min(720px, calc(100% - 320px));
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    width: min(900px, calc(100% - 320px));
+    justify-content: center;
+}
+
+.searchbarout {
+    position: static;
+    width: 100%;
+    max-width: 620px;
     display: flex;
     align-items: center;
     gap: 0.85rem;
@@ -59,6 +78,28 @@ textarea {
     border: 1px solid #e5e7eb;
     background: #f3f1ef;
 }
+
+.components {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-left: auto;
+
+}
+
+.components a {
+    color: #111827;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding-right: 80px;
+}
+
+.components a:hover {
+    color: #5f3340;
+    text-decoration: double underline;
+}
+
 
 .searchbarout input {
     width: 100%;
@@ -80,6 +121,9 @@ textarea {
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-left: 30px;
+    margin-right: 30px;
+    gap: 3.5rem;
 }
 
 .icon-btn {
@@ -107,6 +151,8 @@ textarea {
     height: 36px;
 }
 
+
+
 @media (max-width: 760px) {
     .nav-bar {
         justify-content: center;
@@ -115,12 +161,27 @@ textarea {
         padding: 1rem 1rem 1.25rem;
     }
 
+    .search-nav {
+        position: static;
+        transform: none;
+        flex-direction: column;
+        width: 100%;
+        gap: 0.85rem;
+    }
+
     .searchbarout {
         position: static;
         transform: none;
         width: 100%;
         max-width: 100%;
         margin: 0 auto;
+    }
+
+    .components {
+        justify-content: center;
+        width: 100%;
+        flex-wrap: wrap;
+        margin-left: 0;
     }
 
     .nav-actions {

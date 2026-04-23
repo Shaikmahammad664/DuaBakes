@@ -16,6 +16,7 @@ from db_ops import (
 from dotenv import load_dotenv
 from loguru import logger
 import smtplib
+from chat_bot import call_llm
 
 
 
@@ -45,10 +46,13 @@ class Product(BaseModel):
     StockQuantity: int
     Weight: float
 
-
 class AdminLoginModel(BaseModel):
     Email: str
     Password: str
+
+class chatBot(BaseModel):
+    message: str
+
 
 
 
@@ -162,6 +166,21 @@ async def get_product(product_id: str):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return {"status": "Success", "product": product}
+
+
+@app.post("/chat-bot")
+async def chatBot(message: str):
+    if message:
+        response= call_llm(message)
+        clean_response = response.choices[0].message.content.strip()
+        return {"status": "Success", "response": clean_response}
+    else:
+        raise HTTPException(status_code=400, detail="Message cannot be empty")
+
+
+
+
+
 
 
 
