@@ -23,37 +23,35 @@
 
 .nav-bar {
     position: fixed;
-    top: 1.5rem; /* Adjusted to sit below the announcement bar */
+    top: 1.5rem;
     left: 0;
     right: 0;
     z-index: 1000;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Evenly distributes Logo, Search, and Links/Icons */
+    justify-content: space-between;
     padding: 1rem 2rem;
     background-color: #ffffff;
     border-bottom: 1px solid rgba(16, 24, 40, 0.08);
     min-height: 96px;
+    box-sizing: border-box;
     width: 100%;
-    gap: 1.1rem; /* Adds space between the flex items */
+    gap: 1.1rem;
 }
 
 .brand img {
     max-height: 72px;
     width: auto;
     object-fit: contain;
-    /* margin-right: 5rem; Adds space between the logo and the search bar */
 }
 
-/* FIX: Removed position absolute so it sits naturally in the flex layout */
 .search-nav {
-    flex: 1; /* Allows it to take up available middle space dynamically */
-    max-width: 400px; /* Prevents the search bar from becoming ridiculously wide */
-    /* position: absolute; */
+    flex: 1;
+    max-width: 400px;
 }
 
 .searchbarout {
-    width: 130%;
+    width: 120%;
     display: flex;
     align-items: center;
     gap: 0.85rem;
@@ -61,7 +59,9 @@
     border-radius: 999px;
     border: 1px solid #e5e7eb;
     background: #f3f1ef;
-    margin-left: 10%;
+    box-sizing: border-box;
+    height: 40px;
+    margin-left: 20px;
 }
 
 .searchbarout input {
@@ -80,14 +80,12 @@
     color: #717478;
 }
 
-/* NEW CONTAINER: Groups your text links AND your action icons cleanly together on the right */
 .nav-right-group {
     display: flex;
     align-items: center;
     gap: 2rem;
 }
 
-/* FIX: Removed the massive hardcoded 750px margin */
 .components {
     display: flex;
     align-items: center;
@@ -100,7 +98,7 @@
     font-weight: 500;
     letter-spacing: 0.04em;
     padding: 0.5rem 0.75rem;
-    white-space: nowrap; /* CRUCIAL: Keeps "CONTACT US" on a single line */
+    white-space: nowrap;
 }
 
 .components a:hover {
@@ -141,30 +139,17 @@
     height: 28px;
 }
 
-/* --- Keep your responsive media queries at the bottom --- */
 @media (max-width: 760px) {
     .nav-bar {
-        flex-direction: column; /* Stacks items vertically instead of jamming them sideways */
+        flex-direction: column;
         gap: 1.5rem;
         height: auto;
         padding: 1rem;
     }
 }
 
-/* @media (max-width: 500px) {
-    .searchbarout {
-        width: 100%;
-        margin-left: 0;
-    }
-
-    .components {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-}   */
-
 @media (max-width: 900px) {
     .nav-right-group {
-        gap: 1rem; /* Reduces space between links and icons on smaller screens */
+        gap: 1rem;
     }
 }

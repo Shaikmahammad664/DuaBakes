@@ -1,73 +1,70 @@
-    <!DOCTYPE html>
-    <html lang="en">    
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>DuaBakes</title>
-            <link rel="stylesheet" type="text/css" href="Login.css">
-            <link rel="stylesheet" type="text/css" href="Navbar.css">
-            <link rel="stylesheet" type="text/css" href="index.css">
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        </head>
-        <body>
-            <div id="navbar-placeholder"></div>
-            <main class="page-content">
-                <header>
-                    <h1 class="header-title">
-                        LOG IN
-                    </h1>
-                </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DuaBakes | Login</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <link rel="stylesheet" type="text/css" href="Navbar.css">
+    <link rel="stylesheet" type="text/css" href="signup.css">
+    <link rel="stylesheet" type="text/css" href="Login.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="signup-page">
+    <div id="navbar-placeholder"></div>
+    <main class="page-content">
+        <header>
+            <h1 class="header-title">LOG IN</h1>
+        </header>
 
-                <div class="login-box">
-                <form id="loginForm">
-                    <div>
-                        <input type="email" name ="email" id ="email" placeholder="Your Email" title="Enter your email address" required>
-                    </div>
-                    <div>
-                        <input type="password" name ="password" id ="password" placeholder="Your Password" title="Enter your password" required>
-                    </div>
-                    <div class="forgot-link">
-                        <a href="#">Forgot your password?</a>
-                    </div>
-                    <div class="actions">
-                        <button type="submit" title="Click to Sign in">SIGN IN</button>
-                        <a href="signup.html" class="secondary-link">SIGN UP</a>
-                    </div>
-                    <div>
-                        <p>Don't have an account? Signup here</p>
-                    </div>
-                </form>
-                </div>
-            </main>
-            <script src="api.js"></script>
-            <script>
-                document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const formData = {
-                        email: document.getElementById('email').value,
-                        password: document.getElementById('password').value
-                    };
-                    const result = await login(formData);
-                    alert(result.status || 'Login completed');
-                    if (result.status === 'Success') {
-                        document.getElementById('loginForm').reset();
-                        window.location.href = 'index sample.html';
-                    }
-                });
+        <div class="signup-box">
+        <form id="signupForm">
+            <div>
+                <input type="email" name="email" id="email" placeholder="Your Email" title="Enter your email address" required>
+            </div>
+            <div>
+                <input type="password" name="password" id="password" placeholder="Your Password" title="Enter your password" required>
+            </div>
+            <div class="forgot-link">
+                <a href="#">Forgot your password?</a>
+            </div>
+            <div class="actions">
+                <button type="submit" title="Click to Sign in">SIGN IN</button>
+            </div>
+            <div>
+                <p>Don't have an account? <a href="signup.html">Signup here</a></p>
+            </div>
+        </form>
+        </div>
+    </main>
+    <script src="api.js"></script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            const result = await login(formData);
+            alert(result.status || 'Login completed');
+            if (result.status === 'Success') {
+                document.getElementById('signupForm').reset();
+                window.location.href = 'index sample.html';
+            }
+        });
 
-                async function loadNavbar() {
-                    try {
-                        const response = await fetch('Navbar.html');
-                        if (!response.ok) throw new Error('Navbar not found');
-                        const html = await response.text();
-                        document.getElementById('navbar-placeholder').innerHTML = html;
-                    } catch (error) {
-                        console.error('Failed to load Navbar:', error);
-                    }
-                }
+        async function loadNavbar() {
+            try {
+                const response = await fetch('Navbar.html');
+                if (!response.ok) throw new Error('Navbar not found');
+                const html = await response.text();
+                document.getElementById('navbar-placeholder').innerHTML = html;
+            } catch (error) {
+                console.error('Failed to load Navbar:', error);
+            }
+        }
 
-                loadNavbar();
-            </script>
-        </body>
-
-    </html>
+        loadNavbar();
+    </script>
+</body>
+</html>
