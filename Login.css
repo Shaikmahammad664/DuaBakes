@@ -1,4 +1,4 @@
-/* 
+
 .login-page {
     min-height: 100vh;
     background-color: #ffffff;
@@ -10,6 +10,18 @@
     max-width: 980px;
     margin: 0 auto;
     padding: 8rem 1rem 2.5rem;
+}
+
+@media (max-width: 768px) {
+    .login-page .page-content {
+        padding: 7rem 1rem 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-page .page-content {
+        padding: 6rem 0.75rem 1.5rem;
+    }
 }
 
 .login-page header {
@@ -26,6 +38,15 @@
     border-radius: 18px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-top: -10px;
+}
+
+@media (max-width: 480px) {
+    .login-box {
+        max-width: 100%;
+        padding: 1.5rem 1.2rem;
+        margin: 10px auto 30px;
+        border-radius: 12px;
+    }
 }
 
 .header-title {
@@ -57,9 +78,41 @@
     background-color: #E38F82;
 }
 
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 20px;
+        margin-bottom: 40px;
+    }
+    
+    .header-title::after {
+        left: -80px;
+        width: 240px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-title {
+        font-size: 18px;
+        margin-bottom: 30px;
+        display: block;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .header-title::after {
+        display: none;
+    }
+}
+
 .login-page #loginForm {
     display: grid;
     gap: 0.25rem; 
+}
+
+@media (max-width: 480px) {
+    .login-page #loginForm {
+        gap: 0.2rem;
+    }
 }
 
 .login-page #loginForm button {
@@ -80,11 +133,26 @@
     background-color: #c35c5c;
 }
 
+@media (max-width: 480px) {
+    .login-page #loginForm button {
+        padding: 10px 16px;
+        font-size: 16px;
+        border-radius: 10px;
+    }
+}
+
 .login-page #loginForm p {
     font-family: karala, sans-serif;
     font-size: 16px;
     margin: 0.5rem 0 0; 
     text-align: center;
+}
+
+@media (max-width: 480px) {
+    .login-page #loginForm p {
+        font-size: 14px;
+        margin: 0.4rem 0 0;
+    }
 }
 
 .login-page #loginForm input[type="email"],
@@ -98,12 +166,28 @@
     font-size: 1rem;
     background: #fafafa;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    .login-page #loginForm input[type="email"],
+    .login-page #loginForm input[type="password"] {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.95rem;
+        border-radius: 10px;
+    }
 }
 
 .login-page #loginForm input::placeholder {
     font-family: karala, sans-serif;
     font-size: 15px;
     color: #888;
+}
+
+@media (max-width: 480px) {
+    .login-page #loginForm input::placeholder {
+        font-size: 14px;
+    }
 }
 
 .login-page #loginForm input[type="email"]:focus,
@@ -127,17 +211,3 @@
     margin-bottom: 0px;
     margin-top: 0px;
 }
-
-@media (max-width: 520px) {
-    .login-box {
-        padding: 1.5rem 1rem;
-    }
-
-    .header-title {
-        font-size: 1.75rem;
-    }
-} */
-
-/* .signup-page .forgot-link a:hover {
-    color: #dc4e4e;
-} */
