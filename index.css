@@ -232,7 +232,7 @@ textarea {
 
 #categories {
     display: flex;
-    gap: 1.25rem;
+    gap: 2rem;
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 1rem;
@@ -240,6 +240,7 @@ textarea {
     -webkit-overflow-scrolling: touch;
     margin-left: 3rem;
     padding-left: 1rem;
+    margin-top: -50px;
 }
 
 /* wrapper for horizontal scroll with buttons */
@@ -296,8 +297,8 @@ textarea {
 /* hide buttons on small screens to avoid overlap */
 @media (max-width: 768px) {
     #categories>div {
-        min-width: 160px;
-        padding: 0.8rem 0.4rem;
+        min-width: 120px;
+        padding: 0.4rem 0.2rem;
     }
     
     #categories>div>img {
@@ -306,7 +307,7 @@ textarea {
     }
     
     #categories>div>p {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 }
 
@@ -316,13 +317,13 @@ textarea {
     
     #categories {
         margin-left: 0;
-        gap: 0.75rem;
+        gap: 0.4rem;
     }
     
     #categories>div {
-        min-width: 140px;
-        padding: 0.6rem 0.4rem;
-        gap: 0.4rem;
+        min-width: 100px;
+        padding: 0.3rem 0.2rem;
+        gap: 0.3rem;
     }
     
     #categories>div>img {
@@ -332,7 +333,7 @@ textarea {
     }
     
     #categories>div>p {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
 }
 
@@ -344,15 +345,15 @@ textarea {
     background: transparent;
     border: none;
     border-radius: 0;
-    padding: 1rem 0.5rem;
+    padding: 0.5rem 0.3rem;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: 0.4rem;
     min-height: auto;
-    min-width: 200px;
+    min-width: 110px;
     flex: 0 0 auto;
     transition: transform 0.25s ease;
     scroll-snap-align: start;
@@ -373,7 +374,7 @@ textarea {
 
 #categories>div>p {
     margin: 0;
-    font-size: 1.05rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: #11656d;
 }
