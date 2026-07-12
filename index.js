@@ -47,3 +47,30 @@ categories.map((category) => {
 
     document.getElementById("categories").append(box);
 })
+
+    // Horizontal scroll buttons for categories
+    window.addEventListener('load', () => {
+        const container = document.getElementById('categories');
+        const leftBtn = document.querySelector('.cat-scroll.left');
+        const rightBtn = document.querySelector('.cat-scroll.right');
+        if (!container || !leftBtn || !rightBtn) return;
+
+        const scrollAmount = () => Math.round(container.clientWidth * 0.6);
+
+        leftBtn.addEventListener('click', () => {
+            container.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+        });
+
+        rightBtn.addEventListener('click', () => {
+            container.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+        });
+
+        const updateButtons = () => {
+            leftBtn.style.display = container.scrollLeft > 8 ? 'flex' : 'none';
+            rightBtn.style.display = (container.scrollLeft + container.clientWidth) < (container.scrollWidth - 8) ? 'flex' : 'none';
+        };
+
+        container.addEventListener('scroll', updateButtons, { passive: true });
+        window.addEventListener('resize', updateButtons);
+        setTimeout(updateButtons, 100);
+    });
