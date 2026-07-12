@@ -6,25 +6,11 @@
             <title>DuaBakes</title>
             <link rel="stylesheet" type="text/css" href="Login.css">
             <link rel="stylesheet" type="text/css" href="Navbar.css">
-            <link rel="stylesheet" type="text/css" href="index sample.css">
+            <link rel="stylesheet" type="text/css" href="index.css">
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         </head>
         <body>
-            <div id="navbar">
-                <div class="announcebox">
-                    <div id="announcetext">
-                        <marquee id="msg1" behavior="scroll" direction="left" scrollamount="6" style="display:block;">
-                            <p>Welcome to DuaBakes! We bake freshly when you order.</p>
-                        </marquee>
-                    </div>
-                </div>
-
-                <nav class="nav-bar">
-                    <div class="brand">
-                        <img src="dua bakes logo f.png" alt="DuaBakes Logo" title="DuaBakes Logo">
-                    </div>
-                </nav>
-            </div>
+            <div id="navbar-placeholder"></div>
             <main class="page-content">
                 <header>
                     <h1 class="header-title">
@@ -68,6 +54,19 @@
                         window.location.href = 'index sample.html';
                     }
                 });
+
+                async function loadNavbar() {
+                    try {
+                        const response = await fetch('Navbar.html');
+                        if (!response.ok) throw new Error('Navbar not found');
+                        const html = await response.text();
+                        document.getElementById('navbar-placeholder').innerHTML = html;
+                    } catch (error) {
+                        console.error('Failed to load Navbar:', error);
+                    }
+                }
+
+                loadNavbar();
             </script>
         </body>
 

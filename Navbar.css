@@ -1,16 +1,4 @@
-* {
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-button,
-input,
-textarea {
-    font: inherit;
-}
+/* --- Keep your existing *, html, button, input, and announcement styles as they are --- */
 
 .announcebox {
     position: fixed;
@@ -20,9 +8,9 @@ textarea {
     z-index: 1001;
     background-color: #5f3340;
     color: #d8b451;
-    padding: 0.8rem 1rem;
+    padding: 0.5rem 0rem;
     text-align: center;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     letter-spacing: 0.02em;
 }
 
@@ -32,44 +20,40 @@ textarea {
     text-transform: uppercase;
 }
 
+
 .nav-bar {
     position: fixed;
-    top: 3.5rem;
+    top: 1.5rem; /* Adjusted to sit below the announcement bar */
     left: 0;
     right: 0;
     z-index: 1000;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 1rem 2rem 1.25rem;
+    justify-content: space-between; /* Evenly distributes Logo, Search, and Links/Icons */
+    padding: 1rem 2rem;
     background-color: #ffffff;
     border-bottom: 1px solid rgba(16, 24, 40, 0.08);
     min-height: 96px;
     width: 100%;
+    gap: 1.1rem; /* Adds space between the flex items */
 }
-
 
 .brand img {
     max-height: 72px;
     width: auto;
     object-fit: contain;
+    /* margin-right: 5rem; Adds space between the logo and the search bar */
 }
 
+/* FIX: Removed position absolute so it sits naturally in the flex layout */
 .search-nav {
-    position: absolute;
-    left: 40%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    width: min(900px, calc(100% - 320px));
-    justify-content: center;
+    flex: 1; /* Allows it to take up available middle space dynamically */
+    max-width: 400px; /* Prevents the search bar from becoming ridiculously wide */
+    /* position: absolute; */
 }
 
 .searchbarout {
-    position: static;
-    width: 100%;
-    max-width: 620px;
+    width: 130%;
     display: flex;
     align-items: center;
     gap: 0.85rem;
@@ -77,29 +61,8 @@ textarea {
     border-radius: 999px;
     border: 1px solid #e5e7eb;
     background: #f3f1ef;
+    margin-left: 10%;
 }
-
-.components {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-left: auto;
-
-}
-
-.components a {
-    color: #111827;
-    text-decoration: none;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    padding-right: 80px;
-}
-
-.components a:hover {
-    color: #5f3340;
-    text-decoration: double underline;
-}
-
 
 .searchbarout input {
     width: 100%;
@@ -117,20 +80,47 @@ textarea {
     color: #717478;
 }
 
+/* NEW CONTAINER: Groups your text links AND your action icons cleanly together on the right */
+.nav-right-group {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* FIX: Removed the massive hardcoded 750px margin */
+.components {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.components a {
+    color: #5f3340;
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap; /* CRUCIAL: Keeps "CONTACT US" on a single line */
+}
+
+.components a:hover {
+    color: #44202b;
+    text-decoration: underline;
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+}
+
 .nav-actions {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-left: 30px;
-    margin-right: 30px;
-    gap: 3.5rem;
 }
 
 .icon-btn {
-    width: 72px;
-    height: 72px;
-    min-width: 72px;
-    min-height: 72px;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
     border-radius: 999px;
     border: 1px solid rgba(16, 24, 40, 0.18);
     background: #f8fafc;
@@ -147,51 +137,34 @@ textarea {
 }
 
 .icon-btn img {
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
 }
 
-
-
+/* --- Keep your responsive media queries at the bottom --- */
 @media (max-width: 760px) {
     .nav-bar {
-        justify-content: center;
-        text-align: center;
-        position: relative;
-        padding: 1rem 1rem 1.25rem;
+        flex-direction: column; /* Stacks items vertically instead of jamming them sideways */
+        gap: 1.5rem;
+        height: auto;
+        padding: 1rem;
     }
+}
 
-    .search-nav {
-        position: static;
-        transform: none;
-        flex-direction: column;
-        width: 100%;
-        gap: 0.85rem;
-    }
-
+/* @media (max-width: 500px) {
     .searchbarout {
-        position: static;
-        transform: none;
         width: 100%;
-        max-width: 100%;
-        margin: 0 auto;
-    }
-
-    .components {
-        justify-content: center;
-        width: 100%;
-        flex-wrap: wrap;
         margin-left: 0;
     }
 
-    .nav-actions {
-        width: 100%;
-        justify-content: center;
+    .components {
+        flex-direction: column;
+        gap: 0.5rem;
     }
-}
+}   */
 
-@media (max-width: 520px) {
-    .searchbarout {
-        padding: 0.75rem 0.9rem;
+@media (max-width: 900px) {
+    .nav-right-group {
+        gap: 1rem; /* Reduces space between links and icons on smaller screens */
     }
 }

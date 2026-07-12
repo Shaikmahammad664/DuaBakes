@@ -1,96 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">    
-    <head>  
-        <title>DuaBakes
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DuaBakes | Sign Up</title>
+    <link rel="stylesheet" href="Navbar.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="signup.css">
 
-        </title> 
-        <link rel="stylesheet" type="text/css" href="signup.css">
-        <link rel="stylesheet" type="text/css" href="index sample.css">
-        <link rel="stylesheet" type="text/css" href="Navbar.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    </head>
-    <body>
-        <div id="navbar">
-            <div class="announcebox">
-                <div id="announcetext">
-                    <marquee id="msg1" behavior="scroll" direction="left" scrollamount="6" style="display:block;">
-                        <p>Welcome to DuaBakes! We bake freshly when you order.</p>
-                    </marquee>
-                </div>
-            </div>
-
-            <nav class="nav-bar">
-                <div class="brand">
-                    <img src="dua bakes logo f.png" alt="DuaBakes Logo" title="DuaBakes Logo">
-                </div>
-            </nav>
-        </div>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+    <main class="page-content">
         <header>
-            <h1 class ="header-title">
-                SIGN UP
-            </h1>
+            <h1 class="header-title">SIGN UP</h1>
         </header>
-        
         <div class="signup-box">
             <form id="signupForm">
                 <div>
-                    <input type ="text" name ="firstName" id ="firstName" placeholder="First Name" autocomplete ="on" title = "Enter your Firstname" autofocus>
-                </div> <br>
-                <div>
-                    <input type ="text" name ="lastName" id ="lastName" placeholder="Last Name" autocomplete="on" title = "Enter your Lastname" required>
-                </div> <br>
-                <div>
-                    <input type="email" name ="email" id ="email" placeholder="Your Email" title = "Enter your Email " required>
-                </div> <br>
-                <div>
-                    <input type="password" name ="password" id ="password" placeholder="Your Password" title = "Enter your Password" required>
-                </div> <br>
-                <div>
-                    <input type ="tel" name ="phone" id ="phone" placeholder ="+91 1234567890" pattern ="[0-9]{10,}" title = " Enter your Mobilenumber" required>
-                </div> <br>
-                <div>
-                    <button type ="submit" title="Click to Sign up">SIGN UP</button>
-                </div><br>
-                
-                <div>
-                    <a href="Login.html"><button type ="button" title = " Click to Log in"> LOG IN</button></a>
+                    <input type="text" name="firstName" id="firstName" placeholder="First Name" autocomplete="on" title="Enter your Firstname" autofocus>
                 </div>
                 <div>
-                    <p> Already have an account? Login here</a> </p>
+                    <input type="text" name="lastName" id="lastName" placeholder="Last Name" autocomplete="on" title="Enter your Lastname" required>
                 </div>
-        </form>
+                <div>
+                    <input type="email" name="email" id="email" placeholder="Your Email" title="Enter your Email" required>
+                </div>
+                <div>
+                    <input type="password" name="password" id="password" placeholder="Your Password" title="Enter your Password" required>
+                </div>
+                <div>
+                    <input type="tel" name="phone" id="phone" placeholder="+91 1234567890" pattern="[0-9]{10,}" title="Enter your mobile number" required>
+                </div>
+                <div>
+                    <button type="submit" title="Click to Sign up">SIGN UP</button>
+                </div>
+                <div>
+                    <button type="button" onclick="window.location.href='Login.html'" title="Click to Log in">LOG IN</button>
+                </div>
+                <div>
+                    <p>Already have an account? <a href="Login.html">Log in here</a></p>
+                </div>
+            </form>
         </div>
-        
-        
-        
+    </main>
+    <script src="api.js"></script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                phone: document.getElementById('phone').value
+            };
+            const result = await signup(formData);
+            alert(result.status || 'Signup completed');
+            if (result.status === 'User signed up successfully') {
+                document.getElementById('signupForm').reset();
+                window.location.href = 'Login.html';
+            }
+        });
 
+        async function loadNavbar() {
+            try {
+                const response = await fetch('Navbar.html');
+                if (!response.ok) throw new Error('Navbar not found');
+                document.getElementById('navbar-placeholder').innerHTML = await response.text();
+            } catch (error) {
+                console.error('Failed to load Navbar:', error);
+            }
+        }
 
-
-        <script src="api.js"></script>
-        <script>
-            document.getElementById('signupForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = {
-                    firstName: document.getElementById('firstName').value,
-                    lastName: document.getElementById('lastName').value,
-                    email: document.getElementById('email').value,
-                    password: document.getElementById('password').value,
-                    phone: document.getElementById('phone').value
-                };
-                const result = await signup(formData);
-                alert(result.status || 'Signup completed');
-                if (result.status === 'User signed up successfully') {
-                    document.getElementById('signupForm').reset();
-                    window.location.href = 'Login.html';
-                }
-            });
-        </script>
-        <script>
-    // This page uses a simplified navbar without the shared search and action icons.
-    $(document).ready(function() {
-        // Navbar content is already included above; do not overwrite it.
-    });
-</script>
-    </body>
-
-</html>
+        loadNavbar();
+    </script>
+</body>

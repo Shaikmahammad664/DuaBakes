@@ -1,36 +1,43 @@
-  header {
-      text-align: center;
-      font-size: 20px;
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 180px 0 0;
+    background-color: #ffffff;
+    font-family: karala, Arial, Helvetica, sans-serif;
+    color: #1f1f1f;
+}
+
+.page-content {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 1rem 2.5rem;
+}
+
+.signup-box {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto 40px;
+    padding: 2rem 1.5rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 18px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: -10px;
   }
 
-  body {
-      background-color: rgb(255, 255, 255);
-  }
-
-  .signup-box {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      margin-top: -10px;
-  }
-
-  .header-title {
-      font-family: karala;
-      font-size: 24px;
-      color: #0A6169;
-      margin-top: 20px;
-      margin-bottom: 60px;
-      display: inline-block;
-      padding-top: 10px;
-      padding-bottom: 0px;
-      position: relative;
-      font-weight: 10;
-      margin-left: 0px;
-  }
+.header-title {
+    font-family: karala;
+    font-size: 24px;
+    color: #0A6169;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    display: inline-block;
+    padding-top: 10px;
+    padding-bottom: 0px;
+    position: relative;
+    font-weight: 10;
+    margin-left: 0px;
+}
 
   .header-title:hover {
       color: #e6452d;
@@ -47,20 +54,22 @@
       background-color: #E38F82;
   }
 
+  form {
+    display: grid;
+    gap: 0.5rem;
+}
   button {
       background-color: #0A6169;
       color: rgb(255, 255, 255);
-      padding: 10px 20px;
+      padding: 14px 20px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
-      margin-top: 5px;
-      width: 500px;
-      margin-left: 40px;
+      margin-top: 1rem;
+      width: 100%;
       text-align: center;
       font-family: karala, sans-serif;
       font-size: 18px;
-
   }
 
   button:hover {
@@ -70,27 +79,23 @@
   p {
       font-family: karala, sans-serif;
       font-size: 16px;
-      margin-left: 150px;
+      margin: 1rem 0 0;
+      text-align: center;
   }
 
   input[type="text"],
   input[type="password"],
   input[type="email"],
   input[type="tel"] {
-      outline: none;
-      font-size: 16px;
-      padding-left: 15px;
-      padding-right: 15px;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      margin: 1px;
-      height: 50px;
-      width: 500px;
-      border-radius: 8px;
-      font-family: karala, sans-serif;
-      background: transparent;
-      margin-left: 40px;
-      border: 1px solid #ccc;
+    margin: 0;
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-family: karala, sans-serif;
+    font-size: 1rem;
+    background: #fafafa;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   input::placeholder {
@@ -106,7 +111,16 @@
       border: 2px solid #0A6169;
       box-shadow: 0 0 0 4px rgba(10, 97, 105, 0.12);
   }
+input:focus {
+    border-color: #0a6169;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(10, 97, 105, 0.12);
+}
 
+.actions {
+    display: grid;
+    gap: 0.75rem;
+}
   #signupForm div {
       margin-bottom: -7px;
       margin-top: 0px;
