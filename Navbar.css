@@ -132,18 +132,21 @@
 
 @media (max-width: 480px) {
     .search-nav {
-        display: none;
+        flex: 0 1 100px;
+        min-width: 90px;
+        max-width: 120px;
     }
     
     .searchbarout {
         width: 100%;
         height: 34px;
-        padding: 0.5rem 0.7rem;
-        gap: 0.5rem;
+        padding: 0.5rem 0.6rem;
+        gap: 0.4rem;
+        font-size: 0.8rem;
     }
     
     .searchbarout input {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 }
 
