@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/Hero.css';
 import cakeImage from '../../assests/slidephoto.png';
+import backgroundImage from '../../assests/background.png';
 
 export default function Hero() {
   const [showImage, setShowImage] = useState(false);
@@ -15,7 +16,7 @@ export default function Hero() {
         setShowImage(entry.isIntersecting);
       },
       {
-        threshold: 0.35,
+        threshold: 0,
         rootMargin: '-20% 0px -40% 0px',
       }
     );
@@ -27,11 +28,13 @@ export default function Hero() {
   return (
     <>
       <section>
-        <div className="section-heading">
+        {/* <div className="section-heading">
           <p className="eyebrow">Shop by category</p>
           <h2>Browse our bakery collections</h2>
           <p className="section-copy">Tap any category below to explore delicious products made fresh for you.</p>
-        </div>
+        </div> */}
+
+        <div className="section-heading-bg" style={{ backgroundImage: `url(${backgroundImage})` }} />
       </section>
       <section className="hero" ref={heroRef}>
         <div className="hero-copy">
@@ -44,7 +47,6 @@ export default function Hero() {
             {showImage && (
               <>
                 <img src={cakeImage} alt="Fresh bakery treats" />
-                {/* <div className="hero-image-glow" /> */}
                 <div className="hero-image-badge">Made fresh daily</div>
               </>
             )}

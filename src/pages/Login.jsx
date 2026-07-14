@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import '../styles/Auth.css';
 
@@ -9,8 +9,10 @@ export default function Login() {
     password: ''
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,7 +21,14 @@ export default function Login() {
       [name]: value
     }));
     setError('');
+    setSuccess('');
   };
+
+  useEffect(() => {
+    if (location.state?.success) {
+      setSuccess(location.state.success);
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,8 +62,7 @@ export default function Login() {
 
       <div className="signup-box">
         <form onSubmit={handleSubmit}>
-          {error && <div className="error-message">{error}</div>}
-          
+            {success && <div className="success-message">{success}</div>}
           <div>
             <input
               type="email"

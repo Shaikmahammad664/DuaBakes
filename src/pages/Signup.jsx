@@ -31,12 +31,12 @@ export default function Signup() {
     try {
       const response = await authAPI.signup(formData);
       if (response.data.status === 'Success') {
-        // Store token if provided
+        // Store user info locally, then send user to login
         if (response.data.token) {
           localStorage.setItem('token', response.data.token);
         }
         localStorage.setItem('user', JSON.stringify(response.data));
-        navigate('/');
+        navigate('/login', { state: { success: 'Signup successful! Please log in.' } });
       } else {
         setError(response.data.message || 'Signup failed');
       }
