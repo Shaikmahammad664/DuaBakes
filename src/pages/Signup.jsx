@@ -96,11 +96,11 @@ export default function Signup() {
 
           <div>
             <input
-              type="tel"
-              name="phone"
-              placeholder="Phone Number"
-              title="Enter your phone number"
-              value={formData.phone}
+              type="password"
+              name="password"
+              placeholder="Your Password"
+              title="Enter your password"
+              value={formData.password}
               onChange={handleChange}
               required
             />
@@ -108,11 +108,11 @@ export default function Signup() {
 
           <div>
             <input
-              type="password"
-              name="password"
-              placeholder="Your Password"
-              title="Enter your password"
-              value={formData.password}
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              title="Enter your phone number"
+              value={formData.phone}
               onChange={handleChange}
               required
             />

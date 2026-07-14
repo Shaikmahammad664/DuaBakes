@@ -27,11 +27,17 @@ export default function Login() {
   useEffect(() => {
     if (location.state?.success) {
       setSuccess(location.state.success);
+      const timeoutId = setTimeout(() => {
+        setSuccess('');
+      }, 4000);
+      return () => clearTimeout(timeoutId);
     }
   }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
     setLoading(true);
 
     try {
@@ -47,7 +53,13 @@ export default function Login() {
         setError(response.data.message || 'Login failed');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during login');
+      const status = err.response?.status;
+      const backendMessage = err.response?.data?.message || err.response?.data?.detail;
+      if (status === 401) {
+        setError('Email or password wrong');
+      } else {
+        setError(backendMessage || 'An error occurred during login');
+      }
       console.error('Login error:', err);
     } finally {
       setLoading(false);
@@ -63,6 +75,7 @@ export default function Login() {
       <div className="signup-box">
         <form onSubmit={handleSubmit}>
             {success && <div className="success-message">{success}</div>}
+            {error && <div className="error-message">{error}</div>}
           <div>
             <input
               type="email"
@@ -90,7 +103,7 @@ export default function Login() {
           </div>
 
           <div className="forgot-link">
-            <a href="#forgot">Forgot your password?</a>
+            <Link to="/forgot-password">Forgot your password?</Link>
           </div>
 
           <div className="actions">

@@ -34,32 +34,107 @@
 
 import os
 import uuid
+import sqlite3
 import mysql.connector
 from loguru import logger
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# add local connection variable
-connection= mysql.connector.connect(
-    host=os.getenv("DB_HOST"),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PASSWORD"),
-    database=os.getenv("DB_NAME")
-)
+DB_TYPE = None
+connection = None
+cursor = None
 
-cursor= connection.cursor(dictionary=True)
-# to store user data in my sql
+MYSQL_SETTINGS = {
+    'host': os.getenv('DB_HOST', 'localhost'),
+    'user': os.getenv('DB_USER', 'root'),
+    'password': os.getenv('DB_PASSWORD', ''),
+    'database': os.getenv('DB_NAME', 'duabakes'),
+    'port': int(os.getenv('DB_PORT', 3306)) if os.getenv('DB_PORT') else 3306,
+}
+
+SQLITE_FILE = os.path.join(os.path.dirname(__file__), 'bakes_fallback.db')
+
+
+def init_sqlite_tables():
+    cursor.execute(
+        '''
+        CREATE TABLE IF NOT EXISTS users (
+            User_Id TEXT PRIMARY KEY,
+            FirstName TEXT NOT NULL,
+            LastName TEXT NOT NULL,
+            Email TEXT NOT NULL UNIQUE,
+            Password TEXT NOT NULL,
+            PhoneNumber TEXT
+        )
+        '''
+    )
+    cursor.execute(
+        '''
+        CREATE TABLE IF NOT EXISTS Admin (
+            Admin_Id TEXT PRIMARY KEY,
+            FirstName TEXT,
+            LastName TEXT,
+            Email TEXT NOT NULL UNIQUE,
+            Password TEXT NOT NULL
+        )
+        '''
+    )
+    cursor.execute(
+        '''
+        CREATE TABLE IF NOT EXISTS products (
+            ProductId TEXT PRIMARY KEY,
+            ProductName TEXT NOT NULL,
+            Description TEXT,
+            Category TEXT,
+            ImageUrl TEXT,
+            Price REAL DEFAULT 0.00,
+            StockQuantity INTEGER DEFAULT 0,
+            Weight REAL DEFAULT 0
+        )
+        '''
+    )
+    connection.commit()
+
+
+def connect_to_database():
+    global DB_TYPE, connection, cursor
+    try:
+        connection = mysql.connector.connect(**MYSQL_SETTINGS)
+        cursor = connection.cursor(dictionary=True)
+        DB_TYPE = 'mysql'
+        logger.info('Connected to MySQL database successfully.')
+    except Exception as mysql_error:
+        logger.error(f'MySQL connection failed: {mysql_error}')
+        logger.info('Falling back to SQLite local database.')
+        connection = sqlite3.connect(SQLITE_FILE, check_same_thread=False)
+        connection.row_factory = sqlite3.Row
+        cursor = connection.cursor()
+        DB_TYPE = 'sqlite'
+        init_sqlite_tables()
+        logger.info('SQLite fallback database initialized.')
+
+
+connect_to_database()
+
+
+def get_placeholder():
+    return '%s' if DB_TYPE == 'mysql' else '?'
+
+
+# to store user data in db
+
 def store_user(user_data):
     try:
-        existing = fetch_user({"Email": user_data["Email"]})
+        existing = fetch_user({'Email': user_data['Email']})
         if existing:
             logger.warning(f"User already exists: {user_data['Email']}")
             return False
 
         user_id = uuid.uuid4().hex
         logger.info(f"Registering user with id: {user_id}")
-        query = "INSERT INTO users (User_Id, FirstName, LastName, Email, Password, phoneNumber) VALUES (%s, %s, %s, %s, %s, %s)"
+        placeholder = get_placeholder()
+        query = f"INSERT INTO users (User_Id, FirstName, LastName, Email, Password, PhoneNumber) VALUES ({', '.join([placeholder]*6)})"
         values = (
             user_id,
             user_data['FirstName'],
@@ -74,38 +149,45 @@ def store_user(user_data):
     except Exception as e:
         logger.error(f"Error storing user: {e}")
         return False
-    
-# to fetch user data from my sql
 
-def fetch_user(query, table="users"):
+
+# to fetch user data
+
+def fetch_user(query, table='users'):
     try:
         logger.info(f"Fetching user with query {query} from {table}")
+        placeholder = get_placeholder()
         if 'Password' in query:
-            sql_query = f"SELECT * FROM {table} WHERE Email = %s AND Password = %s"
+            sql_query = f"SELECT * FROM {table} WHERE Email = {placeholder} AND Password = {placeholder}"
             values = (query['Email'], query['Password'])
         else:
-            sql_query = f"SELECT * FROM {table} WHERE Email = %s"
+            sql_query = f"SELECT * FROM {table} WHERE Email = {placeholder}"
             values = (query['Email'],)
 
         cursor.execute(sql_query, values)
         user = cursor.fetchone()
         if user:
-            logger.debug(f"User {user.get('User_Id')} found in {table}.")
+            if DB_TYPE == 'sqlite':
+                user = dict(user)
+            logger.debug(f"User found in {table}.")
         return user
     except Exception as e:
         logger.error(f"Error fetching user: {e}")
         return None
+
+
 # to update the password from reset password 
 
-def update_user(query, update_data, table="users"):
+def update_user(query, update_data, table='users'):
     try:
         set_clauses = []
         values = []
+        placeholder = get_placeholder()
         for key, value in update_data.items():
-            set_clauses.append(f"{key} = %s")
+            set_clauses.append(f"{key} = {placeholder}")
             values.append(value)
         values.append(query['Email'])
-        sql_query = f"UPDATE {table} SET {', '.join(set_clauses)} WHERE Email = %s"
+        sql_query = f"UPDATE {table} SET {', '.join(set_clauses)} WHERE Email = {placeholder}"
         cursor.execute(sql_query, tuple(values))
         connection.commit()
         logger.info(f"User with Email {query['Email']} updated successfully.")
@@ -114,23 +196,26 @@ def update_user(query, update_data, table="users"):
         logger.error(f"Error updating user: {e}")
         return False
 
+
 # admin login page 
 
-def fetch_admin(item:dict):
+def fetch_admin(item: dict):
     try:
-        user = fetch_user(item, table="Admin")
+        user = fetch_user(item, table='Admin')
         return user
     except Exception as e:
         logger.error(f"Error fetching admin: {e}")
         return None
 
-# to store products in sql 
+
+# to store products in db 
 
 def store_products(products_data):
     try:
         product_id = uuid.uuid4().hex[:12]
         logger.info(f"Inserting product {product_id}")
-        query = "INSERT INTO products (ProductId, ProductName, Description, Category, ImageUrl, Price, StockQuantity, Weight) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        placeholder = get_placeholder()
+        query = f"INSERT INTO products (ProductId, ProductName, Description, Category, ImageUrl, Price, StockQuantity, Weight) VALUES ({', '.join([placeholder]*8)})"
         values = (
             product_id,
             products_data['ProductName'],
@@ -152,7 +237,10 @@ def store_products(products_data):
 def fetch_products():
     try:
         cursor.execute("SELECT * FROM products")
-        return cursor.fetchall()
+        products = cursor.fetchall()
+        if DB_TYPE == 'sqlite':
+            return [dict(row) for row in products]
+        return products
     except Exception as e:
         logger.error(f"Error fetching products: {e}")
         return []
@@ -160,8 +248,12 @@ def fetch_products():
 
 def fetch_product_by_id(product_id):
     try:
-        cursor.execute("SELECT * FROM products WHERE ProductId = %s", (product_id,))
-        return cursor.fetchone()
+        placeholder = get_placeholder()
+        cursor.execute(f"SELECT * FROM products WHERE ProductId = {placeholder}", (product_id,))
+        product = cursor.fetchone()
+        if DB_TYPE == 'sqlite' and product:
+            return dict(product)
+        return product
     except Exception as e:
         logger.error(f"Error fetching product by id: {e}")
         return None

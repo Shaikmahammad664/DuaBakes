@@ -1,7 +1,10 @@
 from email import message
 from unittest import result
 
-from openai import OpenAI
+try:
+    from openai import OpenAI
+except ModuleNotFoundError:
+    OpenAI = None
 import os
 
 LLM_API_KEY = os.getenv("LLM_API_KEY")
@@ -17,28 +20,30 @@ PROMPT="""
 """
 
 
-def call_llm(text:str):
+def call_llm(text: str):
+    if OpenAI is None:
+        raise RuntimeError("OpenAI module is not installed.")
 
-  client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=LLM_API_KEY,
-  )
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=LLM_API_KEY,
+    )
 
-  response = client.chat.completions.create(
-    model=MODEL,
-    messages=[
-        {
-            "role": "system",
-            "content": PROMPT
-        },
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
             {
-              "role": "user",
-              "content": text
+                "role": "system",
+                "content": PROMPT
+            },
+            {
+                "role": "user",
+                "content": text
             }
-          ],
-    extra_body={"reasoning": {"enabled": True}}
-  )
-  return response
+        ],
+        extra_body={"reasoning": {"enabled": True}}
+    )
+    return response
 
 # display_content = result['response']['choices'][0]['message']['content']
 # print(display_content)
