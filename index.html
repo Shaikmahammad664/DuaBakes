@@ -1,69 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DuaBakes</title>
-    <link rel="stylesheet" type="text/css" href="Navbar.css">
-    <link rel="stylesheet" type="text/css" href="index.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-    <div id="navbar-placeholder"></div>
-
-    <main class="page-content">
-        <section class="categories-section">
-            
-
-            <div class="categories-wrapper">
-                <button class="cat-scroll left" aria-label="Scroll categories left">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                        <polyline points="6 4 18 12 6 20" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </button>
-                <div id="categories" class="categories-row"></div>
-                <button class="cat-scroll right" aria-label="Scroll categories right">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                        <polyline points="6 4 18 12 6 20" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </button>
-            </div>
-        </section>
-
-
-         <section>
-            <div class="section-heading">
-                <p class="eyebrow">Shop by category</p>
-                <h2>Browse our bakery collections</h2>
-                <p class="section-copy">Tap any category below to explore delicious products made fresh for you.</p>
-            </div>
-        </section>
-
-          <section class="hero">
-            <div class="hero-copy">
-                <p class="eyebrow">Freshly baked on demand</p>
-                <h1>Discover your favorite bakery treats</h1>
-                <p class="hero-text">From cakes and cupcakes to donuts, breads, and cookies — order the sweetest snacks with fast delivery and daily freshness.</p>
-            </div>
-            
-        </section>
-       
-    </main>
-   
-    <button class ="chatbot"><img src="./assests/ai logo1.png" alt="Chatbot"></button>
-
-    <script>
-        async function loadNavbar() {
-            try {
-                const response = await fetch('./Navbar.html');
-                if (!response.ok) throw new Error('Navbar not found');
-                document.getElementById('navbar-placeholder').innerHTML = await response.text();
-            } catch (error) {
-                console.error('Failed to load Navbar:', error);
-            }
-        }
-        loadNavbar();
-    </script>
-    <script src="./index.js"></script>
-</body>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

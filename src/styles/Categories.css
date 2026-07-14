@@ -1,0 +1,231 @@
+.categories-section {
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 0.75rem;
+}
+
+.section-heading {
+    max-width: 720px;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+}
+
+.section-heading .eyebrow {
+    margin: 0 auto 0.75rem;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #5f3340;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.section-heading h2 {
+    margin: 0;
+    font-size: clamp(2rem, 3vw, 3rem);
+    line-height: 1.08;
+    color: #111827;
+}
+
+.section-copy {
+    margin: 1rem auto 0;
+    max-width: 36rem;
+    color: #6b7280;
+    line-height: 1.75;
+}
+
+@media (max-width: 768px) {
+    .section-heading {
+        margin: 0 auto 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-heading .eyebrow {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+    }
+    
+    .section-heading h2 {
+        font-size: 1.5rem;
+    }
+    
+    .section-copy {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 0.75rem auto 0;
+    }
+}
+
+/* wrapper for horizontal scroll with buttons */
+.categories-carousel {
+    position: relative;
+    max-width: 100%;
+    margin: 0 auto 2rem;
+    /* padding: 0 1rem; */
+}
+
+.categories-row {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 1rem;
+    align-items: center;
+    min-height: 100px;
+    margin-top: 0;
+    margin-left: 3rem;
+    margin-right: 1rem;
+
+}
+
+.categories-row::-webkit-scrollbar {
+    display: none;
+}
+
+.cat-scroll {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.06);
+    background: transparent;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: none;
+    z-index: 20;
+}
+
+.cat-scroll svg { 
+    width: 36px; 
+    height: 36px; 
+    color: #3b3102; 
+}
+
+.cat-scroll:hover { 
+    background: rgba(0,0,0,0.02); 
+    transform: translateY(-50%) scale(1.02); 
+}
+
+.cat-scroll.left svg { 
+    transform: rotate(180deg); 
+}
+
+.cat-scroll.left {
+    left: -10px;
+}
+
+.cat-scroll.right {
+    right: -10px;
+}
+
+.cat-scroll:focus { 
+    outline: 2px solid rgba(255,255,255,0.2); 
+}
+
+/* Category items */
+.category-item {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 0.25rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    min-height: auto;
+    min-width: 150px;
+    flex: 0 0 auto;
+    transition: transform 0.25s ease;
+    scroll-snap-align: start;
+    cursor: pointer;
+}
+
+.category-item img,
+.category-item .category-icon {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid #bda85c;
+    background: #faf7f3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-icon.fallback {
+    font-size: 0.85rem;
+    color: #3b2b0f;
+    font-weight: 700;
+    padding: 0.4rem;
+    text-align: center;
+}
+
+.category-item:hover {
+    transform: translateY(-3px);
+}
+
+.category-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #115a5a;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .category-item {
+        min-width: 120px;
+        padding: 0.4rem 0.25rem;
+        gap: 0.55rem;
+    }
+    
+    .category-item img,
+    .category-item .category-icon {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .category-item p {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .cat-scroll {
+        display: none;
+    }
+    
+    .categories-carousel {
+        padding: 0 0.75rem;
+    }
+    
+    .categories-row {
+        gap: 0.65rem;
+    }
+    
+    .category-item {
+        min-width: 95px;
+        padding: 0.3rem 0.2rem;
+        gap: 0.3rem;
+    }
+    
+    .category-item img,
+    .category-item .category-icon {
+        width: 72px;
+        height: 72px;
+        border-width: 3px;
+    }
+    
+    .category-item p {
+        font-size: 0.72rem;
+    }
+}
