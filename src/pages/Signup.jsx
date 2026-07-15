@@ -41,7 +41,13 @@ export default function Signup() {
         setError(response.data.message || 'Signup failed');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during signup');
+      const status = err.response?.status;
+      const backendMessage = err.response?.data?.message || err.response?.data?.detail;
+      if (status === 400) {
+        setError(backendMessage || 'User already exists');
+      } else {
+        setError(backendMessage || 'An error occurred during signup');
+      }
       console.error('Signup error:', err);
     } finally {
       setLoading(false);
