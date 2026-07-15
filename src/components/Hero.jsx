@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/Hero.css';
+import '../styles/ProductList.css';
+import ProductList from './ProductList';
 import cakeImage from '../../assests/slidephoto.png';
 import backgroundImage from '../../assests/background.png';
 
@@ -36,6 +38,9 @@ export default function Hero() {
 
         <div className="section-heading-bg" style={{ backgroundImage: `url(${backgroundImage})` }} />
       </section>
+      
+      <ProductList />
+
       <section className="hero" ref={heroRef}>
         <div className="hero-copy">
           <p className="eyebrow">Freshly baked on demand</p>
