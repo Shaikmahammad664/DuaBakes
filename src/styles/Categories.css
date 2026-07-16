@@ -173,6 +173,17 @@
     transform: translateY(-3px);
 }
 
+.category-item.active img,
+.category-item.active .category-icon {
+    border-color: #d4a574;
+    box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2);
+}
+
+.category-item.active p {
+    font-weight: 600;
+    color: #5f3340;
+}
+
 .category-item p {
     margin: 0;
     font-size: 14px;

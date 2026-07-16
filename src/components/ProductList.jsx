@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/ProductList.css';
 import { products } from '../data/products';
 
-export default function ProductList() {
+export default function ProductList({ selectedCategory, startIndex = 0, limit = products.length }) {
   const navigate = useNavigate();
 
   return (

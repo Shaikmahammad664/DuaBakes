@@ -31,7 +31,11 @@ export default function Navbar() {
 
       <nav className="nav-bar">
         <div className="brand">
-          <Link to="/">
+          <Link to="/" onClick={() => {
+            if (window.resetCategoryFilter) {
+              window.resetCategoryFilter();
+            }
+          }}>
             <img src="./assests/bakes logo.png" alt="DuaBakes Logo" title="DuaBakes Logo" />
           </Link>
         </div>
@@ -59,7 +63,13 @@ export default function Navbar() {
 
         <div className="nav-right-group">
           <div className="components">
-            <Link to="/">HOME</Link>
+            <Link to="/" onClick={() => {
+              if (window.resetCategoryFilter) {
+                window.resetCategoryFilter();
+              }
+            }}>
+              HOME
+            </Link>
             <a href="#about">ABOUT US</a>
             <a href="#contact">CONTACT US</a>
           </div>

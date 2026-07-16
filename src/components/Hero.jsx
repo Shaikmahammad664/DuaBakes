@@ -5,7 +5,7 @@ import ProductList from './ProductList';
 import cakeImage from '../../assests/slidephoto.png';
 import backgroundImage from '../../assests/background.png';
 
-export default function Hero() {
+export default function Hero({ selectedCategory }) {
   const [showImage, setShowImage] = useState(false);
   const heroRef = useRef(null);
 
@@ -38,26 +38,36 @@ export default function Hero() {
 
         <div className="section-heading-bg" style={{ backgroundImage: `url(${backgroundImage})` }} />
       </section>
-      
-      <ProductList />
 
-      <section className="hero" ref={heroRef}>
-        <div className="hero-copy">
-          <p className="eyebrow">Freshly baked on demand</p>
-          <h1>Discover your favorite bakery treats</h1>
-          <p className="hero-text">From cakes and cupcakes to donuts, breads, and cookies — order the sweetest snacks with fast delivery and daily freshness.</p>
-        </div>
-        <div className="hero-visual">
-          <div className={`hero-image-card ${showImage ? 'loaded' : 'hidden'}`}>
-            {showImage && (
-              <>
-                <img src={cakeImage} alt="Fresh bakery treats" />
-                <div className="hero-image-badge">Made fresh daily</div>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
+      {selectedCategory ? (
+        // Show all filtered products when category is selected
+        <ProductList selectedCategory={selectedCategory} />
+      ) : (
+        // Show products split by hero section only on home
+        <>
+          <ProductList selectedCategory={selectedCategory} startIndex={0} limit={12} />
+
+          <section className="hero" ref={heroRef}>
+            <div className="hero-copy">
+              <p className="eyebrow">Freshly baked on demand</p>
+              <h1>Discover your favorite bakery treats</h1>
+              <p className="hero-text">From cakes and cupcakes to donuts, breads, and cookies — order the sweetest snacks with fast delivery and daily freshness.</p>
+            </div>
+            <div className="hero-visual">
+              <div className={`hero-image-card ${showImage ? 'loaded' : 'hidden'}`}>
+                {showImage && (
+                  <>
+                    <img src={cakeImage} alt="Fresh bakery treats" />
+                    <div className="hero-image-badge">Made fresh daily</div>
+                  </>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* <ProductList selectedCategory={selectedCategory} startIndex={13} limit={20} /> */}
+        </>
+      )}
     </>
   );
 }
