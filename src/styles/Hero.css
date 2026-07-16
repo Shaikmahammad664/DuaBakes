@@ -16,7 +16,7 @@
     }
 }
 
-.hero {
+.hero {   /*gap above the hero section*/
     display: grid;
     grid-template-columns: minmax(320px, 1fr) minmax(420px, 760px);
     align-items: center;
@@ -25,7 +25,8 @@
     margin: 0 5rem;
     max-width: 1425px;
     width: 100%;
-    margin-top: 40rem;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
 }
 
 .section-heading-bg {

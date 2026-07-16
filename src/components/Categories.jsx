@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import '../styles/Categories.css';
 
-export default function Categories() {
+export default function Categories({ onCategorySelect, selectedCategory }) {
   const [categories] = useState([
     { id: 1, name: 'Cakes', image: '/assests/cake.jpg' },
     { id: 2, name: 'Cupcakes', image: '/assests/cupcakes.jpg' },
@@ -12,7 +12,7 @@ export default function Categories() {
     { id: 7, name: 'Ice Creams', image: '/assests/icecream.jpg' },
     { id: 9, name: 'hampers', image: '/assests/hampers.jpg' },
     { id: 8, name: 'Eggless', image: '/assests/eggless.jpg' },
-    {id: 10, name: 'Make Your Own', image: '/assests/makeown.jpg' }
+    { id: 10, name: 'Make Your Own', image: '/assests/makeown.jpg' }
     
   ]);
 
@@ -30,7 +30,9 @@ export default function Categories() {
   };
 
   const handleCategoryClick = (category) => {
-    console.log('Selected category:', category);
+    if (onCategorySelect) {
+      onCategorySelect(category.name);
+    }
   };
 
   const handleImageError = (id) => {

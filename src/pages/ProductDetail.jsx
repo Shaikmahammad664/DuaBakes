@@ -8,14 +8,21 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const product = products.find((item) => item.id === Number(id));
-  const [size, setSize] = useState('500g');
+  const weightCategories = ['Cakes', 'Eggless', 'Breads', 'Chocolates', 'Ice Creams', 'hampers'];
+  const isWeightProduct = weightCategories.includes(product?.category);
+  const sizes = product?.category === 'Breads' || product?.category === 'Chocolates' || product?.category === 'Ice Creams'
+    ? [
+        { id: '250g', label: '250g', mult: 1 },
+        { id: '500g', label: '500g', mult: 2 },
+      ]
+    : [
+        { id: '500g', label: '500g', mult: 1 },
+        { id: '1kg', label: '1kg', mult: 2 },
+      ];
+  const [size, setSize] = useState(isWeightProduct ? sizes[0].id : '500g');
   const [quantity, setQuantity] = useState(1);
-  const sizes = [
-    { id: '500g', label: '500g', mult: 1 },
-    { id: '1kg', label: '1kg', mult: 2 },
-  ];
 
-  const sizeMultiplier = sizes.find((s) => s.id === size)?.mult || 1;
+  const sizeMultiplier = isWeightProduct ? sizes.find((s) => s.id === size)?.mult || 1 : 1;
   const computedPrice = product ? product.price * sizeMultiplier * Math.max(1, Number(quantity)) : 0;
 
   if (!product) {
@@ -42,30 +49,34 @@ export default function ProductDetail() {
           <p className="product-price">Rs. {computedPrice.toLocaleString()}</p>
 
           <div className="product-size-qty">
-            <div className="product-sizes">
-              {sizes.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  className={`size-btn ${size === s.id ? 'active' : ''}`}
-                  onClick={() => setSize(s.id)}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
+            {isWeightProduct ? (
+              <div className="product-sizes">
+                {sizes.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className={`size-btn ${size === s.id ? 'active' : ''}`}
+                    onClick={() => setSize(s.id)}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="product-unit-label">Pack of 4</div>
+            )}
+          </div>
 
-            <div className="product-quantity">
-              <label htmlFor="qty">Quantity</label>
-              <input
-                id="qty"
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
-                style={{ width: 80, padding: '0.5rem', borderRadius: 6 }}
-              />
-            </div>
+          <div className="product-quantity">
+            <label htmlFor="qty">Quantity</label>
+            <input
+              id="qty"
+              type="number"
+              min="1"
+              value={quantity}
+              onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+              style={{ width: 80, padding: '0.5rem', borderRadius: 6 }}
+            />
           </div>
 
           <p className="product-description">{product.description}</p>

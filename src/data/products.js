@@ -173,7 +173,7 @@ export const products = [
   },
   {
     id: 19,
-    name: 'Cookie Hamper',
+    name: 'Mix Hamper',
     price: 600,
     image: '/assests/products/cookieHamper.png',
     available: true,
@@ -188,5 +188,5 @@ export const products = [
     available: true,
     category: 'hampers',
     description: 'A festive assortment of treats, perfect for celebrating special occasions.',
-  }
+  },
 ];

@@ -45,7 +45,7 @@ export default function Hero({ selectedCategory }) {
       ) : (
         // Show products split by hero section only on home
         <>
-          <ProductList selectedCategory={selectedCategory} startIndex={0} limit={12} />
+          <ProductList selectedCategory={selectedCategory} startIndex={0} limit={12} showHeader={true} />
 
           <section className="hero" ref={heroRef}>
             <div className="hero-copy">
@@ -53,6 +53,7 @@ export default function Hero({ selectedCategory }) {
               <h1>Discover your favorite bakery treats</h1>
               <p className="hero-text">From cakes and cupcakes to donuts, breads, and cookies — order the sweetest snacks with fast delivery and daily freshness.</p>
             </div>
+        
             <div className="hero-visual">
               <div className={`hero-image-card ${showImage ? 'loaded' : 'hidden'}`}>
                 {showImage && (
@@ -65,7 +66,7 @@ export default function Hero({ selectedCategory }) {
             </div>
           </section>
 
-          {/* <ProductList selectedCategory={selectedCategory} startIndex={13} limit={20} /> */}
+          <ProductList selectedCategory={selectedCategory} startIndex={12} showHeader={false} />
         </>
       )}
     </>
