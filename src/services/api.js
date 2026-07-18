@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:7788';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:7788';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -45,7 +45,9 @@ export const authAPI = {
   resetPassword: (email, newPassword) => apiClient.post('/reset-password', {
     Email: email,
     NewPassword: newPassword
-  })
+  }),
+
+  updateProfile: (profileData) => apiClient.post('/profile', profileData)
 };
 
 // Products APIs
@@ -76,7 +78,7 @@ export const ordersAPI = {
   
   getById: (id) => apiClient.get(`/orders/${id}`),
   
-  getByUser: () => apiClient.get('/orders/user/mine')
+  getByUser: (email) => apiClient.get(`/orders/${email}`)
 };
 
 // Chat API

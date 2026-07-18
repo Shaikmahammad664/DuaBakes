@@ -9,6 +9,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Payment from './pages/Payment';
+import Settings from './pages/Settings';
+import Orders from './pages/Orders';
 import './App.css';
 
 function App() {
@@ -85,6 +87,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/orders" element={<Orders />} />
       </Routes>
       <Chatbot />
     </Router>

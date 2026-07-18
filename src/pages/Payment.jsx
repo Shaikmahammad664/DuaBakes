@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ordersAPI } from '../services/api';
 import '../styles/Payment.css';
 
 export default function Payment({ cartItems }) {
@@ -31,6 +32,7 @@ export default function Payment({ cartItems }) {
   const [upiRedirect, setUpiRedirect] = useState('');
   const [discountCode, setDiscountCode] = useState('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [message, setMessage] = useState('');
 
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingFee = 0;
@@ -321,9 +323,30 @@ export default function Payment({ cartItems }) {
               </div>
             )}
 
-            <button type="button" className="pay-now-button" onClick={() => setPaymentConfirmed(true)}>
+            <button type="button" className="pay-now-button" onClick={async () => {
+              const storedUser = localStorage.getItem('user');
+              if (!storedUser) {
+                navigate('/login');
+                return;
+              }
+
+              const user = JSON.parse(storedUser);
+              const email = user.Email || user.email;
+              try {
+                await ordersAPI.create({
+                  Email: email,
+                  Items: cartItems.map((item) => ({ name: item.name, quantity: item.quantity, price: item.price })),
+                  TotalAmount: totalWithTax,
+                });
+                setPaymentConfirmed(true);
+                setMessage('Order placed successfully.');
+              } catch (error) {
+                setMessage('Could not place order right now.');
+              }
+            }}>
               Pay now
             </button>
+            {message && <p className="payment-confirmation">{message}</p>}
             {paymentConfirmed && form.paymentMethod !== 'UPI' && (
               <p className="payment-confirmation">Payment method selected: {form.paymentMethod}</p>
             )}

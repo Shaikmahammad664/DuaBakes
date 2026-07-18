@@ -35,7 +35,9 @@
 import os
 import uuid
 import sqlite3
+import json
 import mysql.connector
+from datetime import datetime
 from loguru import logger
 from dotenv import load_dotenv
 
@@ -91,6 +93,17 @@ def init_sqlite_tables():
             Price REAL DEFAULT 0.00,
             StockQuantity INTEGER DEFAULT 0,
             Weight REAL DEFAULT 0
+        )
+        '''
+    )
+    cursor.execute(
+        '''
+        CREATE TABLE IF NOT EXISTS orders (
+            Order_Id TEXT PRIMARY KEY,
+            User_Email TEXT NOT NULL,
+            Items TEXT NOT NULL,
+            TotalAmount REAL DEFAULT 0.00,
+            CreatedAt TEXT NOT NULL
         )
         '''
     )
@@ -257,4 +270,42 @@ def fetch_product_by_id(product_id):
     except Exception as e:
         logger.error(f"Error fetching product by id: {e}")
         return None
+
+
+def store_order(order_data):
+    try:
+        order_id = uuid.uuid4().hex[:12]
+        placeholder = get_placeholder()
+        query = f"INSERT INTO orders (Order_Id, User_Email, Items, TotalAmount, CreatedAt) VALUES ({', '.join([placeholder]*5)})"
+        values = (
+            order_id,
+            order_data['Email'],
+            json.dumps(order_data.get('Items', [])),
+            float(order_data.get('TotalAmount', 0)),
+            datetime.utcnow().isoformat(),
+        )
+        cursor.execute(query, values)
+        connection.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error storing order: {e}")
+        return False
+
+
+def fetch_orders(email):
+    try:
+        placeholder = get_placeholder()
+        cursor.execute(f"SELECT * FROM orders WHERE User_Email = {placeholder} ORDER BY CreatedAt DESC", (email,))
+        orders = cursor.fetchall()
+        if DB_TYPE == 'sqlite':
+            result = []
+            for row in orders:
+                item = dict(row)
+                item['Items'] = json.loads(item.get('Items', '[]'))
+                result.append(item)
+            return result
+        return orders
+    except Exception as e:
+        logger.error(f"Error fetching orders: {e}")
+        return []
 

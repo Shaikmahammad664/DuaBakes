@@ -1,17 +1,74 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
 
 export default function Navbar({ searchQuery, onSearchChange }) {
   const navigate = useNavigate();
+  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(localStorage.getItem('user')));
+  const dropdownRef = useRef(null);
 
   const handleCartClick = () => {
     navigate('/cart');
   };
 
   const handleAccountClick = () => {
-    // TODO: Navigate to account/profile
+    setIsAccountDropdownOpen(!isAccountDropdownOpen);
   };
+
+  const handleSignIn = () => {
+    navigate('/login');
+    setIsAccountDropdownOpen(false);
+  };
+
+  const handleSignUp = () => {
+    navigate('/signup');
+    setIsAccountDropdownOpen(false);
+  };
+
+  const handleProfile = () => {
+    navigate('/profile');
+    setIsAccountDropdownOpen(false);
+  };
+
+  const handleMyOrders = () => {
+    navigate('/orders');
+    setIsAccountDropdownOpen(false);
+  };
+
+  const handleSettings = () => {
+    navigate('/settings');
+    setIsAccountDropdownOpen(false);
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setIsAccountDropdownOpen(false);
+    navigate('/');
+    alert('You have been signed out successfully!');
+  };
+
+  useEffect(() => {
+    const syncLoginState = () => {
+      setIsLoggedIn(Boolean(localStorage.getItem('user')));
+    };
+
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsAccountDropdownOpen(false);
+      }
+    };
+
+    syncLoginState();
+    window.addEventListener('storage', syncLoginState);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('storage', syncLoginState);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -71,9 +128,65 @@ export default function Navbar({ searchQuery, onSearchChange }) {
             <button type="button" className="icon-btn" aria-label="Cart" onClick={handleCartClick}>
               <img src="./assests/cartlogo.png" alt="Cart icon" title="Cart" />
             </button>
-            <button type="button" className="icon-btn" aria-label="Account" onClick={handleAccountClick}>
-              <img src="./assests/accounticon.png" alt="Account icon" title="Account" />
-            </button>
+            <div className="account-dropdown" ref={dropdownRef}>
+              <button type="button" className="icon-btn" aria-label="Account" onClick={handleAccountClick}>
+                <img src="./assests/accounticon.png" alt="Account icon" title="Account" />
+              </button>
+              {isAccountDropdownOpen && (
+                <div className="dropdown-menu">
+                  {!isLoggedIn ? (
+                    <>
+                      <button 
+                        type="button" 
+                        className="dropdown-item dropdown-btn" 
+                        onClick={handleSignIn}
+                      >
+                        Sign In
+                      </button>
+                      <button 
+                        type="button" 
+                        className="dropdown-item dropdown-btn" 
+                        onClick={handleSignUp}
+                      >
+                        Sign Up
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button 
+                        type="button" 
+                        className="dropdown-item dropdown-btn" 
+                        onClick={handleProfile}
+                      >
+                        Profile
+                      </button>
+                      <button 
+                        type="button" 
+                        className="dropdown-item dropdown-btn" 
+                        onClick={handleMyOrders}
+                      >
+                        My Orders
+                      </button>
+                      <button 
+                        type="button" 
+                        className="dropdown-item dropdown-btn" 
+                        onClick={handleSettings}
+                      >
+                        Settings
+                      </button>
+                      <hr className="dropdown-divider" />
+                      <button 
+                        type="button" 
+                        className="dropdown-item dropdown-btn logout" 
+                        onClick={handleSignOut}
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>

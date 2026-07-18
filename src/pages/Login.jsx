@@ -42,23 +42,38 @@ export default function Login() {
 
     try {
       const response = await authAPI.login(formData);
-      if (response.data.status === 'Success') {
+      
+      // Check if response is successful (status 2xx or specific Success status)
+      if (response.status === 200 || response.data.status === 'Success' || response.data.message === 'Login successful') {
         // Store token if provided
         if (response.data.token) {
           localStorage.setItem('token', response.data.token);
         }
-        localStorage.setItem('user', JSON.stringify(response.data));
-        navigate('/');
+        // Store user data
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        } else {
+          localStorage.setItem('user', JSON.stringify(response.data));
+        }
+        
+        setSuccess('Login successful! Redirecting...');
+        // Redirect to home after a short delay
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
       } else {
         setError(response.data.message || 'Login failed');
       }
     } catch (err) {
       const status = err.response?.status;
       const backendMessage = err.response?.data?.message || err.response?.data?.detail;
+      
       if (status === 401) {
-        setError('Email or password wrong');
+        setError('Email or password is incorrect');
+      } else if (status === 400) {
+        setError(backendMessage || 'Invalid input. Please check your email and password.');
       } else {
-        setError(backendMessage || 'An error occurred during login');
+        setError(backendMessage || 'An error occurred during login. Please try again.');
       }
       console.error('Login error:', err);
     } finally {

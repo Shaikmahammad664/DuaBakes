@@ -12,6 +12,8 @@ from db_ops import (
     update_user,
     fetch_products,
     fetch_product_by_id,
+    store_order,
+    fetch_orders,
 )
 from dotenv import load_dotenv
 from loguru import logger
@@ -52,6 +54,16 @@ class AdminLoginModel(BaseModel):
 
 class chatBot(BaseModel):
     message: str
+
+class ProfileUpdateModel(BaseModel):
+    Email: str
+    PhoneNumber: str | None = None
+    Password: str | None = None
+
+class OrderCreateModel(BaseModel):
+    Email: str
+    Items: list[dict]
+    TotalAmount: float
 
 
 
@@ -110,7 +122,13 @@ async def login(item:LoginModel):
     existing_user = fetch_user({"Email": item.Email, "Password": item.Password})
     if not existing_user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    return {"status": "Success", "message": "Login successful"}
+    user_payload = {
+        "Email": existing_user.get('Email') if isinstance(existing_user, dict) else existing_user["Email"],
+        "FirstName": existing_user.get('FirstName') if isinstance(existing_user, dict) else existing_user["FirstName"],
+        "LastName": existing_user.get('LastName') if isinstance(existing_user, dict) else existing_user["LastName"],
+        "PhoneNumber": existing_user.get('PhoneNumber') if isinstance(existing_user, dict) else existing_user.get("PhoneNumber"),
+    }
+    return {"status": "Success", "message": "Login successful", "user": user_payload}
 
 @app.post("/forgot-password")
 async def forgot_password(item:ForgotPasswordModel):
@@ -128,6 +146,45 @@ async def reset_password(item:ResetPasswordModel):
         return {"status": "Email not found"}
     update_user({"Email": item.Email}, {"Password": item.NewPassword})
     return {"status": "Password reset successful"}
+
+
+@app.post("/profile")
+async def update_profile(item: ProfileUpdateModel):
+    existing_user = fetch_user({"Email": item.Email})
+    if not existing_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    updates = {}
+    if item.PhoneNumber is not None:
+        updates["PhoneNumber"] = item.PhoneNumber
+    if item.Password:
+        updates["Password"] = item.Password
+
+    if not updates:
+        raise HTTPException(status_code=400, detail="No updates provided")
+
+    success = update_user({"Email": item.Email}, updates)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to update profile")
+    return {"status": "Success", "message": "Profile updated successfully"}
+
+
+@app.post("/orders")
+async def create_order(item: OrderCreateModel):
+    existing_user = fetch_user({"Email": item.Email})
+    if not existing_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    success = store_order({"Email": item.Email, "Items": item.Items, "TotalAmount": item.TotalAmount})
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to save order")
+    return {"status": "Success", "message": "Order saved successfully"}
+
+
+@app.get("/orders/{email}")
+async def get_orders(email: str):
+    orders = fetch_orders(email)
+    return {"status": "Success", "orders": orders}
 
 
 @app.post("/admin/login")

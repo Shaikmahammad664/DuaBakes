@@ -96,7 +96,6 @@ export default function ProductDetail({ onAddToCart }) {
             <label htmlFor="delivery-time">PREFERRED TIME</label>
             <input type="time" id="delivery-time" name="delivery-time" />
           </div>
-          <p className="product-description">{product.description}</p>
 
             
           <div className="product-detail-actions">
@@ -112,6 +111,10 @@ export default function ProductDetail({ onAddToCart }) {
             >
               {product.available ? `Add to cart (Rs. ${computedPrice.toLocaleString()})` : 'Unavailable'}
             </button>
+
+            <div className='line'></div>
+              <p className="product-description">{product.description}</p>
+
 
             <button type="button" className="product-add-button product-secondary-button" onClick={() => navigate('/')}>Continue shopping</button>
           </div>

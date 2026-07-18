@@ -306,3 +306,62 @@
         height: 20px;
     }
 }
+
+/* Account Dropdown Menu */
+.account-dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #e5cda8;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    min-width: 200px;
+    margin-top: 0.5rem;
+    z-index: 1100;
+    padding: 0.5rem 0;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #0f4f4d;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 0.95rem;
+    font-weight: 400;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f9f3e6;
+    color: #b7833b;
+}
+
+.dropdown-item.logout {
+    color: #a9423f;
+}
+
+.dropdown-item.logout:hover {
+    background-color: #fff5f3;
+    color: #a9423f;
+}
+
+.dropdown-btn {
+    padding: 0.75rem 1rem;
+}
+
+.dropdown-divider {
+    margin: 0.5rem 0;
+    border: none;
+    border-top: 1px solid #e5cda8;
+    height: 0;
+}
