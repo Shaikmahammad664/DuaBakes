@@ -30,3 +30,18 @@ a {
 #root {
     min-height: 100vh;
 }
+
+.toast-notification {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 0.85rem 1rem;
+    background: rgba(15, 79, 77, 0.95);
+    color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+    z-index: 9999;
+    font-weight: 600;
+}
+
+

@@ -4,7 +4,7 @@ import Hero from '../components/Hero';
 import Categories from '../components/Categories';
 import '../styles/Home.css';
 
-export default function Home() {
+export default function Home({ searchQuery = '', onAddToCart }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const location = useLocation();
 
@@ -36,7 +36,7 @@ export default function Home() {
   return (
     <main className="page-content">
       <Categories onCategorySelect={handleCategorySelect} selectedCategory={selectedCategory} />
-      <Hero selectedCategory={selectedCategory} />
+      <Hero selectedCategory={selectedCategory} searchQuery={searchQuery} onAddToCart={onAddToCart} />
     </main>
   );
 }

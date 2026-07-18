@@ -44,8 +44,7 @@
 }
 
 .product-card { /*home page cards*/
-  background: #ffffff;
-  border-radius: 0.75rem;
+  background: none;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -56,6 +55,7 @@
   position: relative;
   height: 360px;
   overflow: hidden;
+  border-radius: 0.75rem;
 }
 
 .product-card-image img {
@@ -70,18 +70,20 @@
   transition: transform 0.3s ease;
 }
 
-/*.product-badge {  for new arrivalbadge when needed
+.product-badge {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 5;
   background: rgba(255, 255, 255, 0.95);
   color: #7e5a39;
   border-radius: 999px;
   padding: 0.45rem 0.9rem;
   font-size: 0.78rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.06em;
-}*/
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
 
 .product-sold-out {
   position: absolute;
@@ -127,7 +129,7 @@
 }
 
 .product-add-button {  /*add button*/
-  background: #ffffff;
+  background: none;
   color: #0f4f4d;
   border: 1px solid #e5cda8;
   padding: 0.5rem 1.5rem;
@@ -138,11 +140,15 @@
 }
 
 .product-add-button:hover {
-  background: #ffffff;
-  border-color: #b7833b;
+  border: 1px solid #b7833b;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
+.product-add-button.product-added {
+  background: #0f4f4d;
+  border-color: #b7833b;
+  color: #ffffff;
+}
 
 /* product detail page */
 
@@ -152,11 +158,35 @@
   /* padding: 3rem 1rem; */
 }
 
-.product-detail-body h1 {
+.product-detail-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.product-detail-body .product-badge {
+  position: static;
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  box-shadow: none;
+  background: none;
+  color: #7e5a39;
+  padding: 0;
+  border-radius: 0;
+}
+
+.product-detail-body.has-badge h1 {
   font-size: 28px;
   color: #0f4f4d;
   font-weight: 400;
-  margin-left: -0.1rem;
+  margin-top: -0.5rem;
+}
+
+.product-detail-body.no-badge h1 {
+  font-size: 28px;
+  color: #0f4f4d;
+  font-weight: 400;
+  margin-top: 0.9rem;
 }
 
 
@@ -212,6 +242,7 @@
    gap: 1rem;
    flex-wrap: wrap;
 }
+
  
 .size-btn,
 .product-unit-label {
@@ -240,13 +271,23 @@
 .product-unit-label { /*other than cakes*/
    background: #f5f0e8;
    cursor: pointer;
-   width: 28%;
    height: 2.5rem;
    display: flex;
     align-items: center;
     margin-top: -0.5rem;
 }
 
+
+ /* .product-addto-cart-btn {
+   background: #ffffff;
+   color: #0f4f4d;
+   border: 1px solid #e5cda8;
+   padding: 0.5rem 1.5rem;
+   font-size: 14px;
+   font-weight: 400;
+   border-radius: 0.5rem;
+   cursor: pointer;
+ } */
 
  
 .product-quantity {
@@ -268,6 +309,61 @@
   background: #ffffff;
   color: #0f4f4d;
   margin-top: 0.5rem;
+}
+
+.product-description {
+  margin-top: 0.5rem;
+  color: #5c5c5f;
+  line-height: 1.8;
+  font-size: 0.95rem;
+  margin-left: 1rem;
+}
+
+/* Select/date/time control styling used on product detail */
+.select-control {
+  position: relative;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.select-control label {
+  display: block;
+  font-weight: 500;
+  color: #000505;
+  margin-bottom: -0.45rem;
+  margin-left: 0.2rem;
+  font-size: 0.8rem;
+  margin-top: -0.5rem;
+}
+
+.select-control select,
+.select-control input[type="date"],
+.select-control input[type="time"] {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  padding-right: 2.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d6c8b4;
+  background: #fffdfa;
+  color: #b7833b;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.select-control .select-icon {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #5c5c5f;
+}
+
+.select-control select:focus,
+.select-control input[type="date"]:focus,
+.select-control input[type="time"]:focus {
+  outline: none;
+  border-color: #b7833b;
+  box-shadow: 0 0 0 4px rgba(15,79,77,0.06);
 }
 
 

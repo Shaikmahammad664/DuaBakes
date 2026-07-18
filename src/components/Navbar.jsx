@@ -1,18 +1,12 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
 
-export default function Navbar() {
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    // TODO: Implement search functionality
-    console.log('Search for:', searchQuery);
-  };
+export default function Navbar({ searchQuery, onSearchChange }) {
+  const navigate = useNavigate();
 
   const handleCartClick = () => {
-    // TODO: Navigate to cart
+    navigate('/cart');
   };
 
   const handleAccountClick = () => {
@@ -55,8 +49,7 @@ export default function Navbar() {
               name="search" 
               placeholder="Search for products..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onSubmit={handleSearch}
+              onChange={(e) => onSearchChange(e.target.value)}
             />
           </div>
         </div>

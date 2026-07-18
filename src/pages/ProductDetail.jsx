@@ -4,7 +4,7 @@ import { products } from '../data/products';
 import '../styles/ProductList.css';
 import '../styles/Home.css';
 
-export default function ProductDetail() {
+export default function ProductDetail({ onAddToCart }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const product = products.find((item) => item.id === Number(id));
@@ -43,8 +43,8 @@ export default function ProductDetail() {
         <div className="product-detail-image">
           <img src={product.image} alt={product.name} />
         </div>
-        <div className="product-detail-body">
-          <span className="product-badge">{product.badge}</span>
+        <div className={`product-detail-body ${product.badge ? 'has-badge' : 'no-badge'}`}>
+          {product.badge && <span className="product-badge">{product.badge}</span>}
           <h1>{product.name}</h1>
           <p className="product-price">Rs. {computedPrice.toLocaleString()}</p>
 
@@ -78,17 +78,41 @@ export default function ProductDetail() {
               style={{ width: 80, padding: '0.5rem', borderRadius: 6 }}
             />
           </div>
+          <div className="select-control location-select">
+            <label htmlFor="location">SELECT DELIVERY CITY</label>
+            <select id="location" name="location">
+              <option value="location1">Pileru</option>
+            </select>
+            {/* <span className="select-icon">▾</span> */}
+          </div>
 
+          <div className="select-control date-select">
+            <label htmlFor="delivery-date">PREFERRED DATE</label>
+            <input type="date" id="delivery-date" name="delivery-date" min={new Date().toISOString().split('T')[0]} />
+            {/* <span className="select-icon">📅</span> */}
+          </div>
+
+          <div className="select-control time-select">
+            <label htmlFor="delivery-time">PREFERRED TIME</label>
+            <input type="time" id="delivery-time" name="delivery-time" />
+          </div>
           <p className="product-description">{product.description}</p>
 
+            
           <div className="product-detail-actions">
             <button
               type="button"
               className="product-add-button"
               disabled={!product.available}
+              onClick={() => {
+                if (product.available && onAddToCart) {
+                  onAddToCart(product, { size: isWeightProduct ? size : null, quantity });
+                }
+              }}
             >
-              {product.available ? `Add to cart — Rs. ${computedPrice.toLocaleString()}` : 'Unavailable'}
+              {product.available ? `Add to cart (Rs. ${computedPrice.toLocaleString()})` : 'Unavailable'}
             </button>
+
             <button type="button" className="product-add-button product-secondary-button" onClick={() => navigate('/')}>Continue shopping</button>
           </div>
         </div>

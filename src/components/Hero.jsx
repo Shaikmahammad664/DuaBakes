@@ -5,7 +5,7 @@ import ProductList from './ProductList';
 import cakeImage from '../../assests/slidephoto.png';
 import backgroundImage from '../../assests/background.png';
 
-export default function Hero({ selectedCategory }) {
+export default function Hero({ selectedCategory, searchQuery = '', onAddToCart }) {
   const [showImage, setShowImage] = useState(false);
   const heroRef = useRef(null);
 
@@ -39,13 +39,12 @@ export default function Hero({ selectedCategory }) {
         <div className="section-heading-bg" style={{ backgroundImage: `url(${backgroundImage})` }} />
       </section>
 
-      {selectedCategory ? (
-        // Show all filtered products when category is selected
-        <ProductList selectedCategory={selectedCategory} />
+      {selectedCategory || searchQuery ? (
+        <ProductList selectedCategory={selectedCategory} searchQuery={searchQuery} onAddToCart={onAddToCart} />
       ) : (
         // Show products split by hero section only on home
         <>
-          <ProductList selectedCategory={selectedCategory} startIndex={0} limit={12} showHeader={true} />
+          <ProductList selectedCategory={selectedCategory} startIndex={0} limit={12} showHeader={true} onAddToCart={onAddToCart} />
 
           <section className="hero" ref={heroRef}>
             <div className="hero-copy">
@@ -66,7 +65,7 @@ export default function Hero({ selectedCategory }) {
             </div>
           </section>
 
-          <ProductList selectedCategory={selectedCategory} startIndex={12} showHeader={false} />
+          <ProductList selectedCategory={selectedCategory} startIndex={12} showHeader={false} onAddToCart={onAddToCart} />
         </>
       )}
     </>
