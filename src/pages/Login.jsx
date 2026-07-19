@@ -45,25 +45,16 @@ export default function Login() {
       
       // Check if response is successful (status 2xx or specific Success status)
       if (response.status === 200 || response.data.status === 'Success' || response.data.message === 'Login successful') {
-        // Start OTP verification flow instead of full login
-        // Determine identifier (prefer phone if provided)
+        // Standard login flow: store user and navigate
         const user = response.data.user || response.data;
-        const phone = user?.PhoneNumber || user?.phone || user?.Phone || null;
-        const identifier = phone || formData.email;
-
-        // Save pending auth info until OTP is verified
-        localStorage.setItem('pendingAuth', JSON.stringify({ identifier, loginResponse: response.data }));
-
         try {
-          await authAPI.sendOtp(identifier);
-        } catch (sendErr) {
-          console.error('sendOtp error', sendErr);
-          // proceed to OTP page anyway so user can request/resend from there
+          localStorage.setItem('user', JSON.stringify(user));
+        } catch (e) {
+          console.warn('Could not persist user to localStorage', e);
         }
-
-        setSuccess('OTP sent. Please verify to complete login.');
+        setSuccess('Login successful');
         setTimeout(() => {
-          navigate('/verify-otp', { state: { identifier } });
+          navigate('/');
         }, 400);
       } else {
         setError(response.data.message || 'Login failed');

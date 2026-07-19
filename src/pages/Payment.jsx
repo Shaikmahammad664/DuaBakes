@@ -527,8 +527,10 @@ export default function Payment({ cartItems }) {
               <strong>₹ {totalPrice.toLocaleString()}</strong>
             </div>
             <div className="summary-row small">
-              <span>Shipping (Serviced from Domlur, Bangalore)</span>
-              <span>Enter shipping address</span>
+              <span>Shipping</span>
+              <span>Free Delivery</span>
+              {/* <strong>₹ {shippingFee.toLocaleString()}</strong> */}
+
             </div>
             <div className="summary-total-row">
               <span>Total</span>

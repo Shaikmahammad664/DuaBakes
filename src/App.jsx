@@ -15,7 +15,7 @@ import Profile from './pages/Profile';
 import TrackOrder from './pages/TrackOrder';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import VerifyOtp from './pages/VerifyOtp';
+// VerifyOtp removed; OTP flow deprecated
 import './App.css';
 
 function App() {
@@ -99,7 +99,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/track-order/:id" element={<TrackOrder />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
+        {/* OTP route removed */}
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
