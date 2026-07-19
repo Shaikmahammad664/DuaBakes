@@ -11,6 +11,11 @@ import Cart from './pages/Cart';
 import Payment from './pages/Payment';
 import Settings from './pages/Settings';
 import Orders from './pages/Orders';
+import Profile from './pages/Profile';
+import TrackOrder from './pages/TrackOrder';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import VerifyOtp from './pages/VerifyOtp';
 import './App.css';
 
 function App() {
@@ -51,11 +56,14 @@ function App() {
       category: product.category,
       size: options.size || null,
       quantity: Number(options.quantity || 1),
+      delivery: options.delivery || null,
     };
 
     setCartItems((currentItems) => {
       const existingIndex = currentItems.findIndex(
-        (item) => item.id === newItem.id && item.size === newItem.size
+        (item) => item.id === newItem.id
+          && item.size === newItem.size
+          && JSON.stringify(item.delivery) === JSON.stringify(newItem.delivery)
       );
 
       if (existingIndex >= 0) {
@@ -87,8 +95,13 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/track-order/:id" element={<TrackOrder />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
       <Chatbot />
     </Router>

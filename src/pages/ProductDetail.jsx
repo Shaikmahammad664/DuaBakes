@@ -21,9 +21,14 @@ export default function ProductDetail({ onAddToCart }) {
       ];
   const [size, setSize] = useState(isWeightProduct ? sizes[0].id : '500g');
   const [quantity, setQuantity] = useState(1);
+  const [location, setLocation] = useState('');
+  const [deliveryDate, setDeliveryDate] = useState('');
+  const [deliveryTime, setDeliveryTime] = useState('');
+  const [cakeText, setCakeText] = useState('');
 
   const sizeMultiplier = isWeightProduct ? sizes.find((s) => s.id === size)?.mult || 1 : 1;
   const computedPrice = product ? product.price * sizeMultiplier * Math.max(1, Number(quantity)) : 0;
+  const isFormComplete = product?.available && location && deliveryDate && deliveryTime && cakeText.trim().length > 0;
 
   if (!product) {
     return (
@@ -80,41 +85,67 @@ export default function ProductDetail({ onAddToCart }) {
           </div>
           <div className="select-control location-select">
             <label htmlFor="location">SELECT DELIVERY CITY</label>
-            <select id="location" name="location">
-              <option value="location1">Pileru</option>
+            <select id="location" name="location" value={location} onChange={(e) => setLocation(e.target.value)}>
+              <option value="">Select city</option>
+              <option value="Pileru">Pileru</option>
             </select>
             {/* <span className="select-icon">▾</span> */}
           </div>
 
           <div className="select-control date-select">
             <label htmlFor="delivery-date">PREFERRED DATE</label>
-            <input type="date" id="delivery-date" name="delivery-date" min={new Date().toISOString().split('T')[0]} />
+            <input
+              type="date"
+              id="delivery-date"
+              name="delivery-date"
+              min={new Date().toISOString().split('T')[0]}
+              value={deliveryDate}
+              onChange={(e) => setDeliveryDate(e.target.value)}
+            />
             {/* <span className="select-icon">📅</span> */}
           </div>
 
           <div className="select-control time-select">
             <label htmlFor="delivery-time">PREFERRED TIME</label>
-            <input type="time" id="delivery-time" name="delivery-time" />
+            <input
+              type="time"
+              id="delivery-time"
+              name="delivery-time"
+              value={deliveryTime}
+              onChange={(e) => setDeliveryTime(e.target.value)}
+            />
           </div>
 
+          <div className="messageoncake">
+            <textarea
+              placeholder="Write name on cake"
+              rows="3"
+              value={cakeText}
+              onChange={(e) => setCakeText(e.target.value)}
+            ></textarea>
+          </div>
             
           <div className="product-detail-actions">
             <button
               type="button"
               className="product-add-button"
-              disabled={!product.available}
+              disabled={!isFormComplete}
               onClick={() => {
-                if (product.available && onAddToCart) {
-                  onAddToCart(product, { size: isWeightProduct ? size : null, quantity });
+                if (isFormComplete && onAddToCart) {
+                  onAddToCart(product, { size: isWeightProduct ? size : null, quantity, delivery: { location, deliveryDate, deliveryTime, cakeText } });
                 }
               }}
             >
-              {product.available ? `Add to cart (Rs. ${computedPrice.toLocaleString()})` : 'Unavailable'}
+              {isFormComplete ? `Add to cart (Rs. ${computedPrice.toLocaleString()})` : 'Add to cart'}
             </button>
 
             <div className='line'></div>
-              <p className="product-description">{product.description}</p>
-
+              <textarea
+                className="product-description product-description-textarea"
+                readOnly
+                rows={4}
+                value={product.description}
+              />
 
             <button type="button" className="product-add-button product-secondary-button" onClick={() => navigate('/')}>Continue shopping</button>
           </div>

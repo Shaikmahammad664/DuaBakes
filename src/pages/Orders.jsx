@@ -39,6 +39,25 @@ export default function Orders() {
                 <strong>Order #{order.Order_Id || index + 1}</strong>
                 <div>Total: Rs. {Number(order.TotalAmount || 0).toLocaleString()}</div>
                 <div>Date: {order.CreatedAt ? new Date(order.CreatedAt).toLocaleString() : 'N/A'}</div>
+                <div>Delivery Date: {(
+                  (() => {
+                    const raw = order.DeliveryDate || order.Items?.[0]?.delivery?.deliveryDate;
+                    if (!raw) return 'N/A';
+                    if (/^\d{2}-\d{2}-\d{4}$/.test(raw)) return raw;
+                    const parsed = new Date(raw);
+                    if (!isNaN(parsed.getTime())) {
+                      const dd = String(parsed.getDate()).padStart(2, '0');
+                      const mm = String(parsed.getMonth() + 1).padStart(2, '0');
+                      const yyyy = parsed.getFullYear();
+                      return `${dd}-${mm}-${yyyy}`;
+                    }
+                    const parts = String(raw).split('-');
+                    if (parts.length === 3 && parts[0].length === 4) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    return raw;
+                  })()
+                )}</div>
+                <div>Delivery Slot: {order.DeliveryTime || order.Items?.[0]?.delivery?.deliveryTime || 'N/A'}</div>
+                <div>Status: {order.Order_Status || order.status || 'Pending'}</div>
                 <div>Items:</div>
                 <ul>
                   {(order.Items || []).map((item, itemIndex) => (
@@ -47,6 +66,9 @@ export default function Orders() {
                     </li>
                   ))}
                 </ul>
+                <button type="button" className="profile-action-button" onClick={() => navigate(`/track-order/${order.Order_Id || order.id || index + 1}`)}>
+                  Track Order
+                </button>
               </li>
             ))}
           </ul>

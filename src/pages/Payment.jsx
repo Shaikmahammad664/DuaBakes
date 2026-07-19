@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ordersAPI } from '../services/api';
 import '../styles/Payment.css';
@@ -33,10 +33,58 @@ export default function Payment({ cartItems }) {
   const [discountCode, setDiscountCode] = useState('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [message, setMessage] = useState('');
+  const isSignedIn = Boolean(localStorage.getItem('user') || localStorage.getItem('token'));
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) return;
+
+    const parsed = JSON.parse(storedUser);
+    const userData = parsed.user || parsed;
+
+    setForm((current) => ({
+      ...current,
+      email: userData.Email || userData.email || current.email,
+      firstName: userData.FirstName || userData.firstName || current.firstName,
+      lastName: userData.LastName || userData.lastName || current.lastName,
+      phone: userData.PhoneNumber || userData.phone || current.phone,
+      address: userData.address || current.address,
+      apartment: userData.apartment || current.apartment,
+      city: userData.city || current.city,
+      state: userData.state || current.state,
+      pinCode: userData.pinCode || current.pinCode,
+      billingAddress: userData.billingAddress || current.billingAddress,
+      billingApartment: userData.billingApartment || current.billingApartment,
+      billingCity: userData.billingCity || current.billingCity,
+      billingState: userData.billingState || current.billingState,
+      billingPinCode: userData.billingPinCode || current.billingPinCode,
+      billingPhone: userData.billingPhone || current.billingPhone,
+    }));
+  }, []);
 
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingFee = 0;
   const totalWithTax = totalPrice + shippingFee;
+
+  const formatToDDMMYYYY = (dateInput) => {
+    if (!dateInput) return 'N/A';
+    // If already in dd-mm-yyyy format, return as is
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateInput)) return dateInput;
+    // Try to parse ISO or other formats
+    const parsed = new Date(dateInput);
+    if (!isNaN(parsed.getTime())) {
+      const dd = String(parsed.getDate()).padStart(2, '0');
+      const mm = String(parsed.getMonth() + 1).padStart(2, '0');
+      const yyyy = parsed.getFullYear();
+      return `${dd}-${mm}-${yyyy}`;
+    }
+    // Fallback: try to split common yyyy-mm-dd
+    const parts = String(dateInput).split('-');
+    if (parts.length === 3 && parts[0].length === 4) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return dateInput;
+  };
 
   const updateField = (field) => (event) => {
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -63,7 +111,9 @@ export default function Payment({ cartItems }) {
             <div className="section-block">
               <div className="section-title-row">
                 <h2>Contact</h2>
-                <button type="button" className="text-link" onClick={() => navigate('/login')}>Sign in</button>
+                {!isSignedIn && (
+                  <button type="button" className="text-link" onClick={() => navigate('/login', { state: { from: '/payment' } })}>Sign in</button>
+                )}
               </div>
               <label className="field-label">
                 <input
@@ -81,8 +131,8 @@ export default function Payment({ cartItems }) {
 
             <div className="section-block">
               <h2>Delivery</h2>
-              <div className="field-grid two-columns">
-                <label className="field-label">
+              <div className="field-grid delivery-top">
+                <label className="field-label country-field">
                   <select value={form.country} onChange={updateField('country')}>
                     <option>India</option>
                     {/* <option>United States</option> */}
@@ -330,13 +380,82 @@ export default function Payment({ cartItems }) {
                 return;
               }
 
-              const user = JSON.parse(storedUser);
+              const parsed = JSON.parse(storedUser);
+              const user = parsed.user || parsed;
               const email = user.Email || user.email;
+              const shippingAddress = {
+                country: form.country,
+                firstName: form.firstName,
+                lastName: form.lastName,
+                address: form.address,
+                apartment: form.apartment,
+                city: form.city,
+                state: form.state,
+                pinCode: form.pinCode,
+                phone: form.phone,
+              };
+              const billingAddress = form.billingSameAsShipping
+                ? { ...shippingAddress }
+                : {
+                    country: form.billingCountry,
+                    firstName: form.billingFirstName,
+                    lastName: form.billingLastName,
+                    address: form.billingAddress,
+                    apartment: form.billingApartment,
+                    city: form.billingCity,
+                    state: form.billingState,
+                    pinCode: form.billingPinCode,
+                    phone: form.billingPhone,
+                  };
+
+              const updatedUser = {
+                ...user,
+                Email: email,
+                email: email,
+                firstName: form.firstName || user.firstName || user.FirstName || user.name,
+                lastName: form.lastName || user.lastName || user.LastName,
+                phone: form.phone || user.PhoneNumber || user.phone,
+                address: form.address,
+                apartment: form.apartment,
+                city: form.city,
+                state: form.state,
+                pinCode: form.pinCode,
+                billingSameAsShipping: form.billingSameAsShipping,
+                billingAddress: form.billingAddress,
+                billingApartment: form.billingApartment,
+                billingCity: form.billingCity,
+                billingState: form.billingState,
+                billingPinCode: form.billingPinCode,
+                billingPhone: form.billingPhone,
+                addressHistory: [
+                  ...(user.addressHistory || []),
+                  {
+                    createdAt: new Date().toISOString(),
+                    shippingAddress,
+                    billingAddress,
+                  },
+                ],
+              };
+
+              const userToStore = parsed.user ? { ...parsed, user: updatedUser } : updatedUser;
+              localStorage.setItem('user', JSON.stringify(userToStore));
+
               try {
                 await ordersAPI.create({
                   Email: email,
-                  Items: cartItems.map((item) => ({ name: item.name, quantity: item.quantity, price: item.price })),
+                  Items: cartItems.map((item) => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price,
+                    size: item.size,
+                    delivery: item.delivery || null,
+                  })),
                   TotalAmount: totalWithTax,
+                  ShippingAddress: shippingAddress,
+                  BillingAddress: billingAddress,
+                  DeliveryDate: cartItems[0]?.delivery?.deliveryDate || null,
+                  DeliveryTime: cartItems[0]?.delivery?.deliveryTime || null,
+                  CakeText: cartItems[0]?.delivery?.cakeText || null,
                 });
                 setPaymentConfirmed(true);
                 setMessage('Order placed successfully.');
@@ -360,21 +479,34 @@ export default function Payment({ cartItems }) {
           <div className="summary-card">
             <div className="summary-title-row">
               <div>
-                <p className="summary-label">Summary</p>
                 <h2>Order summary</h2>
               </div>
               <span>{cartItems.length} item{cartItems.length !== 1 && 's'}</span>
             </div>
 
             {cartItems.length > 0 ? (
-              <div className="summary-item-card">
-                <img src={cartItems[0].image} alt={cartItems[0].name} />
-                <div>
-                  <p className="summary-item-name">{cartItems[0].name}</p>
-                  <p className="summary-item-meta">Delivery Date: Sat, 18 Jul 2026</p>
-                  <p className="summary-item-meta">Delivery Slot: 11:00 AM - 12:00 PM</p>
-                </div>
-                <strong>Rs. {cartItems[0].price.toLocaleString()}</strong>
+              <div className="summary-items-wrapper">
+                {cartItems.map((item, index) => (
+                  <div key={`${item.id}-${item.size || 'default'}-${index}`} className="summary-item-card">
+                    <div className="summary-item-image-wrap">
+                      <img src={item.image} alt={item.name} />
+                      {item.quantity > 1 && (
+                        <span className="summary-item-count">{item.quantity}</span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="summary-item-name">{item.name}</p>
+                      {item.size && <p className="summary-item-weight">{item.size}</p>}
+                      <p className="summary-item-meta">
+                        Delivery Date: {formatToDDMMYYYY(item.delivery?.deliveryDate) || 'N/A'}
+                      </p>
+                      <p className="summary-item-meta">
+                        Delivery Slot: {item.delivery?.deliveryTime || 'N/A'}
+                      </p>
+                    </div>
+                    <strong>₹ {item.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                  </div>
+                ))}
               </div>
             ) : (
               <p className="empty-summary">Your cart is empty.</p>
@@ -391,16 +523,16 @@ export default function Payment({ cartItems }) {
             </div>
 
             <div className="summary-row">
-              <span>Subtotal</span>
-              <strong>Rs. {totalPrice.toLocaleString()}</strong>
+              <span>Subtotal · {cartItems.reduce((sum, item) => sum + item.quantity, 0)} items</span>
+              <strong>₹ {totalPrice.toLocaleString()}</strong>
             </div>
             <div className="summary-row small">
-              <span>Shipping</span>
-              <span>Serviced from Domlur, Bangalore</span>
+              <span>Shipping (Serviced from Domlur, Bangalore)</span>
+              <span>Enter shipping address</span>
             </div>
             <div className="summary-total-row">
               <span>Total</span>
-              <strong>INR Rs. {totalWithTax.toLocaleString()}</strong>
+              <strong>INR ₹ {totalWithTax.toLocaleString()}</strong>
             </div>
           </div>
         </aside>

@@ -5,6 +5,7 @@ import '../styles/Cart.css';
 
 export default function Cart({ cartItems, setCartItems }) {
   const navigate = useNavigate();
+  const isSignedIn = Boolean(localStorage.getItem('user') || localStorage.getItem('token'));
 
   const updateQuantity = (itemId, size, newQuantity) => {
     setCartItems((currentItems) => currentItems.map((item) => {
@@ -75,7 +76,20 @@ export default function Cart({ cartItems, setCartItems }) {
                   <span>Subtotal</span>
                   <strong>Rs. {totalPrice.toLocaleString()}</strong>
                 </div>
-                <button type="button" className="checkout-btn" onClick={() => navigate('/payment')}>CHECK OUT</button>
+                <button
+                  type="button"
+                  className="checkout-btn"
+                  onClick={() => {
+                    if (!isSignedIn) {
+                      navigate('/login', { state: { from: '/payment' } });
+                      return;
+                    }
+                    navigate('/payment');
+                  }}
+                  disabled={!isSignedIn}
+                >
+                  {isSignedIn ? 'CHECK OUT' : 'SIGN IN TO CHECK OUT'}
+                </button>
                 <button type="button" className="view-cart-btn" onClick={() => navigate('/')}>Continue shopping</button>
               </div>
             </div>

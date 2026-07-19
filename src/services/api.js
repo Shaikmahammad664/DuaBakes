@@ -50,6 +50,16 @@ export const authAPI = {
   updateProfile: (profileData) => apiClient.post('/profile', profileData)
 };
 
+// OTP endpoints (backend must support these routes)
+authAPI.sendOtp = (phoneOrEmail) => apiClient.post('/send-otp', {
+  to: phoneOrEmail
+});
+
+authAPI.verifyOtp = (identifier, otp) => apiClient.post('/verify-otp', {
+  identifier,
+  otp
+});
+
 // Products APIs
 export const productsAPI = {
   getAll: () => apiClient.get('/products'),
@@ -83,7 +93,7 @@ export const ordersAPI = {
 
 // Chat API
 export const chatAPI = {
-  sendMessage: (message) => apiClient.post('/chat', {
+  sendMessage: (message) => apiClient.post('/chat-bot', {
     message: message
   })
 };

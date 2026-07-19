@@ -209,7 +209,7 @@
   justify-content: center;
    min-height: 600px;
    max-height: 600px;
-   width: 100%;
+   width: 90%;
    overflow: hidden;
    border-radius: 1.75rem;
    background: none;
@@ -316,6 +316,33 @@
   border-color: #b7833b;
 }
 
+.messageoncake {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.messageoncake textarea {
+  width: 100%;
+  min-height: 110px;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5cda8;
+  background: #fffdf8;
+  color: #000505;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.messageoncake textarea::placeholder {
+  color: #8f8f8f;
+}
+
+.messageoncake textarea:focus {
+  outline: none;
+  border-color: #b7833b;
+}
 
 .product-detail-actions {
   display: flex;
@@ -331,9 +358,27 @@
   color: #5c5c5f;
   line-height: 1.8;
   font-size: 0.95rem;
+  margin-left: 0.5rem;
+  width: 100%;
 }
 
+.product-description-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #5c5c5f;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  resize: none;
+  margin-left: 0.5rem;
+}
 
+.product-description-textarea:focus {
+  outline: none;
+}
 
 /* Select/date/time control styling used on product detail */
 .select-control {
@@ -376,12 +421,13 @@
 }
 
 .line {
-  width: 100%;
+  width: 80%;
   height: 1px;
   background-color: none;
   margin-bottom: -1.5rem;
   margin-top: -1.5rem;
-  border: 1px solid #0f4f4d;  /*forcing to apply*/
+  border: 1px solid #366d6c;
+  margin-left: 2rem;
 }
 
 

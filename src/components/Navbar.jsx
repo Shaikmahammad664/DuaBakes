@@ -120,8 +120,8 @@ export default function Navbar({ searchQuery, onSearchChange }) {
             }}>
               HOME
             </Link>
-            <a href="#about">ABOUT US</a>
-            <a href="#contact">CONTACT US</a>
+            <Link to="/about">ABOUT US</Link>
+            <Link to="/contact">CONTACT US</Link>
           </div>
 
           <div className="nav-actions">

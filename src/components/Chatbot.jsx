@@ -23,7 +23,7 @@ export default function Chatbot() {
     try {
       // Call backend chatbot API
       const response = await chatAPI.sendMessage(inputValue);
-      const botMessage = { type: 'bot', text: response.data.message || 'I didn\'t understand that.' };
+      const botMessage = { type: 'bot', text: response.data.response || 'I didn\'t understand that.' };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Chat error:', error);

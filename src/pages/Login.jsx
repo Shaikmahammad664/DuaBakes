@@ -45,22 +45,26 @@ export default function Login() {
       
       // Check if response is successful (status 2xx or specific Success status)
       if (response.status === 200 || response.data.status === 'Success' || response.data.message === 'Login successful') {
-        // Store token if provided
-        if (response.data.token) {
-          localStorage.setItem('token', response.data.token);
+        // Start OTP verification flow instead of full login
+        // Determine identifier (prefer phone if provided)
+        const user = response.data.user || response.data;
+        const phone = user?.PhoneNumber || user?.phone || user?.Phone || null;
+        const identifier = phone || formData.email;
+
+        // Save pending auth info until OTP is verified
+        localStorage.setItem('pendingAuth', JSON.stringify({ identifier, loginResponse: response.data }));
+
+        try {
+          await authAPI.sendOtp(identifier);
+        } catch (sendErr) {
+          console.error('sendOtp error', sendErr);
+          // proceed to OTP page anyway so user can request/resend from there
         }
-        // Store user data
-        if (response.data.user) {
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-        } else {
-          localStorage.setItem('user', JSON.stringify(response.data));
-        }
-        
-        setSuccess('Login successful! Redirecting...');
-        // Redirect to home after a short delay
+
+        setSuccess('OTP sent. Please verify to complete login.');
         setTimeout(() => {
-          navigate('/');
-        }, 500);
+          navigate('/verify-otp', { state: { identifier } });
+        }, 400);
       } else {
         setError(response.data.message || 'Login failed');
       }

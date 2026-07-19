@@ -130,21 +130,15 @@
 }
 
 .chatbot-input {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     gap: 0.5rem;
     padding: 1rem;
     border-top: 1px solid #e0e0e0;
     background: white;
 }
 
-.chatbot-input input {
-    flex: 1;
-    padding: 0.75rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 0.95rem;
-}
+
 
 .chatbot-input input:focus {
     outline: none;
@@ -153,13 +147,14 @@
 }
 
 .chatbot-input button {
-    padding: 0.75rem 1rem;
     background: #0A6169;
+    margin-top: 0.1rem;
     color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: 600;
+    height: 90%;
+    font-weight: 500;
     transition: background 0.2s ease;
 }
 

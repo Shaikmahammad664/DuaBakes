@@ -6,6 +6,9 @@ import '../styles/Auth.css';
 export default function Settings() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -18,9 +21,24 @@ export default function Settings() {
       navigate('/login');
       return;
     }
+
     const parsed = JSON.parse(storedUser);
-    setUser(parsed);
-    setPhone(parsed.PhoneNumber || '');
+    const userData = parsed.user || parsed;
+    const resolveValue = (keys) => {
+      for (const key of keys) {
+        const value = userData?.[key];
+        if (value !== undefined && value !== null && value !== '') {
+          return value;
+        }
+      }
+      return '';
+    };
+
+    setUser(userData);
+    setFirstName(resolveValue(['FirstName', 'firstName', 'first_name', 'name']));
+    setLastName(resolveValue(['LastName', 'lastName', 'last_name']));
+    setEmail(resolveValue(['Email', 'email']));
+    setPhone(resolveValue(['PhoneNumber', 'phoneNumber', 'phone', 'Phone']));
   }, [navigate]);
 
   const handleSubmit = async (event) => {
@@ -32,9 +50,22 @@ export default function Settings() {
     setMessage('');
 
     try {
-      const payload = { Email: user.Email, PhoneNumber: phone || undefined, Password: password || undefined };
+      const payload = {
+        Email: email || user?.Email,
+        PhoneNumber: phone || undefined,
+        Password: password || undefined,
+      };
       const response = await authAPI.updateProfile(payload);
       if (response.data.status === 'Success') {
+        const updatedUser = {
+          ...user,
+          Email: email || user?.Email || user?.email,
+          email: email || user?.Email || user?.email,
+          PhoneNumber: phone || user?.PhoneNumber || user?.phone,
+          phone: phone || user?.PhoneNumber || user?.phone,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
         setMessage('Profile updated successfully.');
         setPassword('');
       } else {
@@ -57,7 +88,27 @@ export default function Settings() {
           {message && <div className="success-message">{message}</div>}
           {error && <div className="error-message">{error}</div>}
           <div>
-            <input type="email" value={user?.Email || ''} readOnly />
+            <input
+              type="text"
+              placeholder="First name"
+              value={firstName}
+              readOnly
+            />
+          </div>
+          <div>
+            <input
+              type="text"
+              placeholder="Last name"
+              value={lastName}
+              readOnly
+            />
+          </div>
+          <div>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div>
             <input

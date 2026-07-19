@@ -1,28 +1,37 @@
 .payment-page {
-  margin-top: 2rem;
+  margin-top: -1rem;
   display: flex;
   justify-content: center;
-  margin-left: 3rem;
+  margin-left: 15rem;
+  margin-right: 15rem;
 }
 
 .payment-grid {
   max-width: 1300px;
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
 }
 
-.checkout-panel,
+.checkout-panel {
+  background: none;
+  padding: 1.5rem;
+  border-radius: 0;
+}
+
 .summary-panel {
-  background: transparent;
+  background: #f8f9f9;
+  padding: 2rem;
+  border-radius: 0;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-checkout-card,
+.checkout-card,
 summary-card {
   background: transparent;
-  border-radius: 1.75rem;
-  padding: 2rem;
+  border-radius: 0;
+  padding: 0;
   box-shadow: none;
   border: none;
 }
@@ -120,60 +129,18 @@ summary-card {
   appearance: none;
 }
 
-/* Select and date/time control styling for location, date, time */
-.select-control {
-  position: relative;
-}
-
-.select-control select,
-.select-control input[type="date"],
-.select-control input[type="time"] {
-  width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.95rem 1rem;
-  padding-right: 2.75rem; /* room for icon */
-  border-radius: 0.9rem;
-  border: 1px solid #d6c8b4;
-  background: #fffdfa;
-  color: #001110;
-  height: 2.8rem;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-}
-
-.select-control .select-icon {
-  position: absolute;
-  right: 0.9rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: #5c5c5f;
-  font-size: 0.95rem;
-}
-
-.select-control select:focus,
-.select-control input[type="date"]:focus,
-.select-control input[type="time"]:focus {
-  outline: none;
-  border-color: #0f4f4d;
-  box-shadow: 0 0 0 4px rgba(15,79,77,0.06);
-}
-
-/* specific utility classes */
-.location-select {
-  display: block;
-}
-
-.date-select {
-  display: block;
-}
-
-.time-select {
-  display: block;
-}
-
 .field-grid {
   display: grid;
   gap: 1rem;
+}
+
+.delivery-top {
+  grid-template-columns: minmax(50px, 80px) 1fr;
+  align-items: center;
+}
+
+.country-field {
+  max-width: 100px;
 }
 
 .two-columns {
@@ -282,24 +249,27 @@ summary-card {
 }
 
 .summary-card {
-  position: fixed;
+  position: sticky;
+  top: 0rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.5rem;
   background: #f8f9f9;
-  width: 38.2rem;
-  height: 36rem;
-  margin-top: -2.6rem;
-  margin-left: -1.1rem;
+  border-radius: 0rem;
+  /* padding: 1.5rem 1.5rem 1.75rem; */
+  width: 34rem;
+  max-width: 100%;
+  max-height: calc(100vh - 7rem);
+  box-shadow: none;
+  overflow: hidden;
 }
 
 .summary-title-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
-  margin-left: 0.5rem;
-  margin-right: 1.8rem;
+  margin-top: -2rem;
 }
 
 .summary-label {
@@ -308,30 +278,101 @@ summary-card {
   font-size: 0.9rem;
 }
 
+.summary-items-wrapper {
+  max-height: 20rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.summary-items-wrapper::-webkit-scrollbar {
+  width: 9px;
+}
+
+.summary-items-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.summary-items-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(75, 78, 78, 0.3);
+  border-radius: 999px;
+}
+
+.summary-items-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 79, 77, 0.5);
+}
 
 .summary-item-card {
   display: grid;
-  grid-template-columns: 80px 1fr auto;
+  grid-template-columns: auto 1fr auto;
   gap: 1rem;
-  align-items: center;
-  padding: 1rem;
-  background: transparent;
-  border-radius: 1rem;
-  border: none;
+  align-items: flex-start;
+  padding: 1rem 1rem 1rem 0.85rem;
+  background: #ffffff;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(15, 79, 77, 0.08);
   color: #0f4f4d;
-  margin-right: 1rem;
 }
 
-.summary-item-card img {
+.summary-item-card:last-child {
+  border-bottom: none;
+}
+
+.summary-item-card > strong {
+  align-self: flex-start;
+  font-size: 0.97rem;
+  white-space: nowrap;
+}
+
+.summary-item-image-wrap {
+  position: relative;
+  min-width: 80px;
+  min-height: 80px;
+}
+
+.summary-item-image-wrap img {
   width: 80px;
   height: 80px;
   object-fit: cover;
   border-radius: 1rem;
 }
 
+.summary-item-count {
+  position: absolute;
+  top: -0.4rem;
+  left: -0.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: #001110;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 300;
+}
+
+.summary-item-name {
+  margin: 0 0 0.3rem;
+  font-weight: 300;
+  color: #001110;
+}
+
+.summary-item-weight {
+  margin: 0 0 0.4rem;
+  color: #5c5c5f;
+  font-size: 0.9rem;
+}
+
+.summary-item-meta {
+  margin: 0;
+  color: #5c5c5f;
+  font-size: 0.85rem;
+}
+
 .summary-item-name {
   margin: 0 0 0.35rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #0f4f4d;
 }
 
@@ -367,8 +408,7 @@ summary-card {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  margin-left: 1.5rem;
-  margin-right: 2rem;
+  margin: 0 0.7rem;
   color: #0f4f4d;
 }
 
@@ -377,7 +417,7 @@ summary-card {
   font-size: 0.95rem;
   flex-direction: column;
   align-items: flex-start;
-  margin-left: 1.5rem;
+  margin: 0 0.8rem;
 }
 
 .summary-total-row {
@@ -386,15 +426,15 @@ summary-card {
   gap: 1rem;
   font-size: 1.1rem;
   font-weight: 700;
-  margin-left: 1.5rem;
-  margin-right: 1.97rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
   color: #0f4f4d;
 }
 
 .payment-confirmation {
   margin-top: 1rem;
   color: #0f4f4d;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .empty-summary {
@@ -423,5 +463,26 @@ summary-card {
 
   .summary-item-card {
     grid-template-columns: 80px 1fr;
+  }
+
+  .summary-item-card > strong {
+    align-self: flex-start;
+    margin-top: 0.35rem;
+  }
+
+  .summary-title-row,
+  .summary-items-wrapper,
+  .summary-item-card,
+  .discount-box,
+  .summary-row.small {
+    display: none;
+  }
+
+  .summary-row,
+  .summary-total-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0;
   }
 }

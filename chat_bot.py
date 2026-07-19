@@ -1,15 +1,16 @@
-from email import message
-from unittest import result
+import os
+from dotenv import load_dotenv
 
 try:
     from openai import OpenAI
 except ModuleNotFoundError:
     OpenAI = None
-import os
 
-LLM_API_KEY = os.getenv("LLM_API_KEY")
-MODEL=os.getenv("LLM_MODEL")
+load_dotenv()
 
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip() or os.getenv("LLM_API_KEY", "").strip()
+MODEL = os.getenv("LLM_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free").strip()
+BASE_URL = os.getenv("OPENAI_BASE_URL", "").strip() or "https://openrouter.ai/api/v1"
 
 PROMPT="""
 # STRICT RULES
@@ -24,9 +25,14 @@ def call_llm(text: str):
     if OpenAI is None:
         raise RuntimeError("OpenAI module is not installed.")
 
+    if not OPENAI_API_KEY:
+        raise RuntimeError("OPENAI_API_KEY is not configured or is empty.")
+    if not MODEL:
+        raise RuntimeError("LLM_MODEL is not configured or is empty.")
+
     client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=LLM_API_KEY,
+        api_key=OPENAI_API_KEY,
+        base_url=BASE_URL,
     )
 
     response = client.chat.completions.create(

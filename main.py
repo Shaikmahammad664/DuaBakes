@@ -226,10 +226,13 @@ async def get_product(product_id: str):
 
 
 @app.post("/chat-bot")
-async def chatBot(message: str):
+async def chat_Bt(item:chatBot):
+    logger.info(f"Received message for chat bot: {item.message}")
+    message = item.message
     if message:
         response= call_llm(message)
         clean_response = response.choices[0].message.content.strip()
+        logger.info(f"Chat bot response: {clean_response}")
         return {"status": "Success", "response": clean_response}
     else:
         raise HTTPException(status_code=400, detail="Message cannot be empty")

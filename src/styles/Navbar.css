@@ -208,6 +208,19 @@
     letter-spacing: 0.04em;
     padding: 0.5rem 0.75rem;
     white-space: nowrap;
+    position: relative;
+}
+
+.components a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0px;
+    margin-bottom: 7px;
+    height: 1px;
+    width: 0;
+    background: #44202b; 
+    transition: width 260ms ease-in-out;
 }
 
 @media (max-width: 768px) {
@@ -230,9 +243,12 @@
 
 .components a:hover {
     color: #44202b;
-    text-decoration: underline;
     transform: translateY(-2px);
     transition: transform 0.2s ease;
+}
+
+.components a:hover::after {
+    width: 100%;
 }
 
 .nav-actions {
