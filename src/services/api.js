@@ -80,7 +80,12 @@ export const ordersAPI = {
   
   getById: (id) => apiClient.get(`/orders/${id}`),
   
-  getByUser: (email) => apiClient.get(`/orders/${email}`)
+  getByUser: (identifier) => apiClient.get(`/orders/${identifier}`)
+};
+
+// User APIs
+export const userAPI = {
+  getByIdentifier: (identifier) => apiClient.get(`/users/${identifier}`)
 };
 
 // Chat API

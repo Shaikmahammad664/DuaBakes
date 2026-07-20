@@ -2,33 +2,92 @@ import React, { useState } from 'react';
 import { chatAPI } from '../services/api';
 import '../styles/Chatbot.css';
 
+const initialBotMessage = { type: 'bot', text: 'Hi! How can I help you today?' };
+
+function formatBotText(text) {
+  if (!text) return null;
+
+  return String(text)
+    .replace(/\r/g, '')
+    .split('\n')
+    .filter((line) => line.trim())
+    .map((line, index) => {
+      const trimmed = line.trim();
+      if (/^[-*]\s+/.test(trimmed)) {
+        return (
+          <div key={`${index}-${trimmed}`} className="chatbot-bullet">
+            {trimmed.replace(/^[-*]\s+/, '• ')}
+          </div>
+        );
+      }
+
+      return (
+        <div key={`${index}-${trimmed}`} className="chatbot-line">
+          {trimmed}
+        </div>
+      );
+    });
+}
+
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { type: 'bot', text: 'Hi! How can I help you today?' }
-  ]);
+  const [messages, setMessages] = useState([initialBotMessage]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+
+  const resetChat = () => {
+    setMessages([initialBotMessage]);
+    setInputValue('');
+    setLoading(false);
+  };
+
+  const openChat = () => {
+    resetChat();
+    setIsOpen(true);
+    setShowCloseConfirm(false);
+  };
+
+  const requestClose = () => {
+    setShowCloseConfirm(true);
+  };
+
+  const confirmClose = () => {
+    setIsOpen(false);
+    setShowCloseConfirm(false);
+    resetChat();
+  };
+
+  const cancelClose = () => {
+    setShowCloseConfirm(false);
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
+    const trimmedMessage = inputValue.trim();
+    if (!trimmedMessage || loading) return;
 
-    // Add user message
-    const userMessage = { type: 'user', text: inputValue };
-    setMessages([...messages, userMessage]);
+    const userMessage = { type: 'user', text: trimmedMessage };
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setLoading(true);
 
     try {
-      // Call backend chatbot API
-      const response = await chatAPI.sendMessage(inputValue);
-      const botMessage = { type: 'bot', text: response.data.response || 'I didn\'t understand that.' };
-      setMessages(prev => [...prev, botMessage]);
+      const response = await chatAPI.sendMessage(trimmedMessage);
+      const botMessage = {
+        type: 'bot',
+        text: response?.data?.response || 'I didn\'t understand that.',
+        html: response?.data?.response_html || null
+      };
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error('Chat error:', error);
-      const errorMessage = { type: 'bot', text: 'Sorry, I encountered an error. Please try again.' };
-      setMessages(prev => [...prev, errorMessage]);
+      const errDetail = error?.response?.data?.detail || error?.response?.data?.message || error?.message || JSON.stringify(error);
+      const errorMessage = {
+        type: 'bot',
+        text: `Sorry, I encountered an error. ${errDetail}`
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setLoading(false);
     }
@@ -40,16 +99,35 @@ export default function Chatbot() {
         <div className="chatbot-container">
           <div className="chatbot-header">
             <h3>DuaBakes Assistant</h3>
-            <button onClick={() => setIsOpen(false)} className="close-btn">×</button>
+            <button onClick={requestClose} className="close-btn" aria-label="Close chatbot">
+              ×
+            </button>
           </div>
+
           <div className="chatbot-messages">
             {messages.map((msg, idx) => (
-              <div key={idx} className={`message ${msg.type}`}>
-                <p>{msg.text}</p>
+              <div key={`${msg.type}-${idx}`} className={`message ${msg.type}`}>
+                {msg.type === 'bot' ? (
+                  msg.html ? (
+                    <div className="chatbot-message-content" dangerouslySetInnerHTML={{ __html: msg.html }} />
+                  ) : (
+                    <div className="chatbot-message-content">{formatBotText(msg.text)}</div>
+                  )
+                ) : (
+                  <p>{msg.text}</p>
+                )}
               </div>
             ))}
-            {loading && <div className="message bot"><p>Typing...</p></div>}
+
+            {loading && (
+              <div className="message bot">
+                <div className="chatbot-message-content">
+                  <div className="chatbot-line">Typing...</div>
+                </div>
+              </div>
+            )}
           </div>
+
           <form onSubmit={handleSendMessage} className="chatbot-input">
             <input
               type="text"
@@ -58,14 +136,33 @@ export default function Chatbot() {
               placeholder="Type your message..."
               disabled={loading}
             />
-            <button type="submit" disabled={loading}>Send</button>
+            <button type="submit" disabled={loading}>
+              Send
+            </button>
           </form>
+
+          {showCloseConfirm && (
+            <div className="chatbot-confirm-overlay">
+              <div className="chatbot-confirm-box">
+                <p>Do you want to close the chat?</p>
+                <div className="chatbot-confirm-actions">
+                  <button type="button" className="confirm-secondary" onClick={cancelClose}>
+                    No
+                  </button>
+                  <button type="button" className="confirm-primary" onClick={confirmClose}>
+                    Yes
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
-      <button 
-        className="chatbot-btn" 
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Open chatbot"
+
+      <button
+        className="chatbot-btn"
+        onClick={isOpen ? requestClose : openChat}
+        aria-label={isOpen ? 'Close chatbot' : 'Open chatbot'}
       >
         <img src="./assests/ai logo1.png" alt="Chatbot" />
       </button>

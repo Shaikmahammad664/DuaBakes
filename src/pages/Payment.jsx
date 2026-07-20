@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ordersAPI } from '../services/api';
+import { ordersAPI, authAPI } from '../services/api';
 import '../styles/Payment.css';
 
 export default function Payment({ cartItems }) {
@@ -33,6 +33,10 @@ export default function Payment({ cartItems }) {
   const [discountCode, setDiscountCode] = useState('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [message, setMessage] = useState('');
+  const [canPay, setCanPay] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+  const saveTimer = useRef(null);
   const isSignedIn = Boolean(localStorage.getItem('user') || localStorage.getItem('token'));
 
   useEffect(() => {
@@ -62,6 +66,82 @@ export default function Payment({ cartItems }) {
     }));
   }, []);
 
+  // validate and auto-save profile (debounced) to enable Pay Now
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      setCanPay(false);
+      return;
+    }
+
+    const parsed = JSON.parse(storedUser);
+    const user = parsed.user || parsed;
+    const email = form.email || user.Email || user.email;
+
+    const validShipping = form.firstName && form.lastName && form.address && form.city && form.state && form.pinCode && form.phone;
+    const validBilling = form.billingSameAsShipping
+      ? true
+      : (form.billingFirstName && form.billingLastName && form.billingAddress && form.billingCity && form.billingState && form.billingPinCode && form.billingPhone);
+
+    const shouldSave = Boolean(email) && validShipping && validBilling;
+
+    if (!shouldSave) {
+      setCanPay(false);
+      return;
+    }
+
+    // debounce save to avoid rapid API calls
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      setSavingProfile(true);
+      setSaveError(null);
+      const profilePayload = {
+        Email: email,
+        FirstName: form.firstName,
+        LastName: form.lastName,
+        PhoneNumber: form.phone,
+        address: form.address,
+        apartment: form.apartment,
+        city: form.city,
+        state: form.state,
+        pinCode: form.pinCode,
+        billingSameAsShipping: form.billingSameAsShipping,
+        billingAddress: form.billingSameAsShipping ? form.address : form.billingAddress,
+        billingApartment: form.billingSameAsShipping ? form.apartment : form.billingApartment,
+        billingCity: form.billingSameAsShipping ? form.city : form.billingCity,
+        billingState: form.billingSameAsShipping ? form.state : form.billingState,
+        billingPinCode: form.billingSameAsShipping ? form.pinCode : form.billingPinCode,
+        billingPhone: form.billingSameAsShipping ? form.phone : form.billingPhone,
+      };
+
+      try {
+        await authAPI.updateProfile(profilePayload);
+        // merge into localStorage user object
+        const mergedUser = {
+          ...(parsed.user || parsed),
+          ...profilePayload,
+          email: email,
+          firstName: profilePayload.FirstName,
+          lastName: profilePayload.LastName,
+          phone: profilePayload.PhoneNumber,
+        };
+        const userToStore = parsed.user ? { ...parsed, user: mergedUser } : mergedUser;
+        localStorage.setItem('user', JSON.stringify(userToStore));
+        setCanPay(true);
+      } catch (err) {
+        console.warn('Profile save failed', err);
+        setSaveError('Could not save profile — pay disabled');
+        setCanPay(false);
+      } finally {
+        setSavingProfile(false);
+      }
+    }, 600);
+
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
+  }, [form.firstName, form.lastName, form.address, form.apartment, form.city, form.state, form.pinCode, form.phone, form.billingSameAsShipping, form.billingAddress, form.billingApartment, form.billingCity, form.billingState, form.billingPinCode, form.billingPhone]);
+
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingFee = 0;
   const totalWithTax = totalPrice + shippingFee;
@@ -89,11 +169,34 @@ export default function Payment({ cartItems }) {
   const updateField = (field) => (event) => {
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     setForm((current) => ({ ...current, [field]: value }));
+    setMessage('');
     if (field === 'paymentMethod') {
       setPaymentConfirmed(false);
       setUpiId('');
       setUpiRedirect('');
     }
+  };
+
+  const getMissingFields = () => {
+    const missing = [];
+    if (!form.email) missing.push('Email');
+    if (!form.firstName) missing.push('First name');
+    if (!form.lastName) missing.push('Last name');
+    if (!form.address) missing.push('Address');
+    if (!form.city) missing.push('City');
+    if (!form.state) missing.push('State');
+    if (!form.pinCode) missing.push('PIN code');
+    if (!form.phone) missing.push('Phone');
+    if (!form.billingSameAsShipping) {
+      if (!form.billingFirstName) missing.push('Billing first name');
+      if (!form.billingLastName) missing.push('Billing last name');
+      if (!form.billingAddress) missing.push('Billing address');
+      if (!form.billingCity) missing.push('Billing city');
+      if (!form.billingState) missing.push('Billing state');
+      if (!form.billingPinCode) missing.push('Billing PIN code');
+      if (!form.billingPhone) missing.push('Billing phone');
+    }
+    return missing;
   };
 
   return (
@@ -373,7 +476,24 @@ export default function Payment({ cartItems }) {
               </div>
             )}
 
-            <button type="button" className="pay-now-button" onClick={async () => {
+            <button type="button" className={`pay-now-button ${(!canPay || savingProfile) ? 'disabled' : ''}`} onClick={async () => {
+              // If profile is saving, notify user
+              if (savingProfile) {
+                setMessage('Saving profile — please wait before paying.');
+                return;
+              }
+
+              // If not allowed to pay, show which fields are missing
+              if (!canPay) {
+                const missing = getMissingFields();
+                if (missing.length > 0) {
+                  setMessage('Please fill: ' + missing.slice(0, 6).join(', ') + (missing.length > 6 ? ', ...' : ''));
+                } else {
+                  setMessage('Please complete all required fields before proceeding.');
+                }
+                return;
+              }
+
               const storedUser = localStorage.getItem('user');
               if (!storedUser) {
                 navigate('/login');
@@ -408,13 +528,11 @@ export default function Payment({ cartItems }) {
                     phone: form.billingPhone,
                   };
 
-              const updatedUser = {
-                ...user,
+              const profilePayload = {
                 Email: email,
-                email: email,
-                firstName: form.firstName || user.firstName || user.FirstName || user.name,
-                lastName: form.lastName || user.lastName || user.LastName,
-                phone: form.phone || user.PhoneNumber || user.phone,
+                FirstName: form.firstName || user.FirstName || user.firstName || user.name,
+                LastName: form.lastName || user.LastName || user.lastName,
+                PhoneNumber: form.phone || user.PhoneNumber || user.phone,
                 address: form.address,
                 apartment: form.apartment,
                 city: form.city,
@@ -427,6 +545,22 @@ export default function Payment({ cartItems }) {
                 billingState: form.billingState,
                 billingPinCode: form.billingPinCode,
                 billingPhone: form.billingPhone,
+              };
+
+              // persist profile on backend (best-effort)
+              try {
+                await authAPI.updateProfile(profilePayload);
+              } catch (err) {
+                console.warn('Could not persist profile to backend', err);
+              }
+
+              const mergedUser = {
+                ...(parsed.user || parsed),
+                ...profilePayload,
+                email: email,
+                firstName: profilePayload.FirstName,
+                lastName: profilePayload.LastName,
+                phone: profilePayload.PhoneNumber,
                 addressHistory: [
                   ...(user.addressHistory || []),
                   {
@@ -437,12 +571,14 @@ export default function Payment({ cartItems }) {
                 ],
               };
 
-              const userToStore = parsed.user ? { ...parsed, user: updatedUser } : updatedUser;
+              const userToStore = parsed.user ? { ...parsed, user: mergedUser } : mergedUser;
               localStorage.setItem('user', JSON.stringify(userToStore));
 
               try {
                 await ordersAPI.create({
+                  PhoneNumber: form.phone || user.PhoneNumber || user.phone,
                   Email: email,
+                  PaymentMethod: form.paymentMethod,
                   Items: cartItems.map((item) => ({
                     name: item.name,
                     quantity: item.quantity,
@@ -460,12 +596,14 @@ export default function Payment({ cartItems }) {
                 setPaymentConfirmed(true);
                 setMessage('Order placed successfully.');
               } catch (error) {
-                setMessage('Could not place order right now.');
+                const serverMsg = error?.response?.data?.detail || error?.message || 'Could not place order right now.';
+                setMessage(serverMsg);
               }
             }}>
-              Pay now
+              {savingProfile ? 'Saving...' : 'Pay now'}
             </button>
             {message && <p className="payment-confirmation">{message}</p>}
+            {saveError && <p className="error-message">{saveError}</p>}
             {paymentConfirmed && form.paymentMethod !== 'UPI' && (
               <p className="payment-confirmation">Payment method selected: {form.paymentMethod}</p>
             )}

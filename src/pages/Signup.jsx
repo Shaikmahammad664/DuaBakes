@@ -35,7 +35,8 @@ export default function Signup() {
         if (response.data.token) {
           localStorage.setItem('token', response.data.token);
         }
-        localStorage.setItem('user', JSON.stringify(response.data));
+        const signupUser = response.data.user || response.data;
+        localStorage.setItem('user', JSON.stringify(signupUser));
         navigate('/login', { state: { success: 'Signup successful! Please log in.' } });
       } else {
         setError(response.data.message || 'Signup failed');

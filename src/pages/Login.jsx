@@ -49,6 +49,9 @@ export default function Login() {
         const user = response.data.user || response.data;
         try {
           localStorage.setItem('user', JSON.stringify(user));
+          if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
+          }
         } catch (e) {
           console.warn('Could not persist user to localStorage', e);
         }

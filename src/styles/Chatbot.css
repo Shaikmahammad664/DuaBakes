@@ -36,7 +36,7 @@
         bottom: 16px;
         right: 16px;
     }
-    
+
     .chatbot-btn img {
         width: 36px;
         height: 36px;
@@ -118,15 +118,40 @@
     word-wrap: break-word;
 }
 
-.message.bot p {
+.message.bot .chatbot-message-content {
+    max-width: 82%;
     background: white;
     border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 0.75rem 0.9rem;
     color: #333;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .message.user p {
     background: #0A6169;
     color: white;
+}
+
+.chatbot-line,
+.chatbot-bullet {
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.chatbot-bullet {
+    padding-left: 0.6rem;
+    position: relative;
+}
+
+.chatbot-bullet::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #0A6169;
 }
 
 .chatbot-input {
@@ -138,7 +163,11 @@
     background: white;
 }
 
-
+.chatbot-input input {
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    padding: 0.7rem 0.8rem;
+}
 
 .chatbot-input input:focus {
     outline: none;
@@ -148,12 +177,11 @@
 
 .chatbot-input button {
     background: #0A6169;
-    margin-top: 0.1rem;
     color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    height: 90%;
+    padding: 0 1rem;
     font-weight: 500;
     transition: background 0.2s ease;
 }
@@ -165,6 +193,55 @@
 .chatbot-input button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.chatbot-confirm-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.chatbot-confirm-box {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    width: 100%;
+    max-width: 260px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+.chatbot-confirm-box p {
+    margin: 0 0 0.75rem;
+    color: #333;
+}
+
+.chatbot-confirm-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.chatbot-confirm-actions button {
+    border: none;
+    border-radius: 6px;
+    padding: 0.55rem 0.9rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.confirm-secondary {
+    background: #e9ecef;
+    color: #333;
+}
+
+.confirm-primary {
+    background: #0A6169;
+    color: white;
 }
 
 @media (max-width: 640px) {

@@ -16,9 +16,9 @@ export default function Orders() {
     }
 
     const user = JSON.parse(storedUser);
-    const email = user.Email || user.email;
+    const identifier = user.PhoneNumber || user.phone || user.Email || user.email;
 
-    ordersAPI.getByUser(email)
+    ordersAPI.getByUser(identifier)
       .then((response) => {
         setOrders(response.data.orders || []);
       })
