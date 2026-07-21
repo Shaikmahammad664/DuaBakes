@@ -16,7 +16,9 @@ Environment variables to set in Render's dashboard (example):
 - `DB_PASSWORD` — database password
 - `DB_NAME` — database name (e.g. `duabakes`)
 - `SENDER_EMAIL` — email address used to send password reset emails
-- `EMAIL_PASSWORD` — password or app password for the sender email
+- `SENDER_NAME` — optional display name for the sender email
+- `BREVO_API_KEY` — Brevo API key used for `https://api.brevo.com/v3/smtp/email`
+- `FRONTEND_URL` — URL of the frontend app used in reset links
 
 Quick local test with Docker (PowerShell):
 

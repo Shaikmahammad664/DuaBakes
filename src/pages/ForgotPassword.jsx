@@ -20,10 +20,14 @@ export default function ForgotPassword() {
       if (response.data.status) {
         setStatusMessage('If the email exists, a reset link has been sent.');
       } else {
-        setError(response.data.message || 'Unable to send reset link.');
+        setError(response.data.message || response.data.detail || 'Unable to send reset link.');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred while sending reset instructions.');
+      setError(
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'An error occurred while sending reset instructions.'
+      );
       console.error('Forgot password error:', err);
     } finally {
       setLoading(false);

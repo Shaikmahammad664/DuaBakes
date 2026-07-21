@@ -11,15 +11,23 @@ This repository contains a FastAPI backend for the DuaBakes application.
 2. Create the MySQL schema:
    - Start your MySQL server.
    - Run the SQL in `db_schema.sql`.
-3. Copy `.env` and set your local database settings:
+3. Copy `.env` and set your local database and Brevo email settings:
    ```env
    DB_HOST=localhost
    DB_USER=root
    DB_PASSWORD=your_password
    DB_NAME=duabakes
-   SENDER_EMAIL=your_email@example.com
-   EMAIL_PASSWORD=your_email_password
+   SENDER_EMAIL=your_verified_sender@example.com
+   BREVO_API_KEY=your_brevo_api_key
+   SENDER_NAME=Bakes App
+   FRONTEND_URL=http://localhost:5173
    ```
+   - `SENDER_EMAIL` should be a verified sender in your Brevo account.
+   - `BREVO_API_KEY` must be a Brevo transactional HTTP API key, not an SMTP key.
+     - SMTP keys start with `xsmtpsib-` and will not work with `https://api.brevo.com/v3/smtp/email`.
+   - `SENDER_NAME` is optional and appears as the email display name.
+   - `FRONTEND_URL` should match the URL where the React app is served.
+
 
 ## Run locally
 

@@ -11,7 +11,7 @@ DuaBakes is a web application for a bakery business, featuring user authenticati
 - **MySQL**: Relational database management system used to store user data, admin credentials, and product information.
 - **Uvicorn**: ASGI web server implementation for Python, used to run the FastAPI application.
 - **OpenAI API**: Integrated via OpenRouter for the chatbot functionality, allowing AI-powered responses to bakery-related queries.
-- **SMTP**: Used for sending password reset emails.
+- **Brevo HTTP API**: Used for sending password reset emails through `https://api.brevo.com/v3/smtp/email`.
 
 ### Frontend
 - **HTML**: Markup language for structuring the web pages (signup, login, products, admin login, etc.).

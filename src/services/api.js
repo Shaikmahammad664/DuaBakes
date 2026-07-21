@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:7788';
+// Use Vite proxy during development when VITE_API_BASE_URL is not set.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -13,6 +14,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
+    config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -33,7 +35,7 @@ export const authAPI = {
     Password: formData.password
   }),
   
-  adminLogin: (formData) => apiClient.post('/admin-login', {
+  adminLogin: (formData) => apiClient.post('/admin/login', {
     Email: formData.email,
     Password: formData.password
   }),
@@ -44,6 +46,10 @@ export const authAPI = {
   
   resetPassword: (email, newPassword) => apiClient.post('/reset-password', {
     Email: email,
+    NewPassword: newPassword
+  }),
+  resetPasswordWithToken: (token, newPassword) => apiClient.post('/reset-password', {
+    Token: token,
     NewPassword: newPassword
   }),
 
@@ -80,12 +86,35 @@ export const ordersAPI = {
   
   getById: (id) => apiClient.get(`/orders/${id}`),
   
-  getByUser: (identifier) => apiClient.get(`/orders/${identifier}`)
+  getByUser: (identifier) => apiClient.get(`/orders/${identifier}`),
+
+  getAdminOrders: () => apiClient.get('/admin/orders'),
+
+  updateStatus: (orderId, status, note) => apiClient.post('/admin/orders/status', {
+    OrderId: orderId,
+    Status: status,
+    Note: note
+  })
 };
 
 // User APIs
 export const userAPI = {
   getByIdentifier: (identifier) => apiClient.get(`/users/${identifier}`)
+};
+
+// Payments API
+export const paymentsAPI = {
+  createRazorpayOrder: (paymentData) => apiClient.post('/razorpay/create-order', {
+    Amount: paymentData.amount,
+    Currency: paymentData.currency || 'INR',
+    Receipt: paymentData.receipt
+  }),
+
+  verifyRazorpayPayment: (paymentData) => apiClient.post('/razorpay/verify-payment', {
+    RazorpayOrderId: paymentData.orderId,
+    RazorpayPaymentId: paymentData.paymentId,
+    RazorpaySignature: paymentData.signature
+  })
 };
 
 // Chat API

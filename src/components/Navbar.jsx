@@ -174,6 +174,13 @@ export default function Navbar({ searchQuery, onSearchChange }) {
                       >
                         Settings
                       </button>
+                      <button 
+                        type="button" 
+                        className="dropdown-item dropdown-btn" 
+                        onClick={() => { setIsAccountDropdownOpen(false); navigate('/admin'); }}
+                      >
+                        Admin Panel
+                      </button>
                       <hr className="dropdown-divider" />
                       <button 
                         type="button" 

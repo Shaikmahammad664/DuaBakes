@@ -431,6 +431,62 @@ summary-card {
   color: #0f4f4d;
 }
 
+.upi-section {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.upi-note {
+  margin: 0;
+  color: #5c5c5f;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.upi-option-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.upi-option-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid #d6c8b4;
+  background: #fffdfa;
+  color: #0f4f4d;
+  font-weight: 600;
+}
+
+.upi-option-card input {
+  accent-color: #0f4f4d;
+}
+
+.upi-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.upi-qr-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  background: #ffffff;
+  border: 1px solid rgba(15, 79, 77, 0.12);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.upi-qr-card p,
+.upi-info {
+  margin: 0;
+  color: #5c5c5f;
+  text-align: center;
+}
+
 .payment-confirmation {
   margin-top: 1rem;
   color: #0f4f4d;
@@ -457,7 +513,8 @@ summary-card {
     padding: 1.5rem;
   }
 
-  .two-columns {
+  .two-columns,
+  .upi-grid {
     grid-template-columns: 1fr;
   }
 

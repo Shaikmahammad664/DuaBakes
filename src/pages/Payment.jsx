@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useNavigate } from 'react-router-dom';
-import { ordersAPI, authAPI } from '../services/api';
+import { ordersAPI, authAPI, paymentsAPI } from '../services/api';
 import '../styles/Payment.css';
 
 export default function Payment({ cartItems }) {
@@ -28,16 +29,30 @@ export default function Payment({ cartItems }) {
     billingPinCode: '',
     billingPhone: '',
   });
-  const [upiId, setUpiId] = useState('');
+  const [upiMode, setUpiMode] = useState('qr');
+  const [upiQrValue, setUpiQrValue] = useState('');
+  const [upiDeepLink, setUpiDeepLink] = useState('');
   const [upiRedirect, setUpiRedirect] = useState('');
   const [discountCode, setDiscountCode] = useState('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [message, setMessage] = useState('');
   const [canPay, setCanPay] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const saveTimer = useRef(null);
   const isSignedIn = Boolean(localStorage.getItem('user') || localStorage.getItem('token'));
+
+  useEffect(() => {
+    const existingScript = document.getElementById('razorpay-checkout-script');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.id = 'razorpay-checkout-script';
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -166,14 +181,45 @@ export default function Payment({ cartItems }) {
     return dateInput;
   };
 
+  const merchantUpiVpa = (import.meta.env.VITE_UPI_VPA || '9182259139@ybl').trim();
+  const merchantUpiName = (import.meta.env.VITE_UPI_NAME || 'DuaBakes').trim();
+
+  const buildUpiDeepLink = (amount) => {
+    const safeVpa = encodeURIComponent(merchantUpiVpa);
+    const safeName = encodeURIComponent(merchantUpiName);
+    const safeAmount = Number(amount || 0).toFixed(2);
+    return `upi://pay?pa=${safeVpa}&pn=${safeName}&am=${safeAmount}&cu=INR`;
+  };
+
+  useEffect(() => {
+    if (form.paymentMethod !== 'UPI') {
+      setUpiQrValue('');
+      setUpiDeepLink('');
+      setPaymentConfirmed(false);
+      setUpiRedirect('');
+      return;
+    }
+
+    const amount = Number(totalWithTax || 0).toFixed(2);
+    const link = buildUpiDeepLink(amount);
+    setUpiQrValue(link);
+    setUpiDeepLink(link);
+    setPaymentConfirmed(true);
+    setUpiMode('qr');
+    setUpiRedirect('');
+  }, [form.paymentMethod, totalWithTax]);
+
   const updateField = (field) => (event) => {
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     setForm((current) => ({ ...current, [field]: value }));
     setMessage('');
     if (field === 'paymentMethod') {
       setPaymentConfirmed(false);
-      setUpiId('');
       setUpiRedirect('');
+      if (value !== 'UPI') {
+        setUpiQrValue('');
+        setUpiDeepLink('');
+      }
     }
   };
 
@@ -334,39 +380,81 @@ export default function Payment({ cartItems }) {
               </label>
 
               {form.paymentMethod === 'UPI' && (
-                <div className="field-grid upi-grid">
-                  <label className="field-label">
-                    <input
-                      type="text"
-                      value={upiId}
-                      onChange={(event) => {
-                        setUpiId(event.target.value);
-                        setUpiRedirect('');
-                        setPaymentConfirmed(false);
-                      }}
-                      placeholder="Enter UPI ID"
-                    />
-                  </label>
+                <div className="upi-section">
+                  <p className="upi-note">Payments will be requested to <strong>Duabakes</strong>{/*UPI ID <strong>{merchantUpiVpa}</strong> */}.</p>
+
+                  {upiQrValue && (
+                    <div className="upi-qr-card">
+                      <QRCodeSVG value={upiQrValue} size={220} level="H" includeMargin />
+                      <p>Scan this QR to pay exactly ₹{Number(totalWithTax || 0).toFixed(2)}.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Reference block from the earlier UPI UI:
+              {form.paymentMethod === 'UPI' && (
+                <div className="upi-section">
+                  <p className="upi-note">Payments will be requested to <strong>Duabakes</strong> UPI ID <strong>{merchantUpiVpa}</strong>.</p>
+
+                  <div className="upi-option-row">
+                    <label className="upi-option-card">
+                      <input
+                        type="radio"
+                        name="upiMode"
+                        value="qr"
+                        checked={upiMode === 'qr'}
+                        onChange={() => {
+                          setUpiMode('qr');
+                          setUpiQrValue('');
+                          setUpiDeepLink('');
+                          setPaymentConfirmed(false);
+                          setUpiRedirect('');
+                        }}
+                      />
+                      <span>Scan QR</span>
+                    </label>
+                    <label className="upi-option-card">
+                      <input
+                        type="radio"
+                        name="upiMode"
+                        value="app"
+                        checked={upiMode === 'app'}
+                        onChange={() => {
+                          setUpiMode('app');
+                          setUpiQrValue('');
+                          setUpiDeepLink('');
+                          setPaymentConfirmed(false);
+                          setUpiRedirect('');
+                        }}
+                      />
+                      <span>Open UPI app</span>
+                    </label>
+                  </div>
+
                   <button
                     type="button"
                     className="pay-now-button"
                     onClick={() => {
-                      const id = upiId.trim();
-                      if (!id) return;
-                      if (id.endsWith('@ybl')) {
-                        setUpiRedirect('PhonePe');
-                      } else if (id.endsWith('@okhdfc') || id.endsWith('@okicici') || id.endsWith('@okbank')) {
-                        setUpiRedirect('Bank UPI');
-                      } else {
-                        setUpiRedirect('Google Pay');
-                      }
+                      const amount = Number(totalWithTax || 0).toFixed(2);
+                      const link = buildUpiDeepLink(amount);
+                      setUpiQrValue(link);
+                      setUpiDeepLink(link);
                       setPaymentConfirmed(true);
                     }}
                   >
-                    Continue with UPI
+                    {upiMode === 'app' ? 'Open UPI app' : 'Generate QR'}
                   </button>
+
+                  {upiMode === 'qr' && upiQrValue && (
+                    <div className="upi-qr-card">
+                      <QRCodeSVG value={upiQrValue} size={220} level="H" includeMargin />
+                      <p>Scan this QR to pay exactly ₹{Number(totalWithTax || 0).toFixed(2)}.</p>
+                    </div>
+                  )}
                 </div>
               )}
+              */}
             </div>
 
             <div className="section-block billing-block">
@@ -476,14 +564,11 @@ export default function Payment({ cartItems }) {
               </div>
             )}
 
-            <button type="button" className={`pay-now-button ${(!canPay || savingProfile) ? 'disabled' : ''}`} onClick={async () => {
-              // If profile is saving, notify user
-              if (savingProfile) {
-                setMessage('Saving profile — please wait before paying.');
+            <button type="button" className={`pay-now-button ${(!canPay || savingProfile || isProcessingPayment) ? 'disabled' : ''}`} onClick={async () => {
+              if (savingProfile || isProcessingPayment) {
                 return;
               }
 
-              // If not allowed to pay, show which fields are missing
               if (!canPay) {
                 const missing = getMissingFields();
                 if (missing.length > 0) {
@@ -547,7 +632,6 @@ export default function Payment({ cartItems }) {
                 billingPhone: form.billingPhone,
               };
 
-              // persist profile on backend (best-effort)
               try {
                 await authAPI.updateProfile(profilePayload);
               } catch (err) {
@@ -574,25 +658,86 @@ export default function Payment({ cartItems }) {
               const userToStore = parsed.user ? { ...parsed, user: mergedUser } : mergedUser;
               localStorage.setItem('user', JSON.stringify(userToStore));
 
+              const orderPayload = {
+                PhoneNumber: form.phone || user.PhoneNumber || user.phone,
+                Email: email,
+                PaymentMethod: form.paymentMethod,
+                Items: cartItems.map((item) => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                  size: item.size,
+                  delivery: item.delivery || null,
+                })),
+                TotalAmount: totalWithTax,
+                ShippingAddress: shippingAddress,
+                BillingAddress: billingAddress,
+                DeliveryDate: cartItems[0]?.delivery?.deliveryDate || null,
+                DeliveryTime: cartItems[0]?.delivery?.deliveryTime || null,
+                CakeText: cartItems[0]?.delivery?.cakeText || null,
+              };
+
+              if (form.paymentMethod === 'Razorpay Secure') {
+                setIsProcessingPayment(true);
+                setMessage('Creating Razorpay payment...');
+                try {
+                  const response = await paymentsAPI.createRazorpayOrder({
+                    amount: totalWithTax,
+                    receipt: `bakes-${Date.now()}`,
+                  });
+
+                  const razorpayOptions = {
+                    key: response?.data?.key_id,
+                    amount: response?.data?.amount,
+                    currency: response?.data?.currency || 'INR',
+                    name: 'Bakes',
+                    description: 'Order payment',
+                    order_id: response?.data?.order_id,
+                    handler: async (razorpayResponse) => {
+                      try {
+                        await paymentsAPI.verifyRazorpayPayment({
+                          orderId: razorpayResponse.razorpay_order_id,
+                          paymentId: razorpayResponse.razorpay_payment_id,
+                          signature: razorpayResponse.razorpay_signature,
+                        });
+                        await ordersAPI.create(orderPayload);
+                        setPaymentConfirmed(true);
+                        setMessage('Payment successful and order placed.');
+                      } catch (error) {
+                        const serverMsg = error?.response?.data?.detail || error?.message || 'Payment verification failed.';
+                        setMessage(serverMsg);
+                      } finally {
+                        setIsProcessingPayment(false);
+                      }
+                    },
+                    prefill: {
+                      name: `${form.firstName} ${form.lastName}`.trim(),
+                      email: form.email,
+                      contact: form.phone,
+                    },
+                    theme: {
+                      color: '#0f4f4d',
+                    },
+                    modal: {
+                      ondismiss: () => {
+                        setIsProcessingPayment(false);
+                        setMessage('Payment cancelled.');
+                      },
+                    },
+                  };
+
+                  const razorpayInstance = new window.Razorpay(razorpayOptions);
+                  razorpayInstance.open();
+                } catch (error) {
+                  setIsProcessingPayment(false);
+                  const serverMsg = error?.response?.data?.detail || error?.message || 'Could not initiate Razorpay checkout.';
+                  setMessage(serverMsg);
+                }
+                return;
+              }
+
               try {
-                await ordersAPI.create({
-                  PhoneNumber: form.phone || user.PhoneNumber || user.phone,
-                  Email: email,
-                  PaymentMethod: form.paymentMethod,
-                  Items: cartItems.map((item) => ({
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: item.price,
-                    size: item.size,
-                    delivery: item.delivery || null,
-                  })),
-                  TotalAmount: totalWithTax,
-                  ShippingAddress: shippingAddress,
-                  BillingAddress: billingAddress,
-                  DeliveryDate: cartItems[0]?.delivery?.deliveryDate || null,
-                  DeliveryTime: cartItems[0]?.delivery?.deliveryTime || null,
-                  CakeText: cartItems[0]?.delivery?.cakeText || null,
-                });
+                await ordersAPI.create(orderPayload);
                 setPaymentConfirmed(true);
                 setMessage('Order placed successfully.');
               } catch (error) {
@@ -600,7 +745,7 @@ export default function Payment({ cartItems }) {
                 setMessage(serverMsg);
               }
             }}>
-              {savingProfile ? 'Saving...' : 'Pay now'}
+              {savingProfile ? 'Saving...' : isProcessingPayment ? 'Processing...' : 'Place order'}
             </button>
             {message && <p className="payment-confirmation">{message}</p>}
             {saveError && <p className="error-message">{saveError}</p>}

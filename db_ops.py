@@ -2,6 +2,8 @@ import os
 import uuid
 import sqlite3
 import json
+import hashlib
+import base64
 import mysql.connector
 from datetime import datetime
 from loguru import logger
@@ -86,6 +88,8 @@ def init_sqlite_tables():
             Items TEXT NOT NULL,
             TotalAmount REAL DEFAULT 0.00,
             CreatedAt TEXT NOT NULL,
+            Order_Status TEXT DEFAULT 'placed',
+            TrackingNote TEXT,
             PRIMARY KEY (PhoneNumber, Order_Id)
         )
         '''
@@ -120,6 +124,10 @@ def init_sqlite_tables():
         cursor.execute('ALTER TABLE users ADD COLUMN billingPhone TEXT')
     if 'Token' not in existing_user_columns:
         cursor.execute('ALTER TABLE users ADD COLUMN Token TEXT')
+    if 'PasswordResetToken' not in existing_user_columns:
+        cursor.execute('ALTER TABLE users ADD COLUMN PasswordResetToken TEXT')
+    if 'PasswordResetExpires' not in existing_user_columns:
+        cursor.execute('ALTER TABLE users ADD COLUMN PasswordResetExpires TEXT')
 
     cursor.execute("PRAGMA table_info(orders)")
     existing_order_columns = [row[1] for row in cursor.fetchall()]
@@ -129,6 +137,10 @@ def init_sqlite_tables():
         cursor.execute('ALTER TABLE orders ADD COLUMN ShippingAddress TEXT')
     if 'BillingAddress' not in existing_order_columns:
         cursor.execute('ALTER TABLE orders ADD COLUMN BillingAddress TEXT')
+    if 'Order_Status' not in existing_order_columns:
+        cursor.execute("ALTER TABLE orders ADD COLUMN Order_Status TEXT DEFAULT 'placed'")
+    if 'TrackingNote' not in existing_order_columns:
+        cursor.execute('ALTER TABLE orders ADD COLUMN TrackingNote TEXT')
 
     connection.commit()
 
@@ -173,6 +185,8 @@ def ensure_mysql_tables():
                 Items TEXT NOT NULL,
                 TotalAmount DECIMAL(10,2) DEFAULT 0.00,
                 CreatedAt TEXT NOT NULL,
+                Order_Status VARCHAR(50) DEFAULT 'placed',
+                TrackingNote TEXT,
                 PRIMARY KEY (Order_Id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         ''')
@@ -192,6 +206,14 @@ def ensure_mysql_tables():
         mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'BillingAddress'")
         if mysql_cursor.fetchone() is None:
             mysql_cursor.execute("ALTER TABLE orders ADD COLUMN BillingAddress TEXT NULL")
+
+        mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'Order_Status'")
+        if mysql_cursor.fetchone() is None:
+            mysql_cursor.execute("ALTER TABLE orders ADD COLUMN Order_Status VARCHAR(50) DEFAULT 'placed'")
+
+        mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'TrackingNote'")
+        if mysql_cursor.fetchone() is None:
+            mysql_cursor.execute("ALTER TABLE orders ADD COLUMN TrackingNote TEXT NULL")
 
         # ensure users table exists and has address columns
         mysql_cursor.execute('''
@@ -222,11 +244,34 @@ def ensure_mysql_tables():
         ensure_user_column("ALTER TABLE users ADD COLUMN billingPinCode TEXT NULL", 'billingPinCode')
         ensure_user_column("ALTER TABLE users ADD COLUMN billingPhone TEXT NULL", 'billingPhone')
         ensure_user_column("ALTER TABLE users ADD COLUMN Token VARCHAR(255) NULL", 'Token')
+        ensure_user_column("ALTER TABLE users ADD COLUMN PasswordResetToken VARCHAR(255) NULL", 'PasswordResetToken')
+        ensure_user_column("ALTER TABLE users ADD COLUMN PasswordResetExpires VARCHAR(255) NULL", 'PasswordResetExpires')
 
         connection.commit()
         backfill_mysql_order_phone()
     except Exception as e:
         logger.error(f'Error ensuring MySQL tables: {e}')
+
+
+def ensure_default_admin():
+    try:
+        if fetch_admin({'Email': os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@bakes.com')}):
+            return True
+
+        admin_email = os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@bakes.com')
+        admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', 'admin1234')
+        admin_id = uuid.uuid4().hex[:12]
+        placeholder = get_placeholder()
+        cursor.execute(
+            f"INSERT INTO Admin (Admin_Id, FirstName, LastName, Email, Password) VALUES ({', '.join([placeholder] * 5)})",
+            (admin_id, 'Admin', 'User', admin_email, hash_password(admin_password)),
+        )
+        connection.commit()
+        logger.info(f'Created default admin account for {admin_email}')
+        return True
+    except Exception as e:
+        logger.error(f'Error ensuring default admin account: {e}')
+        return False
 
 
 def connect_to_database():
@@ -247,12 +292,50 @@ def connect_to_database():
         init_sqlite_tables()
         logger.info('SQLite fallback database initialized.')
 
+    ensure_default_admin()
+
 
 connect_to_database()
 
 
 def get_placeholder():
     return '%s' if DB_TYPE == 'mysql' else '?'
+
+
+def hash_password(password: str) -> str:
+    if not password:
+        raise ValueError('Password is required')
+
+    salt = base64.b64encode(os.urandom(16)).decode('utf-8')
+    derived = hashlib.pbkdf2_hmac(
+        'sha256',
+        password.encode('utf-8'),
+        salt.encode('utf-8'),
+        100_000,
+    )
+    encoded_hash = base64.b64encode(derived).decode('utf-8')
+    return f'pbkdf2_sha256$100000${salt}${encoded_hash}'
+
+
+def verify_password(password: str, stored_hash: str | None) -> bool:
+    if not password or not stored_hash:
+        return False
+
+    if isinstance(stored_hash, str) and stored_hash.startswith('pbkdf2_sha256$'):
+        try:
+            _, iterations_str, salt, encoded_hash = stored_hash.split('$', 3)
+            iterations = int(iterations_str)
+            derived = hashlib.pbkdf2_hmac(
+                'sha256',
+                password.encode('utf-8'),
+                salt.encode('utf-8'),
+                iterations,
+            )
+            return base64.b64decode(encoded_hash.encode('utf-8')) == derived
+        except (ValueError, TypeError):
+            return False
+
+    return stored_hash == password
 
 
 # to store user data in db
@@ -270,6 +353,10 @@ def store_user(user_data):
         raise ValueError('Email already registered')
 
     try:
+        password = user_data.get('Password')
+        if isinstance(password, str) and password and not password.startswith('pbkdf2_sha256$'):
+            user_data['Password'] = hash_password(password)
+
         placeholder = get_placeholder()
         # MySQL users table may have a `User_Id` primary key without default;
         # generate and include it on MySQL inserts.
@@ -327,13 +414,16 @@ def fetch_user(query, table='users'):
         if 'Token' in query:
             sql_query = f"SELECT * FROM {table} WHERE Token = {placeholder}"
             values = (query['Token'],)
+        elif 'PasswordResetToken' in query:
+            sql_query = f"SELECT * FROM {table} WHERE PasswordResetToken = {placeholder}"
+            values = (query['PasswordResetToken'],)
         elif 'Password' in query:
             if 'PhoneNumber' in query:
-                sql_query = f"SELECT * FROM {table} WHERE PhoneNumber = {placeholder} AND Password = {placeholder}"
-                values = (query['PhoneNumber'], query['Password'])
+                sql_query = f"SELECT * FROM {table} WHERE PhoneNumber = {placeholder}"
+                values = (query['PhoneNumber'],)
             else:
-                sql_query = f"SELECT * FROM {table} WHERE Email = {placeholder} AND Password = {placeholder}"
-                values = (query['Email'], query['Password'])
+                sql_query = f"SELECT * FROM {table} WHERE Email = {placeholder}"
+                values = (query['Email'],)
         elif 'PhoneNumber' in query:
             sql_query = f"SELECT * FROM {table} WHERE PhoneNumber = {placeholder}"
             values = (query['PhoneNumber'],)
@@ -346,6 +436,10 @@ def fetch_user(query, table='users'):
         if user:
             if DB_TYPE == 'sqlite':
                 user = dict(user)
+            if 'Password' in query:
+                stored_password = user.get('Password') if isinstance(user, dict) else getattr(user, 'Password', None)
+                if not verify_password(query['Password'], stored_password):
+                    return None
             logger.debug(f"User found in {table}.")
         return user
     except Exception as e:
@@ -361,6 +455,8 @@ def update_user(query, update_data, table='users'):
         set_clauses = []
         values = []
         for k, v in update_data.items():
+            if k == 'Password' and isinstance(v, str) and v and not v.startswith('pbkdf2_sha256$'):
+                v = hash_password(v)
             set_clauses.append(f"{k} = {placeholder}")
             values.append(v)
 
@@ -397,7 +493,7 @@ def fetch_admin(item: dict):
 
 def store_products(products_data):
     try:
-        product_id = uuid.uuid4().hex[:12]
+        product_id = (products_data.get('ProductId') or '').strip() or uuid.uuid4().hex[:12]
         logger.info(f"Inserting product {product_id}")
         placeholder = get_placeholder()
         query = f"INSERT INTO products (ProductId, ProductName, Description, Category, ImageUrl, Price, StockQuantity, Weight) VALUES ({', '.join([placeholder]*8)})"
@@ -444,6 +540,37 @@ def fetch_product_by_id(product_id):
         return None
 
 
+def update_product(product_id, product_data):
+    try:
+        placeholder = get_placeholder()
+        fields = []
+        values = []
+        for key in ['ProductName', 'Description', 'Category', 'ImageUrl', 'Price', 'StockQuantity', 'Weight']:
+            if key in product_data:
+                fields.append(f"{key} = {placeholder}")
+                values.append(product_data[key])
+        if not fields:
+            return False
+        values.append(product_id)
+        cursor.execute(f"UPDATE products SET {', '.join(fields)} WHERE ProductId = {placeholder}", tuple(values))
+        connection.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error updating product: {e}")
+        return False
+
+
+def delete_product(product_id):
+    try:
+        placeholder = get_placeholder()
+        cursor.execute(f"DELETE FROM products WHERE ProductId = {placeholder}", (product_id,))
+        connection.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        logger.error(f"Error deleting product: {e}")
+        return False
+
+
 def store_order(order_data):
     try:
         if not order_data.get('PhoneNumber'):
@@ -452,7 +579,7 @@ def store_order(order_data):
 
         order_id = uuid.uuid4().hex[:12]
         placeholder = get_placeholder()
-        query = f"INSERT INTO orders (PhoneNumber, Order_Id, PaymentMethod, ShippingAddress, BillingAddress, Items, TotalAmount, CreatedAt) VALUES ({', '.join([placeholder]*8)})"
+        query = f"INSERT INTO orders (PhoneNumber, Order_Id, PaymentMethod, ShippingAddress, BillingAddress, Items, TotalAmount, CreatedAt, Order_Status, TrackingNote) VALUES ({', '.join([placeholder]*10)})"
         # prefer CreatedAt from caller but normalize to local timezone-aware ISO string
         created = order_data.get('CreatedAt')
         if created:
@@ -477,12 +604,53 @@ def store_order(order_data):
             json.dumps(order_data.get('Items', [])),
             float(order_data.get('TotalAmount', 0)),
             created_at,
+            order_data.get('Order_Status') or 'placed',
+            order_data.get('TrackingNote') or '',
         )
         cursor.execute(query, values)
         connection.commit()
         return True
     except Exception as e:
         logger.error(f"Error storing order: {e}")
+        return False
+
+
+def fetch_all_orders():
+    try:
+        cursor.execute("SELECT * FROM orders ORDER BY CreatedAt DESC")
+        orders = cursor.fetchall()
+        result = []
+        for row in orders:
+            item = dict(row) if DB_TYPE == 'sqlite' else row
+            item['Items'] = json.loads(item.get('Items', '[]')) if isinstance(item.get('Items'), str) else item.get('Items', [])
+            if isinstance(item.get('ShippingAddress'), str) and item.get('ShippingAddress'):
+                try:
+                    item['ShippingAddress'] = json.loads(item['ShippingAddress'])
+                except Exception:
+                    pass
+            if isinstance(item.get('BillingAddress'), str) and item.get('BillingAddress'):
+                try:
+                    item['BillingAddress'] = json.loads(item['BillingAddress'])
+                except Exception:
+                    pass
+            result.append(item)
+        return result
+    except Exception as e:
+        logger.error(f"Error fetching all orders: {e}")
+        return []
+
+
+def update_order_status(order_id, status, note=''):
+    try:
+        placeholder = get_placeholder()
+        cursor.execute(
+            f"UPDATE orders SET Order_Status = {placeholder}, TrackingNote = {placeholder} WHERE Order_Id = {placeholder}",
+            (status, note, order_id),
+        )
+        connection.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        logger.error(f"Error updating order status: {e}")
         return False
 
 

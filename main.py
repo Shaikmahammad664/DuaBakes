@@ -1,5 +1,6 @@
 
 import os
+from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -12,16 +13,25 @@ from db_ops import (
     update_user,
     fetch_products,
     fetch_product_by_id,
+    update_product,
+    delete_product,
     store_order,
     fetch_orders,
+    fetch_all_orders,
+    update_order_status,
     backfill_orders_from_users,
 )
 from dotenv import load_dotenv
 from loguru import logger
-import smtplib
+import requests
+import uuid
+import hashlib
+import hmac
+from datetime import datetime, timedelta
 from chat_bot import call_llm
 import html as _html
 import re as _re
+import razorpay
 
 
 def markdown_to_safe_html(md: str) -> str:
@@ -175,7 +185,8 @@ def get_product_price_text(message: str) -> str | None:
 
 
 
-load_dotenv()
+dotenv_path = Path(__file__).with_name('.env')
+load_dotenv(dotenv_path=dotenv_path)
 
 class SignUpRequest(BaseModel):
     FirstName: str
@@ -189,10 +200,11 @@ class LoginModel(BaseModel):
 class ForgotPasswordModel(BaseModel):
     Email: str
 class ResetPasswordModel(BaseModel):
-    Email: str
+    Email: str | None = None
+    Token: str | None = None
     NewPassword: str
 class Product(BaseModel):
-    ProductId: str
+    ProductId: str | None = None
     ProductName: str
     Description: str
     Category: str
@@ -200,6 +212,11 @@ class Product(BaseModel):
     Price: float
     StockQuantity: int
     Weight: float
+
+class AdminOrderStatusModel(BaseModel):
+    OrderId: str
+    Status: str
+    Note: str | None = None
 
 class AdminLoginModel(BaseModel):
     Email: str
@@ -236,7 +253,15 @@ class OrderCreateModel(BaseModel):
     Items: list[dict]
     TotalAmount: float
 
+class RazorpayCreateOrderModel(BaseModel):
+    Amount: float
+    Currency: str = 'INR'
+    Receipt: str | None = None
 
+class RazorpayVerifyModel(BaseModel):
+    RazorpayOrderId: str
+    RazorpayPaymentId: str
+    RazorpaySignature: str
 
 
 # enable swagger ui
@@ -255,20 +280,173 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-def send_reset_link(email , reset_link):
-    sender=os.getenv("SENDER_EMAIL")
-    password =os.getenv("EMAIL_PASSWORD")
-    # Placeholder function to simulate sending an email
-    logger.info(f"Sending password reset link to {email}: {reset_link}")
+def get_brevo_config():
+    sender_email = os.getenv("SENDER_EMAIL", "").strip().strip('"').strip("'")
+    sender_name = os.getenv("SENDER_NAME", "Bakes App").strip().strip('"').strip("'")
+    api_key = os.environ["BREVO_API_KEY"]
+    if not sender_email or not api_key:
+        logger.error("BREVO_API_KEY and SENDER_EMAIL must be set for Brevo email delivery.")
+        raise ValueError("Email sender or Brevo API key is not configured.")
+
+    if api_key.startswith("xsmtpsib-"):
+        logger.error("BREVO_API_KEY appears to be a Brevo SMTP key, not a transactional API key.")
+        raise ValueError(
+            "BREVO_API_KEY appears to be an SMTP key (xsmtpsib-...). "
+            "Use a Brevo transactional API key for the /smtp/email endpoint."
+        )
+
+    return sender_email, sender_name or "Bakes App", api_key
+
+
+def get_razorpay_client():
+    key_id = os.getenv("RAZORPAY_KEY_ID", "").strip()
+    key_secret = os.getenv("RAZORPAY_KEY_SECRET", "").strip()
+    if not key_id or not key_secret:
+        raise ValueError("RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be configured")
+    return razorpay.Client(auth=(key_id, key_secret))
+
+
+def verify_razorpay_signature(order_id: str, payment_id: str, signature: str) -> bool:
+    key_secret = os.getenv("RAZORPAY_KEY_SECRET", "").strip()
+    if not key_secret:
+        return False
+    generated = hmac.new(
+        key_secret.encode('utf-8'),
+        f"{order_id}|{payment_id}".encode('utf-8'),
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(generated, signature)
+
+
+def send_reset_link(email, reset_link):
     try:
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(sender, password)
-            message = f"Subject: Password Reset\n\nClick the link to reset your password: {reset_link}"
-            server.sendmail(sender, email, message)
-        logger.info("Email sent successfully")
-    except Exception as e:
-        logger.error(f"Failed to send email: {e}")
+        sender_email, sender_name, api_key = get_brevo_config()
+    except ValueError as e:
+        logger.error(f"Invalid Brevo configuration: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    logger.info(f"Sending password reset link to {email} from sender {sender_email} ({sender_name})")
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "api-key": api_key,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+    payload = {
+        "sender": {
+            "name": sender_name,
+            "email": sender_email
+        },
+        "to": [
+            {
+                "email": email,
+                "name": email
+            }
+        ],
+        "subject": "Password Reset Request",
+        "htmlContent": (
+            f"<p>Hi,</p>"
+            # f"<p>Click the link below to reset your password:</p>"
+            # f"<p><a href=\"{reset_link}\">Reset Password</a></p>"
+            # f"<p>This link expires in 30 minutes.</p>"
+        )
+    }
+
+    response = requests.post(url, headers=headers, json=payload, timeout=20)
+    if response.status_code not in (200, 201, 202):
+        logger.error(f"Brevo API failed: {response.status_code} {response.text}")
+        if response.status_code == 401:
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    "Brevo API key authentication failed. "
+                    "Check BREVO_API_KEY and ensure the key is valid and active."
+                )
+            )
+        raise HTTPException(status_code=500, detail="Unable to send reset email via Brevo API.")
+    logger.info("Brevo password reset email sent successfully")
+
+
+class BrevoTestModel(BaseModel):
+    Email: str
+
+
+@app.post("/razorpay/create-order")
+async def create_razorpay_order(item: RazorpayCreateOrderModel):
+    try:
+        client = get_razorpay_client()
+        amount = max(1, int(round(float(item.Amount) * 100)))
+        receipt = item.Receipt or f"order-{uuid.uuid4().hex[:8]}"
+        order = client.order.create({
+            "amount": amount,
+            "currency": (item.Currency or 'INR').upper(),
+            "receipt": receipt,
+        })
+        return {
+            "status": "Success",
+            "order_id": order.get('id'),
+            "amount": order.get('amount'),
+            "currency": order.get('currency'),
+            "key_id": os.getenv("RAZORPAY_KEY_ID", "").strip(),
+            "receipt": receipt,
+        }
+    except ValueError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.exception(f"Razorpay order creation failed: {exc}")
+        raise HTTPException(status_code=500, detail="Unable to create Razorpay order") from exc
+
+
+@app.post("/razorpay/verify-payment")
+async def verify_razorpay_payment(item: RazorpayVerifyModel):
+    if not verify_razorpay_signature(item.RazorpayOrderId, item.RazorpayPaymentId, item.RazorpaySignature):
+        raise HTTPException(status_code=400, detail="Invalid Razorpay signature")
+    return {"status": "Success", "message": "Payment verified successfully"}
+
+
+@app.post("/test-email")
+async def test_email(item: BrevoTestModel):
+    try:
+        sender_email, sender_name, api_key = get_brevo_config()
+    except ValueError as e:
+        logger.error(f"Invalid Brevo configuration: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "api-key": api_key,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+    payload = {
+        "sender": {
+            "name": sender_name,
+            "email": sender_email
+        },
+        "to": [
+            {
+                "email": item.Email,
+                "name": item.Email
+            }
+        ],
+        "subject": "Brevo API Test Email",
+        "htmlContent": "<p>This is a test email from the Bakes application. If you receive it, Brevo API email is configured correctly.</p>"
+    }
+
+    response = requests.post(url, headers=headers, json=payload, timeout=20)
+    if response.status_code not in (200, 201, 202):
+        logger.error(f"Brevo API test email failed: {response.status_code} {response.text}")
+        if response.status_code == 401:
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    "Brevo API key authentication failed. "
+                    "Check BREVO_API_KEY and ensure the key is valid and active."
+                )
+            )
+        raise HTTPException(status_code=500, detail="Brevo API test email failed. Check API key and configuration.")
+
+    return {"status": "Brevo test email sent successfully."}
 
 
 @app.get("/")
@@ -327,6 +505,10 @@ async def login(item:LoginModel):
 
     update_user(identifier, {'Token': token})
 
+    stored_password = existing_user.get('Password') if isinstance(existing_user, dict) else existing_user.get('Password')
+    if isinstance(stored_password, str) and stored_password and not stored_password.startswith('pbkdf2_sha256$'):
+        update_user(identifier, {'Password': item.Password})
+
     user_payload = {
         "Email": existing_user.get('Email') if isinstance(existing_user, dict) else existing_user["Email"],
         "FirstName": existing_user.get('FirstName') if isinstance(existing_user, dict) else existing_user["FirstName"],
@@ -339,16 +521,49 @@ async def login(item:LoginModel):
 async def forgot_password(item:ForgotPasswordModel):
     existing_user = fetch_user({"Email": item.Email})
     if not existing_user:
-        return {"status": "Email not found"}
-    reset_link = f"https://example.com/reset-password?email={item.Email}"
-    send_reset_link(item.Email, reset_link)
-    return {"status": "Password reset link sent to email"}
+        raise HTTPException(status_code=404, detail="Email not found")
+
+    token = uuid.uuid4().hex
+    expires_at = (datetime.utcnow() + timedelta(minutes=30)).isoformat()
+    update_user({"Email": item.Email}, {"PasswordResetToken": token, "PasswordResetExpires": expires_at})
+
+    frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:5173')
+    reset_link = f"{frontend_url}/reset-password?token={token}"
+
+    try:
+        send_reset_link(item.Email, reset_link)
+    except Exception as e:
+        logger.exception(f"Failed to send reset email to {item.Email}: {e}")
+        # clear the token if email fails to send to avoid stale reset tokens
+        update_user({"Email": item.Email}, {"PasswordResetToken": None, "PasswordResetExpires": None})
+        raise HTTPException(status_code=500, detail="Unable to send reset email. Check Brevo API key and sender configuration.")
+
+    return {"status": "Reset link sent to your email."}
 
 @app.post("/reset-password")
 async def reset_password(item:ResetPasswordModel):
+    if item.Token:
+        user = fetch_user({"PasswordResetToken": item.Token})
+        if not user:
+            raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+        expiry = user.get('PasswordResetExpires') if isinstance(user, dict) else user.get('PasswordResetExpires')
+        try:
+            if expiry and datetime.fromisoformat(expiry) < datetime.utcnow():
+                raise HTTPException(status_code=400, detail="Reset link has expired")
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid token expiry")
+
+        identifier = {"Email": user.get('Email')} if user.get('Email') else {"PhoneNumber": user.get('PhoneNumber')}
+        update_user(identifier, {"Password": item.NewPassword, "PasswordResetToken": None, "PasswordResetExpires": None})
+        return {"status": "Password reset successful"}
+
+    if not item.Email:
+        raise HTTPException(status_code=400, detail="Email is required")
+
     existing_user = fetch_user({"Email": item.Email})
     if not existing_user:
-        return {"status": "Email not found"}
+        raise HTTPException(status_code=400, detail="Email not found")
     update_user({"Email": item.Email}, {"Password": item.NewPassword})
     return {"status": "Password reset successful"}
 
@@ -457,7 +672,27 @@ async def admin_login(item:AdminLoginModel):
     existing_admin = fetch_admin(item.model_dump())
     if not existing_admin:
         raise HTTPException(status_code=401, detail="Invalid admin credentials")
+
+    stored_password = existing_admin.get('Password') if isinstance(existing_admin, dict) else existing_admin.get('Password')
+    if isinstance(stored_password, str) and stored_password and not stored_password.startswith('pbkdf2_sha256$'):
+        update_user({"Email": item.Email}, {"Password": item.Password})
+
     return {"status": "Success", "message": "Admin login successful"}
+
+
+@app.get("/admin/orders")
+async def admin_orders():
+    return {"status": "Success", "orders": fetch_all_orders()}
+
+
+@app.post("/admin/orders/status")
+async def admin_update_order_status(item: AdminOrderStatusModel):
+    if not item.OrderId:
+        raise HTTPException(status_code=400, detail="OrderId is required")
+    ok = update_order_status(item.OrderId, item.Status, item.Note or '')
+    if not ok:
+        raise HTTPException(status_code=500, detail="Unable to update order status")
+    return {"status": "Success", "message": "Order status updated"}
 
 
 @app.post("/admin/backfill-orders")
@@ -484,6 +719,24 @@ async def create_product(item:Product):
     if not res:
         raise HTTPException(status_code=500, detail="Error adding product")
     return {"status": "Success", "message": "Product added successfully"}
+
+
+@app.put("/products/{product_id}")
+async def edit_product(product_id: str, item: Product):
+    payload = item.model_dump(exclude_none=True)
+    payload.pop('ProductId', None)
+    ok = update_product(product_id, payload)
+    if not ok:
+        raise HTTPException(status_code=500, detail="Unable to update product")
+    return {"status": "Success", "message": "Product updated successfully"}
+
+
+@app.delete("/products/{product_id}")
+async def delete_product_route(product_id: str):
+    ok = delete_product(product_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"status": "Success", "message": "Product deleted successfully"}
 
 @app.get("/products")
 async def get_products():
