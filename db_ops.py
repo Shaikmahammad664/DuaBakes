@@ -215,6 +215,16 @@ def ensure_mysql_tables():
         if mysql_cursor.fetchone() is None:
             mysql_cursor.execute("ALTER TABLE orders ADD COLUMN TrackingNote TEXT NULL")
 
+        mysql_cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Admin (
+                Admin_Id VARCHAR(32) PRIMARY KEY,
+                FirstName VARCHAR(255),
+                LastName VARCHAR(255),
+                Email VARCHAR(255) NOT NULL UNIQUE,
+                Password VARCHAR(255) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ''')
+
         # ensure users table exists and has address columns
         mysql_cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
@@ -255,13 +265,14 @@ def ensure_mysql_tables():
 
 def ensure_default_admin():
     try:
-        if fetch_admin({'Email': os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@bakes.com')}):
+        admin_email = os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@bakes.com')
+        placeholder = '%s' if DB_TYPE == 'mysql' else '?'
+        cursor.execute(f"SELECT 1 FROM Admin WHERE Email = {placeholder}", (admin_email,))
+        if cursor.fetchone():
             return True
 
-        admin_email = os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@bakes.com')
         admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', 'admin1234')
         admin_id = uuid.uuid4().hex[:12]
-        placeholder = get_placeholder()
         cursor.execute(
             f"INSERT INTO Admin (Admin_Id, FirstName, LastName, Email, Password) VALUES ({', '.join([placeholder] * 5)})",
             (admin_id, 'Admin', 'User', admin_email, hash_password(admin_password)),
@@ -295,9 +306,6 @@ def connect_to_database():
     ensure_default_admin()
 
 
-connect_to_database()
-
-
 def get_placeholder():
     return '%s' if DB_TYPE == 'mysql' else '?'
 
@@ -315,6 +323,9 @@ def hash_password(password: str) -> str:
     )
     encoded_hash = base64.b64encode(derived).decode('utf-8')
     return f'pbkdf2_sha256$100000${salt}${encoded_hash}'
+
+
+connect_to_database()
 
 
 def verify_password(password: str, stored_hash: str | None) -> bool:
@@ -577,7 +588,7 @@ def store_order(order_data):
             logger.warning('PhoneNumber is required to store an order')
             return False
 
-        order_id = uuid.uuid4().hex[:12]
+        order_id = (order_data.get('Order_Id') or '').strip() or uuid.uuid4().hex[:12]
         placeholder = get_placeholder()
         query = f"INSERT INTO orders (PhoneNumber, Order_Id, PaymentMethod, ShippingAddress, BillingAddress, Items, TotalAmount, CreatedAt, Order_Status, TrackingNote) VALUES ({', '.join([placeholder]*10)})"
         # prefer CreatedAt from caller but normalize to local timezone-aware ISO string

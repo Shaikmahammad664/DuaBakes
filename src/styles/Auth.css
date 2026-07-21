@@ -556,6 +556,22 @@ form > div {
     gap: 1rem;
 }
 
+.admin-notification-banner {
+    background: #f4f9ff;
+    border: 1px solid #c9e4ff;
+    color: #084b75;
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    font-weight: 600;
+}
+
+.admin-notification-banner--empty {
+    background: #f6f7f9;
+    border-color: #d8dee3;
+    color: #4a5560;
+    font-weight: 500;
+}
+
 .admin-actions {
     display: flex;
     justify-content: flex-end;

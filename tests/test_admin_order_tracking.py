@@ -17,16 +17,25 @@ class AdminOrderTrackingTests(unittest.TestCase):
 
     def test_update_order_status_writes_status_and_note(self):
         self.assertTrue(hasattr(db_ops, 'update_order_status'))
-        self.cursor.execute(
-            "INSERT INTO orders (PhoneNumber, Order_Id, PaymentMethod, ShippingAddress, BillingAddress, Items, TotalAmount, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            ('9999999999', 'test-order-1', 'Cash', '{}', '{}', '[]', 0.0, '2024-01-01T00:00:00+00:00'),
-        )
+        if db_ops.DB_TYPE == 'mysql':
+            self.cursor.execute(
+                "INSERT INTO orders (PhoneNumber, Order_Id, PaymentMethod, ShippingAddress, BillingAddress, Items, TotalAmount, CreatedAt, Order_Status, TrackingNote) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                ('9999999999', 'test-order-1', 'Cash', '{}', '{}', '[]', 0.0, '2024-01-01T00:00:00+00:00', 'placed', ''),
+            )
+        else:
+            self.cursor.execute(
+                "INSERT INTO orders (PhoneNumber, Order_Id, PaymentMethod, ShippingAddress, BillingAddress, Items, TotalAmount, CreatedAt, Order_Status, TrackingNote) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                ('9999999999', 'test-order-1', 'Cash', '{}', '{}', '[]', 0.0, '2024-01-01T00:00:00+00:00', 'placed', ''),
+            )
         self.connection.commit()
 
         updated = db_ops.update_order_status('test-order-1', 'preparing', 'Packed and ready for pickup')
         self.assertTrue(updated)
 
-        self.cursor.execute("SELECT Order_Status, TrackingNote FROM orders WHERE Order_Id = ?", ('test-order-1',))
+        if db_ops.DB_TYPE == 'mysql':
+            self.cursor.execute("SELECT Order_Status, TrackingNote FROM orders WHERE Order_Id = %s", ('test-order-1',))
+        else:
+            self.cursor.execute("SELECT Order_Status, TrackingNote FROM orders WHERE Order_Id = ?", ('test-order-1',))
         row = self.cursor.fetchone()
         self.assertEqual(row['Order_Status'], 'preparing')
         self.assertEqual(row['TrackingNote'], 'Packed and ready for pickup')

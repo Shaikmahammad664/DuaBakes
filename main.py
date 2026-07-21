@@ -371,6 +371,66 @@ class BrevoTestModel(BaseModel):
     Email: str
 
 
+def build_admin_order_notification_payload(order_data: dict, order_id: str) -> dict:
+    items = order_data.get('Items') or []
+    item_summary = ""
+    if items:
+        item_lines = []
+        for item in items:
+            name = item.get('name') or item.get('ProductName') or 'Item'
+            quantity = item.get('quantity') or 1
+            item_lines.append(f"<li>{name} × {quantity}</li>")
+        item_summary = f"<ul>{''.join(item_lines)}</ul>"
+    else:
+        item_summary = '<p>No item details were provided.</p>'
+
+    address = order_data.get('ShippingAddress') or {}
+    city = address.get('city') or address.get('City') or 'N/A'
+    payment_method = order_data.get('PaymentMethod') or 'Unknown'
+    total_amount = order_data.get('TotalAmount') or 0
+
+    return {
+        'subject': f'New order received - {order_id}',
+        'htmlContent': (
+            f"<h3>New order received</h3>"
+            f"<p>Order ID: <strong>{order_id}</strong></p>"
+            f"<p>Payment method: <strong>{payment_method}</strong></p>"
+            f"<p>Delivery City: <strong>{city}</strong></p>"
+            f"<p>Total amount: <strong>Rs. {total_amount}</strong></p>"
+            f"<h4>Items</h4>{item_summary}"
+        ),
+    }
+
+
+def send_admin_order_notification(order_data: dict, order_id: str) -> None:
+    try:
+        sender_email, sender_name, api_key = get_brevo_config()
+    except ValueError as e:
+        logger.warning(f"Skipping admin order notification due to Brevo config issue: {e}")
+        return
+
+    payload = build_admin_order_notification_payload(order_data, order_id)
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "api-key": api_key,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+    email_payload = {
+        "sender": {"name": sender_name, "email": sender_email},
+        "to": [{"email": os.getenv("ADMIN_NOTIFICATION_EMAIL", "admin@bakes.com"), "name": "Admin"}],
+        "subject": payload['subject'],
+        "htmlContent": payload['htmlContent'],
+    }
+
+    response = requests.post(url, headers=headers, json=email_payload, timeout=20)
+    if response.status_code not in (200, 201, 202):
+        logger.warning(f"Admin order notification failed: {response.status_code} {response.text}")
+        return
+
+    logger.info(f"Admin order notification sent for order {order_id}")
+
+
 @app.post("/razorpay/create-order")
 async def create_razorpay_order(item: RazorpayCreateOrderModel):
     try:
@@ -455,7 +515,8 @@ async def base():
 
 @app.post("/signup")
 async def signup(item:SignUpRequest):
-    # check existing by email or phone
+    # normalize email and check existing by email or phone
+    item.Email = item.Email.strip().lower() if item.Email else item.Email
     try:
         if item.Email and fetch_user({"Email": item.Email}):
             raise HTTPException(status_code=400, detail="Email already registered")
@@ -491,6 +552,7 @@ async def signup(item:SignUpRequest):
 
 @app.post("/login")
 async def login(item:LoginModel):
+    item.Email = item.Email.strip().lower() if item.Email else item.Email
     existing_user = fetch_user({"Email": item.Email, "Password": item.Password})
     if not existing_user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -519,6 +581,7 @@ async def login(item:LoginModel):
 
 @app.post("/forgot-password")
 async def forgot_password(item:ForgotPasswordModel):
+    item.Email = item.Email.strip().lower() if item.Email else item.Email
     existing_user = fetch_user({"Email": item.Email})
     if not existing_user:
         raise HTTPException(status_code=404, detail="Email not found")
@@ -640,7 +703,7 @@ async def create_order(item: OrderCreateModel):
             logger.warning(f"Order creation failed: user exists but has no PhoneNumber: {existing_user}")
             raise HTTPException(status_code=400, detail="User phone number is missing")
 
-        success = store_order({
+        order_id = store_order({
             "PhoneNumber": phone,
             "PaymentMethod": item.PaymentMethod or 'Unknown',
             "ShippingAddress": item.ShippingAddress or {},
@@ -648,11 +711,21 @@ async def create_order(item: OrderCreateModel):
             "Items": item.Items,
             "TotalAmount": item.TotalAmount,
         })
-        if not success:
+        if not order_id:
             logger.error(f"Failed to store order for user {phone}")
             raise HTTPException(status_code=500, detail="Failed to save order")
 
-        logger.info(f"Order stored for user {phone}")
+        logger.info(f"Order stored for user {phone} with order id {order_id}")
+        try:
+            send_admin_order_notification({
+                'PhoneNumber': phone,
+                'PaymentMethod': item.PaymentMethod or 'Unknown',
+                'ShippingAddress': item.ShippingAddress or {},
+                'Items': item.Items,
+                'TotalAmount': item.TotalAmount,
+            }, order_id)
+        except Exception as notify_error:
+            logger.warning(f"Order notification skipped: {notify_error}")
         return {"status": "Success", "message": "Order saved successfully"}
     except HTTPException:
         raise

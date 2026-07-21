@@ -27,7 +27,10 @@ export default function AdminDashboard() {
   const [productForm, setProductForm] = useState(emptyProductForm);
   const [editingProductId, setEditingProductId] = useState('');
 
-  const newOrdersCount = useMemo(() => orders.filter((order) => (order.Order_Status || order.status || 'placed') === 'placed').length, [orders]);
+  const newOrdersCount = useMemo(
+    () => orders.filter((order) => (order.Order_Status || order.status || 'placed') === 'placed').length,
+    [orders],
+  );
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -181,6 +184,15 @@ export default function AdminDashboard() {
       <div className="admin-shell">
         {error ? <div className="error-message">{error}</div> : null}
         {success ? <div className="success-message">{success}</div> : null}
+        {newOrdersCount > 0 ? (
+          <div className="admin-notification-banner">
+            You have <strong>{newOrdersCount}</strong> new order{newOrdersCount === 1 ? '' : 's'} awaiting attention.
+          </div>
+        ) : (
+          <div className="admin-notification-banner admin-notification-banner--empty">
+            No new orders waiting right now.
+          </div>
+        )}
         <div className="admin-actions">
           <button type="button" className="profile-action-button" onClick={handleLogout}>Logout</button>
         </div>
