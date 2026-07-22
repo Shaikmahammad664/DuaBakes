@@ -82,6 +82,42 @@
     }
 }
 
+@media (max-width: 767px) {
+    .nav-bar {
+        flex-wrap: wrap;
+        row-gap: 0.7rem;
+        align-items: center;
+        padding: 0.8rem 0.9rem;
+        min-height: auto;
+    }
+
+    .brand {
+        order: 1;
+        flex: 1 1 auto;
+    }
+
+    .search-nav {
+        order: 2;
+        flex-basis: 100%;
+        width: 100%;
+        max-width: none;
+    }
+
+    .nav-right-group {
+        order: 3;
+        margin-left: auto;
+        gap: 0.8rem;
+    }
+
+    .components {
+        display: none;
+    }
+
+    .mobile-menu-toggle {
+        display: inline-flex;
+    }
+}
+
 .search-nav {
     flex: 1 1 540px;
     max-width: 560px;
@@ -150,6 +186,20 @@
     
     .searchbarout input {
         font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .search-nav {
+        flex: 1 1 100%;
+        max-width: none;
+        min-width: 0;
+    }
+
+    .searchbarout {
+        max-width: none;
+        height: 38px;
+        padding: 0.65rem 0.8rem;
     }
 }
 
@@ -270,6 +320,73 @@
     }
 }
 
+.mobile-menu-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #d4c2b4;
+    border-radius: 999px;
+    background: #fffaf5;
+    align-items: center;
+    justify-content: center;
+    gap: 0.22rem;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 0;
+    margin-left: auto;
+}
+
+.mobile-menu-toggle span {
+    width: 18px;
+    height: 2px;
+    background: #5f3340;
+    border-radius: 999px;
+}
+
+.mobile-menu-panel {
+    display: none;
+    width: 100%;
+    margin-top: 0.4rem;
+    padding: 0.7rem;
+    border: 1px solid rgba(95, 51, 64, 0.12);
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 12px 32px rgba(95, 51, 64, 0.12);
+}
+
+.mobile-menu-panel.open {
+    display: block;
+}
+
+.mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.mobile-nav-links a,
+.mobile-nav-action {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.7rem 0.8rem;
+    border-radius: 0.75rem;
+    color: #5f3340;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.mobile-nav-links a:hover,
+.mobile-nav-action:hover {
+    background: #f9f1e7;
+}
+
+.mobile-nav-action.logout {
+    color: #a9423f;
+}
+
 .icon-btn {
     width: 56px;
     height: 56px;
@@ -320,6 +437,16 @@
     .icon-btn img {
         width: 20px;
         height: 20px;
+    }
+}
+
+@media (max-width: 767px) {
+    .mobile-menu-panel {
+        display: none;
+    }
+
+    .mobile-menu-panel.open {
+        display: block;
     }
 }
 

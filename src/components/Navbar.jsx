@@ -5,11 +5,17 @@ import '../styles/Navbar.css';
 export default function Navbar({ searchQuery, onSearchChange }) {
   const navigate = useNavigate();
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(localStorage.getItem('user')));
   const dropdownRef = useRef(null);
 
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   const handleCartClick = () => {
     navigate('/cart');
+    closeMobileMenu();
   };
 
   const handleAccountClick = () => {
@@ -19,26 +25,31 @@ export default function Navbar({ searchQuery, onSearchChange }) {
   const handleSignIn = () => {
     navigate('/login');
     setIsAccountDropdownOpen(false);
+    closeMobileMenu();
   };
 
   const handleSignUp = () => {
     navigate('/signup');
     setIsAccountDropdownOpen(false);
+    closeMobileMenu();
   };
 
   const handleProfile = () => {
     navigate('/profile');
     setIsAccountDropdownOpen(false);
+    closeMobileMenu();
   };
 
   const handleMyOrders = () => {
     navigate('/orders');
     setIsAccountDropdownOpen(false);
+    closeMobileMenu();
   };
 
   const handleSettings = () => {
     navigate('/settings');
     setIsAccountDropdownOpen(false);
+    closeMobileMenu();
   };
 
   const handleSignOut = () => {
@@ -46,6 +57,7 @@ export default function Navbar({ searchQuery, onSearchChange }) {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
     setIsAccountDropdownOpen(false);
+    closeMobileMenu();
     navigate('/');
     alert('You have been signed out successfully!');
   };
@@ -61,11 +73,20 @@ export default function Navbar({ searchQuery, onSearchChange }) {
       }
     };
 
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
     syncLoginState();
+    handleResize();
     window.addEventListener('storage', syncLoginState);
+    window.addEventListener('resize', handleResize);
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       window.removeEventListener('storage', syncLoginState);
+      window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
@@ -83,6 +104,7 @@ export default function Navbar({ searchQuery, onSearchChange }) {
       <nav className="nav-bar">
         <div className="brand">
           <Link to="/" onClick={() => {
+            closeMobileMenu();
             if (window.resetCategoryFilter) {
               window.resetCategoryFilter();
             }
@@ -90,6 +112,18 @@ export default function Navbar({ searchQuery, onSearchChange }) {
             <img src="./assests/bakes logo.png" alt="DuaBakes Logo" title="DuaBakes Logo" />
           </Link>
         </div>
+
+        <button
+          type="button"
+          className="mobile-menu-toggle"
+          aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isMobileMenuOpen}
+          onClick={() => setIsMobileMenuOpen((open) => !open)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
 
         <div className="search-nav">
           <div className="searchbarout">
@@ -187,6 +221,35 @@ export default function Navbar({ searchQuery, onSearchChange }) {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        <div className={`mobile-menu-panel ${isMobileMenuOpen ? 'open' : ''}`}>
+          <div className="mobile-nav-links">
+            <Link to="/" onClick={() => {
+              closeMobileMenu();
+              if (window.resetCategoryFilter) {
+                window.resetCategoryFilter();
+              }
+            }}>
+              Home
+            </Link>
+            <Link to="/about" onClick={closeMobileMenu}>About Us</Link>
+            <Link to="/contact" onClick={closeMobileMenu}>Contact Us</Link>
+            <button type="button" className="mobile-nav-action" onClick={handleCartClick}>Cart</button>
+            {!isLoggedIn ? (
+              <>
+                <button type="button" className="mobile-nav-action" onClick={handleSignIn}>Sign In</button>
+                <button type="button" className="mobile-nav-action" onClick={handleSignUp}>Sign Up</button>
+              </>
+            ) : (
+              <>
+                <button type="button" className="mobile-nav-action" onClick={handleProfile}>Profile</button>
+                <button type="button" className="mobile-nav-action" onClick={handleMyOrders}>My Orders</button>
+                <button type="button" className="mobile-nav-action" onClick={handleSettings}>Settings</button>
+                <button type="button" className="mobile-nav-action logout" onClick={handleSignOut}>Sign Out</button>
+              </>
+            )}
           </div>
         </div>
       </nav>

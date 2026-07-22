@@ -6,13 +6,13 @@
 
 @media (max-width: 768px) {
     .page-content {
-        padding: 7.5rem 1rem 2rem;
+        padding: 8.8rem 1rem 2rem;
     }
 }
 
 @media (max-width: 480px) {
     .page-content {
-        padding: 6.5rem 0.75rem 1.5rem;
+        padding: 8.2rem 0.75rem 1.5rem;
     }
 }
 

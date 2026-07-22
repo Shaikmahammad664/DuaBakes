@@ -1,25 +1,16 @@
-
-FROM python:3.11-slim
-
-# set working directory
+FROM node:20-alpine AS build
 WORKDIR /app
 
-# install minimal build tools (some packages may need compilation)
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends build-essential gcc \
-	&& rm -rf /var/lib/apt/lists/*
+COPY package*.json ./
+RUN npm install
 
-# copy project
 COPY . .
+RUN npm run build
 
-# install Python dependencies required to run the app
-RUN pip install --no-cache-dir fastapi uvicorn mysql-connector-python python-dotenv loguru
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-ENV PYTHONUNBUFFERED=1
-
-# Render sets a PORT env var. Default to 7788 for local runs.
-EXPOSE 7788
-
-# Use shell form so ${PORT} is expanded at runtime by the shell
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-7788}"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
 
