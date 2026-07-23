@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
+import logoImg from '../../assests/bakes logo.png';
+import cartLogo from '../../assests/cartlogo.png';
+import accountIcon from '../../assests/accounticon.png';
 
 export default function Navbar({ searchQuery, onSearchChange }) {
   const navigate = useNavigate();
@@ -109,7 +112,7 @@ export default function Navbar({ searchQuery, onSearchChange }) {
               window.resetCategoryFilter();
             }
           }}>
-            <img src="./assests/bakes logo.png" alt="DuaBakes Logo" title="DuaBakes Logo" />
+            <img src={logoImg} alt="DuaBakes Logo" title="DuaBakes Logo" />
           </Link>
         </div>
 
@@ -160,11 +163,11 @@ export default function Navbar({ searchQuery, onSearchChange }) {
 
           <div className="nav-actions">
             <button type="button" className="icon-btn" aria-label="Cart" onClick={handleCartClick}>
-              <img src="./assests/cartlogo.png" alt="Cart icon" title="Cart" />
+              <img src={cartLogo} alt="Cart icon" title="Cart" />
             </button>
             <div className="account-dropdown" ref={dropdownRef}>
               <button type="button" className="icon-btn" aria-label="Account" onClick={handleAccountClick}>
-                <img src="./assests/accounticon.png" alt="Account icon" title="Account" />
+                <img src={accountIcon} alt="Account icon" title="Account" />
               </button>
               {isAccountDropdownOpen && (
                 <div className="dropdown-menu">

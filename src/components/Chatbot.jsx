@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { chatAPI } from '../services/api';
 import '../styles/Chatbot.css';
+import aiLogo from '../../assests/ai logo1.png';
 
 const initialBotMessage = { type: 'bot', text: 'Hi! How can I help you today?' };
 
@@ -164,7 +165,7 @@ export default function Chatbot() {
         onClick={isOpen ? requestClose : openChat}
         aria-label={isOpen ? 'Close chatbot' : 'Open chatbot'}
       >
-        <img src="./assests/ai logo1.png" alt="Chatbot" />
+        <img src={aiLogo} alt="Chatbot" />
       </button>
     </>
   );
