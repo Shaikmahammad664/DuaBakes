@@ -11,3 +11,6 @@ wheels/
 .env
 .vscode/
 __pycache__/
+
+# Dependencies
+node_modules/
