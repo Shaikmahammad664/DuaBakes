@@ -65,11 +65,11 @@ export default function Home({ searchQuery = '', onAddToCart }) {
         <div className="footer-contact-summary">
           <div>
             <p className="footer-label">Write to us</p>
-            <p className="footer-value">hello@duabakes.com</p>
+            <p className="footer-value">duabakesofficial@gmail.com</p>
           </div>
           <div>
             <p className="footer-label">Get in touch with us</p>
-            <p className="footer-value">+ 91 1234567889</p>
+            <p className="footer-value">+ 91 9182259139</p>
           </div>
         </div>
 

@@ -95,9 +95,9 @@ export default function Navbar({ searchQuery, onSearchChange }) {
     <>
       <div className="announcebox">
         <div id="announcetext">
-          <marquee behavior="scroll" direction="left" scrollAmount="6" style={{display: 'block'}}>
+          <div className="announcement-banner" style={{ display: 'block' }}>
             <p>Welcome to DuaBakes! We bake freshly when you order.</p>
-          </marquee>
+          </div>
         </div>
       </div>
 
