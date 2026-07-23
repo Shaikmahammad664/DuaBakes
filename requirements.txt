@@ -1,6 +1,7 @@
 fastapi>=0.120.2
 loguru>=0.7.3
 mysql-connector-python>=9.5.0
+openai>=2.31.0
 python-dotenv>=1.2.1
 razorpay>=1.4.0
 requests>=2.31.0
