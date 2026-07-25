@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { chatAPI } from '../services/api';
 import '../styles/Chatbot.css';
-import aiLogo from '../../assests/ai logo1.png';
 
+const aiLogo = '/ai%20logo1.png';
 const initialBotMessage = { type: 'bot', text: 'Hi! How can I help you today?' };
 
 function formatBotText(text) {

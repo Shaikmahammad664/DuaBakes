@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import '../styles/Hero.css';
 import '../styles/ProductList.css';
 import ProductList from './ProductList';
-import cakeImage from '../../assests/slidephoto.png';
-import backgroundImage from '../../assests/background.png';
+
+const cakeImage = '/slidephoto.png';
+const backgroundImage = '/background.png';
 
 export default function Hero({ selectedCategory, searchQuery = '', onAddToCart }) {
   const [showImage, setShowImage] = useState(false);

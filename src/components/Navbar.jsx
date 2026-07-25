@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
-import logoImg from '../../assests/bakes logo.png';
-import cartLogo from '../../assests/cartlogo.png';
-import accountIcon from '../../assests/accounticon.png';
+
+const logoImg = '/bakes%20logo.png';
+const cartLogo = '/cartlogo.png';
+const accountIcon = '/accounticon.png';
 
 export default function Navbar({ searchQuery, onSearchChange }) {
   const navigate = useNavigate();

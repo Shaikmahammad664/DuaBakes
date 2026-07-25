@@ -10,6 +10,12 @@ const apiClient = axios.create({
   }
 });
 
+if (!import.meta.env.VITE_API_BASE_URL) {
+  console.info('VITE_API_BASE_URL is not set; using local /api proxy. Set VITE_API_BASE_URL in Vercel for production.');
+} else {
+  console.info(`Using backend URL from VITE_API_BASE_URL: ${import.meta.env.VITE_API_BASE_URL}`);
+}
+
 // Add token to requests if it exists
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
