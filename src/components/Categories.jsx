@@ -3,16 +3,16 @@ import '../styles/Categories.css';
 
 export default function Categories({ onCategorySelect, selectedCategory }) {
   const [categories] = useState([
-    { id: 1, name: 'Cakes', image: '/assests/cake.jpg' },
-    { id: 2, name: 'Cupcakes', image: '/assests/cupcakes.jpg' },
-    { id: 3, name: 'Donuts', image: '/assests/donuts.jpg' },
-    { id: 4, name: 'Breads', image: '/assests/breads.jpg' },
-    { id: 5, name: 'Cookies', image: '/assests/cookies.jpg' },
-    { id: 6, name: 'Chocolates', image: '/assests/chocolates.jpg' },
-    { id: 7, name: 'Ice Creams', image: '/assests/icecream.jpg' },
-    { id: 9, name: 'hampers', image: '/assests/hampers.jpg' },
-    { id: 8, name: 'Eggless', image: '/assests/eggless.jpg' },
-    { id: 10, name: 'Make Your Own', image: '/assests/makeown.jpg' }
+    { id: 1, name: 'Cakes', image: '/cake.jpg' },
+    { id: 2, name: 'Cupcakes', image: '/cupcakes.jpg' },
+    { id: 3, name: 'Donuts', image: '/donuts.jpg' },
+    { id: 4, name: 'Breads', image: '/breads.jpg' },
+    { id: 5, name: 'Cookies', image: '/cookies.jpg' },
+    { id: 6, name: 'Chocolates', image: '/chocolates.jpg' },
+    { id: 7, name: 'Ice Creams', image: '/icecream.jpg' },
+    { id: 9, name: 'hampers', image: '/hampers.jpg' },
+    { id: 8, name: 'Eggless', image: '/eggless.jpg' },
+    { id: 10, name: 'Make Your Own', image: '/makeown.jpg' }
     
   ]);
 
