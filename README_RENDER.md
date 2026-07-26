@@ -11,10 +11,8 @@ Usage notes for Render:
 
 Environment variables to set in Render's dashboard (example):
 
-- `DB_HOST` — database host (e.g. `localhost` or a Render-managed database host)
-- `DB_USER` — database user
-- `DB_PASSWORD` — database password
-- `DB_NAME` — database name (e.g. `duabakes`)
+- `DATABASE_URL` — full SQLAlchemy connection URL, for example:
+  `mysql+pymysql://user:password@host:3306/dbname`
 - `SENDER_EMAIL` — email address used to send password reset emails
 - `SENDER_NAME` — optional display name for the sender email
 - `BREVO_API_KEY` — Brevo API key used for `https://api.brevo.com/v3/smtp/email`

@@ -13,10 +13,7 @@ This repository contains a FastAPI backend for the DuaBakes application.
    - Run the SQL in `db_schema.sql`.
 3. Copy `.env` and set your local database and Brevo email settings:
    ```env
-   DB_HOST=localhost
-   DB_USER=root
-   DB_PASSWORD=your_password
-   DB_NAME=duabakes
+   DATABASE_URL=mysql+pymysql://root:your_password@localhost:3306/duabakes
    SENDER_EMAIL=your_verified_sender@example.com
    BREVO_API_KEY=your_brevo_api_key
    SENDER_NAME=Bakes App

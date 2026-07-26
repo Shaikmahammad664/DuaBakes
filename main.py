@@ -5,6 +5,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
+from dotenv import load_dotenv
+from loguru import logger
+import requests
+
+dotenv_path = Path(__file__).with_name('.env')
+load_dotenv(dotenv_path=dotenv_path)
+
 from db_ops import (
     store_user,
     fetch_user,
@@ -20,10 +27,10 @@ from db_ops import (
     fetch_all_orders,
     update_order_status,
     backfill_orders_from_users,
+    connect_to_database,
+    connection,
+    engine,
 )
-from dotenv import load_dotenv
-from loguru import logger
-import requests
 import uuid
 import hashlib
 import hmac
@@ -318,6 +325,27 @@ def verify_razorpay_signature(order_id: str, payment_id: str, signature: str) ->
     return hmac.compare_digest(generated, signature)
 
 
+@app.on_event("startup")
+def startup_event():
+    try:
+        connect_to_database()
+        logger.info("Database connection established on startup.")
+    except Exception as e:
+        logger.error(f"Failed to connect to database on startup: {e}")
+        raise
+
+
+@app.on_event("shutdown")
+def shutdown_event():
+    try:
+        if connection is not None:
+            connection.close()
+        if engine is not None:
+            engine.dispose()
+    except Exception as e:
+        logger.error(f"Error closing database connection: {e}")
+
+
 def send_reset_link(email, reset_link):
     try:
         sender_email, sender_name, api_key = get_brevo_config()
@@ -515,8 +543,7 @@ async def base():
 
 @app.post("/signup")
 async def signup(item:SignUpRequest):
-    # normalize email and check existing by email or phone
-    item.Email = item.Email.strip().lower() if item.Email else item.Email
+    # check existing by email or phone
     try:
         if item.Email and fetch_user({"Email": item.Email}):
             raise HTTPException(status_code=400, detail="Email already registered")
@@ -552,7 +579,6 @@ async def signup(item:SignUpRequest):
 
 @app.post("/login")
 async def login(item:LoginModel):
-    item.Email = item.Email.strip().lower() if item.Email else item.Email
     existing_user = fetch_user({"Email": item.Email, "Password": item.Password})
     if not existing_user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -581,7 +607,6 @@ async def login(item:LoginModel):
 
 @app.post("/forgot-password")
 async def forgot_password(item:ForgotPasswordModel):
-    item.Email = item.Email.strip().lower() if item.Email else item.Email
     existing_user = fetch_user({"Email": item.Email})
     if not existing_user:
         raise HTTPException(status_code=404, detail="Email not found")

@@ -1,17 +1,11 @@
-FROM node:20-alpine AS build
+FROM python:3.14-slim AS build
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY requirements.txt ./
+RUN python -m pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN chmod -R 755 /app/node_modules/.bin
-RUN npm run build
 
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 7788
+CMD ["sh", "-lc", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-7788}"]
 

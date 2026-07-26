@@ -1,151 +1,51 @@
 import os
 import uuid
-import sqlite3
 import json
 import hashlib
 import base64
-import mysql.connector
 from datetime import datetime
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from loguru import logger
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.sql import text
+
+try:
+    import pymysql
+except ImportError:
+    pymysql = None
+
+try:
+    import psycopg2
+    import psycopg2.extras
+except ImportError:
+    psycopg2 = None
+    psycopg2_extras = None
 
 load_dotenv()
 
-DB_TYPE = None
+engine = None
 connection = None
 cursor = None
 
-MYSQL_SETTINGS = {
-    'host': os.getenv('DB_HOST', 'localhost'),
-    'user': os.getenv('DB_USER', 'root'),
-    'password': os.getenv('DB_PASSWORD', ''),
-    'database': os.getenv('DB_NAME', 'duabakes'),
-    'port': int(os.getenv('DB_PORT', 3306)) if os.getenv('DB_PORT') else 3306,
-}
 
-SQLITE_FILE = os.path.join(os.path.dirname(__file__), 'bakes_fallback.db')
+def get_db_dialect_name() -> str:
+    if engine is not None:
+        return engine.dialect.name
+    database_url = os.getenv('DATABASE_URL', '')
+    dialect = urlparse(database_url).scheme
+    return dialect.split('+', 1)[0] if dialect else ''
 
 
-def init_sqlite_tables():
-    global cursor, connection
-    cursor.execute(
-        '''
-        CREATE TABLE IF NOT EXISTS users (
-            PhoneNumber TEXT PRIMARY KEY,
-            FirstName TEXT NOT NULL,
-            LastName TEXT NOT NULL,
-            Email TEXT NOT NULL UNIQUE,
-            Password TEXT NOT NULL,
-            Token TEXT,
-            address TEXT,
-            apartment TEXT,
-            city TEXT,
-            state TEXT,
-            pinCode TEXT,
-            billingSameAsShipping INTEGER,
-            billingAddress TEXT,
-            billingApartment TEXT,
-            billingCity TEXT,
-            billingState TEXT,
-            billingPinCode TEXT,
-            billingPhone TEXT
-        )
-        '''
-    )
-    cursor.execute(
-        '''
-        CREATE TABLE IF NOT EXISTS Admin (
-            Admin_Id TEXT PRIMARY KEY,
-            FirstName TEXT,
-            LastName TEXT,
-            Email TEXT NOT NULL UNIQUE,
-            Password TEXT NOT NULL
-        )
-        '''
-    )
-    cursor.execute(
-        '''
-        CREATE TABLE IF NOT EXISTS products (
-            ProductId TEXT PRIMARY KEY,
-            ProductName TEXT NOT NULL,
-            Description TEXT,
-            Category TEXT,
-            ImageUrl TEXT,
-            Price REAL DEFAULT 0.00,
-            StockQuantity INTEGER DEFAULT 0,
-            Weight REAL DEFAULT 0
-        )
-        '''
-    )
-    cursor.execute(
-        '''
-        CREATE TABLE IF NOT EXISTS orders (
-            PhoneNumber TEXT NOT NULL,
-            Order_Id TEXT NOT NULL,
-            PaymentMethod TEXT,
-            ShippingAddress TEXT,
-            BillingAddress TEXT,
-            Items TEXT NOT NULL,
-            TotalAmount REAL DEFAULT 0.00,
-            CreatedAt TEXT NOT NULL,
-            Order_Status TEXT DEFAULT 'placed',
-            TrackingNote TEXT,
-            PRIMARY KEY (PhoneNumber, Order_Id)
-        )
-        '''
-    )
-
-    # runtime migration for existing sqlite DBs
-    cursor.execute("PRAGMA table_info(users)")
-    existing_user_columns = [row[1] for row in cursor.fetchall()]
-    if 'address' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN address TEXT')
-    if 'apartment' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN apartment TEXT')
-    if 'city' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN city TEXT')
-    if 'state' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN state TEXT')
-    if 'pinCode' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN pinCode TEXT')
-    if 'billingSameAsShipping' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN billingSameAsShipping INTEGER')
-    if 'billingAddress' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN billingAddress TEXT')
-    if 'billingApartment' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN billingApartment TEXT')
-    if 'billingCity' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN billingCity TEXT')
-    if 'billingState' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN billingState TEXT')
-    if 'billingPinCode' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN billingPinCode TEXT')
-    if 'billingPhone' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN billingPhone TEXT')
-    if 'Token' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN Token TEXT')
-    if 'PasswordResetToken' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN PasswordResetToken TEXT')
-    if 'PasswordResetExpires' not in existing_user_columns:
-        cursor.execute('ALTER TABLE users ADD COLUMN PasswordResetExpires TEXT')
-
-    cursor.execute("PRAGMA table_info(orders)")
-    existing_order_columns = [row[1] for row in cursor.fetchall()]
-    if 'PaymentMethod' not in existing_order_columns:
-        cursor.execute('ALTER TABLE orders ADD COLUMN PaymentMethod TEXT')
-    if 'ShippingAddress' not in existing_order_columns:
-        cursor.execute('ALTER TABLE orders ADD COLUMN ShippingAddress TEXT')
-    if 'BillingAddress' not in existing_order_columns:
-        cursor.execute('ALTER TABLE orders ADD COLUMN BillingAddress TEXT')
-    if 'Order_Status' not in existing_order_columns:
-        cursor.execute("ALTER TABLE orders ADD COLUMN Order_Status TEXT DEFAULT 'placed'")
-    if 'TrackingNote' not in existing_order_columns:
-        cursor.execute('ALTER TABLE orders ADD COLUMN TrackingNote TEXT')
-
-    connection.commit()
+def is_cockroach_database() -> bool:
+    return get_db_dialect_name() == 'cockroachdb'
 
 
 def backfill_mysql_order_phone():
+    if is_cockroach_database():
+        logger.info('Skipping MySQL-specific order backfill on CockroachDB.')
+        return
+
     try:
         mysql_cursor = connection.cursor()
         mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'PhoneNumber'")
@@ -173,6 +73,10 @@ def backfill_mysql_order_phone():
 
 
 def ensure_mysql_tables():
+    if is_cockroach_database():
+        logger.info('Skipping MySQL table creation on CockroachDB.')
+        return
+
     try:
         mysql_cursor = connection.cursor()
         mysql_cursor.execute('''
@@ -264,9 +168,13 @@ def ensure_mysql_tables():
 
 
 def ensure_default_admin():
+    if is_cockroach_database():
+        logger.info('Skipping MySQL default admin creation on CockroachDB.')
+        return False
+
     try:
         admin_email = os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@bakes.com')
-        placeholder = '%s' if DB_TYPE == 'mysql' else '?'
+        placeholder = get_placeholder()
         cursor.execute(f"SELECT 1 FROM Admin WHERE Email = {placeholder}", (admin_email,))
         if cursor.fetchone():
             return True
@@ -285,29 +193,52 @@ def ensure_default_admin():
         return False
 
 
-def connect_to_database():
-    global DB_TYPE, connection, cursor
-    try:
-        connection = mysql.connector.connect(**MYSQL_SETTINGS)
-        cursor = connection.cursor(dictionary=True)
-        DB_TYPE = 'mysql'
-        logger.info('Connected to MySQL database successfully.')
-        ensure_mysql_tables()
-    except Exception as mysql_error:
-        logger.error(f'MySQL connection failed: {mysql_error}')
-        logger.info('Falling back to SQLite local database.')
-        connection = sqlite3.connect(SQLITE_FILE, check_same_thread=False)
-        connection.row_factory = sqlite3.Row
-        cursor = connection.cursor()
-        DB_TYPE = 'sqlite'
-        init_sqlite_tables()
-        logger.info('SQLite fallback database initialized.')
+def create_db_cursor(connection):
+    if pymysql is not None and connection.__class__.__module__.startswith('pymysql'):
+        return connection.cursor(pymysql.cursors.DictCursor)
+    if psycopg2 is not None and connection.__class__.__module__.startswith('psycopg2'):
+        return connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    return connection.cursor()
 
+
+def create_engine_connection(database_url):
+    global engine, connection, cursor
+    engine = create_engine(database_url, pool_pre_ping=True)
+    connection = engine.raw_connection()
+    cursor = create_db_cursor(connection)
+    return engine, connection, cursor
+
+
+def normalize_database_url(database_url: str) -> str:
+    if database_url.startswith('cockroachdb://'):
+        parsed = urlparse(database_url)
+        query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+        if query.get('sslmode') == 'verify-full' and 'sslrootcert' not in query:
+            query['sslmode'] = 'system'
+            normalized_url = urlunparse(parsed._replace(query=urlencode(query, doseq=True)))
+            logger.warning('CockroachDB DATABASE_URL normalized to sslmode=system because no sslrootcert is configured.')
+            return normalized_url
+    return database_url
+
+
+def build_database_url():
+    database_url = os.getenv('DATABASE_URL')
+    if database_url:
+        return database_url
+    raise ValueError('DATABASE_URL is required for SQLAlchemy connections.')
+
+
+def connect_to_database():
+    global connection, cursor, engine
+    database_url = normalize_database_url(build_database_url())
+    create_engine_connection(database_url)
+    logger.info('Connected to database successfully via SQLAlchemy.')
+    ensure_mysql_tables()
     ensure_default_admin()
 
 
 def get_placeholder():
-    return '%s' if DB_TYPE == 'mysql' else '?'
+    return '%s'
 
 
 def hash_password(password: str) -> str:
@@ -323,9 +254,6 @@ def hash_password(password: str) -> str:
     )
     encoded_hash = base64.b64encode(derived).decode('utf-8')
     return f'pbkdf2_sha256$100000${salt}${encoded_hash}'
-
-
-connect_to_database()
 
 
 def verify_password(password: str, stored_hash: str | None) -> bool:
@@ -369,49 +297,32 @@ def store_user(user_data):
             user_data['Password'] = hash_password(password)
 
         placeholder = get_placeholder()
-        # MySQL users table may have a `User_Id` primary key without default;
-        # generate and include it on MySQL inserts.
-        if DB_TYPE == 'mysql':
-            user_id = uuid.uuid4().hex[:32]
-            query = f"INSERT INTO users (User_Id, PhoneNumber, FirstName, LastName, Email, Password) VALUES ({', '.join([placeholder]*6)})"
-            values = (
-                user_id,
-                user_data.get('PhoneNumber'),
-                user_data['FirstName'],
-                user_data['LastName'],
-                user_data['Email'],
-                user_data['Password'],
-            )
-        else:
-            query = f"INSERT INTO users (PhoneNumber, FirstName, LastName, Email, Password) VALUES ({', '.join([placeholder]*5)})"
-            values = (
-                user_data['PhoneNumber'],
-                user_data['FirstName'],
-                user_data['LastName'],
-                user_data['Email'],
-                user_data['Password'],
-            )
+        query = f"INSERT INTO users (PhoneNumber, FirstName, LastName, Email, Password) VALUES ({', '.join([placeholder]*5)})"
+        values = (
+            user_data['PhoneNumber'],
+            user_data['FirstName'],
+            user_data['LastName'],
+            user_data['Email'],
+            user_data['Password'],
+        )
         cursor.execute(query, values)
         connection.commit()
         return True
-    except sqlite3.IntegrityError as ie:
-        msg = str(ie)
-        logger.error(f"SQLite integrity error storing user: {msg}")
-        if 'UNIQUE constraint failed' in msg and 'users.Email' in msg:
-            raise ValueError('Email already registered')
-        if 'UNIQUE constraint failed' in msg and 'users.PhoneNumber' in msg:
-            raise ValueError('Phone number already registered')
-        raise
-    except mysql.connector.IntegrityError as me:
-        msg = str(me)
-        logger.error(f"MySQL integrity error storing user: {msg}")
+    except Exception as e:
+        msg = str(e)
+        logger.error(f"Integrity error storing user: {msg}")
         if 'Duplicate' in msg and 'Email' in msg:
             raise ValueError('Email already registered')
         if 'Duplicate' in msg and 'PhoneNumber' in msg:
             raise ValueError('Phone number already registered')
         raise
     except Exception as e:
-        logger.exception(f"Error storing user: {e}")
+        msg = str(e)
+        logger.error(f"Integrity error storing user: {msg}")
+        if 'Duplicate' in msg and 'Email' in msg:
+            raise ValueError('Email already registered')
+        if 'Duplicate' in msg and 'PhoneNumber' in msg:
+            raise ValueError('Phone number already registered')
         raise
 
 
@@ -445,10 +356,10 @@ def fetch_user(query, table='users'):
         cursor.execute(sql_query, values)
         user = cursor.fetchone()
         if user:
-            if DB_TYPE == 'sqlite':
+            if not isinstance(user, dict):
                 user = dict(user)
             if 'Password' in query:
-                stored_password = user.get('Password') if isinstance(user, dict) else getattr(user, 'Password', None)
+                stored_password = user.get('Password')
                 if not verify_password(query['Password'], stored_password):
                     return None
             logger.debug(f"User found in {table}.")
@@ -530,8 +441,7 @@ def fetch_products():
     try:
         cursor.execute("SELECT * FROM products")
         products = cursor.fetchall()
-        if DB_TYPE == 'sqlite':
-            return [dict(row) for row in products]
+        return [dict(row) for row in products]
         return products
     except Exception as e:
         logger.error(f"Error fetching products: {e}")
@@ -543,9 +453,7 @@ def fetch_product_by_id(product_id):
         placeholder = get_placeholder()
         cursor.execute(f"SELECT * FROM products WHERE ProductId = {placeholder}", (product_id,))
         product = cursor.fetchone()
-        if DB_TYPE == 'sqlite' and product:
-            return dict(product)
-        return product
+        return dict(product) if product is not None else None
     except Exception as e:
         logger.error(f"Error fetching product by id: {e}")
         return None
@@ -632,7 +540,7 @@ def fetch_all_orders():
         orders = cursor.fetchall()
         result = []
         for row in orders:
-            item = dict(row) if DB_TYPE == 'sqlite' else row
+            item = dict(row) if not isinstance(row, dict) else row
             item['Items'] = json.loads(item.get('Items', '[]')) if isinstance(item.get('Items'), str) else item.get('Items', [])
             if isinstance(item.get('ShippingAddress'), str) and item.get('ShippingAddress'):
                 try:
@@ -672,13 +580,9 @@ def fetch_orders(user_identifier):
         # discover which columns exist so we can query by Email or legacy User_Email if present
         columns = []
         try:
-            if DB_TYPE == 'mysql':
-                mcur = connection.cursor()
-                mcur.execute("SHOW COLUMNS FROM orders")
-                columns = [r[0] for r in mcur.fetchall()]
-            else:
-                cursor.execute("PRAGMA table_info(orders)")
-                columns = [r[1] for r in cursor.fetchall()]
+            mcur = connection.cursor()
+            mcur.execute("SHOW COLUMNS FROM orders")
+            columns = [r[0] for r in mcur.fetchall()]
         except Exception:
             columns = []
 
@@ -719,7 +623,7 @@ def fetch_orders(user_identifier):
 
         result = []
         for row in orders:
-            item = dict(row) if DB_TYPE == 'sqlite' else row
+            item = dict(row) if not isinstance(row, dict) else row
             item['Items'] = json.loads(item.get('Items', '[]')) if isinstance(item.get('Items'), str) else item.get('Items', [])
             if isinstance(item.get('ShippingAddress'), str) and item.get('ShippingAddress'):
                 try:
@@ -739,33 +643,9 @@ def fetch_orders(user_identifier):
 
 
 def backfill_orders_from_users():
-    """Backfill PhoneNumber on orders from users table for both MySQL and SQLite."""
+    """Backfill PhoneNumber on orders from users table for MySQL."""
     try:
-        if DB_TYPE == 'mysql':
-            backfill_mysql_order_phone()
-            return True
-
-        # sqlite path
-        cursor.execute("PRAGMA table_info(orders)")
-        order_cols = [r[1] for r in cursor.fetchall()]
-        if 'PhoneNumber' not in order_cols:
-            logger.info('orders table has no PhoneNumber column to backfill')
-            return False
-
-        # update from Email if present
-        if 'Email' in order_cols:
-            cursor.execute(
-                "UPDATE orders SET PhoneNumber = (SELECT PhoneNumber FROM users WHERE users.Email = orders.Email) WHERE (PhoneNumber IS NULL OR PhoneNumber = '') AND Email IS NOT NULL"
-            )
-
-        # update from User_Email if present
-        if 'User_Email' in order_cols:
-            cursor.execute(
-                "UPDATE orders SET PhoneNumber = (SELECT PhoneNumber FROM users WHERE users.Email = orders.User_Email) WHERE (PhoneNumber IS NULL OR PhoneNumber = '') AND User_Email IS NOT NULL"
-            )
-
-        connection.commit()
-        logger.info('Backfilled PhoneNumber on existing SQLite orders.')
+        backfill_mysql_order_phone()
         return True
     except Exception as e:
         logger.error(f'Error backfilling orders phone numbers: {e}')
