@@ -36,7 +36,7 @@ DuaBakes is a web application for a bakery business, featuring user authenticati
 - Password reset functionality via email
 - Admin login and product management
 - Product catalog with details
-- AI chatbot for bakery-related customer support
+- Integrated an AI-powered chatbot using the OpenRouter API to provide instant customer support for bakery-related inquiries
 - Responsive web interface
 
 ### Architecture
