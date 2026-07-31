@@ -579,8 +579,10 @@ async def signup(item:SignUpRequest):
 
 @app.post("/login")
 async def login(item:LoginModel):
+    logger.info(f"Login attempt for Email: {item.Email}")
     existing_user = fetch_user({"Email": item.Email, "Password": item.Password})
     if not existing_user:
+        logger.warning(f"Login failed for Email: {item.Email} — fetch_user returned no match")
         raise HTTPException(status_code=401, detail="Invalid email or password")
     # generate a session token, persist it to users table and return it
     import uuid

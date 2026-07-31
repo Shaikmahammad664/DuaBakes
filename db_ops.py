@@ -335,7 +335,7 @@ def store_user(user_data):
 
 def fetch_user(query, table='users'):
     try:
-        logger.info(f"Fetching user with query {query} from {table}")
+        logger.info(f"Fetching user with query keys {list(query.keys())} from {table}")
         placeholder = get_placeholder()
         # support token-based lookup
         if 'Token' in query:
@@ -363,9 +363,17 @@ def fetch_user(query, table='users'):
         if user:
             if not isinstance(user, dict):
                 user = dict(user)
+            # log presence and type of stored password (do NOT log actual password)
+            pwd = user.get('Password')
+            if pwd is None:
+                logger.debug('Fetched user has no Password field set')
+            else:
+                logger.debug(f"Fetched user Password prefix: {str(pwd)[:16]}... (len={len(str(pwd))})")
             if 'Password' in query:
                 stored_password = user.get('Password')
-                if not verify_password(query['Password'], stored_password):
+                verified = verify_password(query['Password'], stored_password)
+                logger.debug(f"Password verification result: {verified}")
+                if not verified:
                     return None
             logger.debug(f"User found in {table}.")
         return user
