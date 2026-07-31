@@ -19,19 +19,6 @@ body {
     background-color: #fff7f0;
 }
 
-/* ensure page content is not hidden under the fixed announcement and navbar on small screens */
-@media (max-width: 767px) {
-    body {
-        padding-top: 120px;
-    }
-}
-
-@media (min-width: 768px) {
-    body {
-        padding-top: 140px;
-    }
-}
-
 button, input, textarea {
     font: inherit;
 }
