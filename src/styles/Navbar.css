@@ -20,6 +20,23 @@
     text-transform: uppercase;
 }
 
+/* marquee animation for announcement banner */
+.announcement-banner {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.announcement-banner p {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 12s linear infinite;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-100%); }
+}
+
 @media (max-width: 640px) {
     .announcebox {
         font-size: 0.7rem;

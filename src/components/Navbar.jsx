@@ -86,10 +86,13 @@ export default function Navbar({ searchQuery, onSearchChange }) {
     syncLoginState();
     handleResize();
     window.addEventListener('storage', syncLoginState);
+    // listen for same-window auth changes
+    window.addEventListener('authChange', syncLoginState);
     window.addEventListener('resize', handleResize);
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       window.removeEventListener('storage', syncLoginState);
+      window.removeEventListener('authChange', syncLoginState);
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousedown', handleClickOutside);
     };

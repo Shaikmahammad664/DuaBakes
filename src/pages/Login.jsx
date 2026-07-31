@@ -52,6 +52,12 @@ export default function Login() {
           if (response.data.token) {
             localStorage.setItem('token', response.data.token);
           }
+        // Notify other parts of the app in the same window that auth state changed
+        try {
+          window.dispatchEvent(new Event('authChange'));
+        } catch (e) {
+          // ignore
+        }
         } catch (e) {
           console.warn('Could not persist user to localStorage', e);
         }
