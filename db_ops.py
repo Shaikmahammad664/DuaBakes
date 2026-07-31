@@ -210,6 +210,7 @@ def create_engine_connection(database_url):
 
 
 def normalize_database_url(database_url: str) -> str:
+    # Ensure CockroachDB URLs without sslrootcert use system sslmode
     if database_url.startswith('cockroachdb://'):
         parsed = urlparse(database_url)
         query = dict(parse_qsl(parsed.query, keep_blank_values=True))
@@ -218,6 +219,10 @@ def normalize_database_url(database_url: str) -> str:
             normalized_url = urlunparse(parsed._replace(query=urlencode(query, doseq=True)))
             logger.warning('CockroachDB DATABASE_URL normalized to sslmode=system because no sslrootcert is configured.')
             return normalized_url
+    # If a plain mysql:// URL is provided, prefer PyMySQL driver explicitly
+    if database_url.startswith('mysql://') and 'mysql+pymysql://' not in database_url:
+        logger.warning('DATABASE_URL uses mysql:// — normalizing to mysql+pymysql:// to ensure PyMySQL driver is used.')
+        return 'mysql+pymysql://' + database_url[len('mysql://'):]
     return database_url
 
 
