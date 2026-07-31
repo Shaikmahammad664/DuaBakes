@@ -361,22 +361,41 @@ def fetch_user(query, table='users'):
         cursor.execute(sql_query, values)
         user = cursor.fetchone()
         if user:
-            if not isinstance(user, dict):
-                user = dict(user)
+            # Normalize DB row -> dict in a robust way using cursor.description
+            try:
+                if isinstance(user, dict):
+                    row = user
+                else:
+                    # If cursor.description is available, map column names to values
+                    if getattr(cursor, 'description', None):
+                        cols = [c[0] for c in cursor.description]
+                        row = dict(zip(cols, user))
+                    else:
+                        # Fall back to attempting direct dict() conversion
+                        row = dict(user)
+            except Exception as e:
+                logger.error(f"Failed to convert DB row to dict: {e}")
+                return None
+
             # log presence and type of stored password (do NOT log actual password)
-            pwd = user.get('Password')
+            pwd = row.get('Password')
             if pwd is None:
                 logger.debug('Fetched user has no Password field set')
             else:
-                logger.debug(f"Fetched user Password prefix: {str(pwd)[:16]}... (len={len(str(pwd))})")
+                try:
+                    logger.debug(f"Fetched user Password prefix: {str(pwd)[:16]}... (len={len(str(pwd))})")
+                except Exception:
+                    logger.debug('Fetched user has a non-string Password field')
+
             if 'Password' in query:
-                stored_password = user.get('Password')
+                stored_password = row.get('Password')
                 verified = verify_password(query['Password'], stored_password)
                 logger.debug(f"Password verification result: {verified}")
                 if not verified:
                     return None
             logger.debug(f"User found in {table}.")
-        return user
+            return row
+        return None
     except Exception as e:
         logger.error(f"Error fetching user: {e}")
         return None
