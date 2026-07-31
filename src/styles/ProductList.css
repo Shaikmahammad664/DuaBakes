@@ -38,8 +38,9 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 2.5rem;
-  margin-left: -5rem;
-  margin-right: -6rem;
+  /* avoid negative margins which push content off-screen on small devices */
+  margin-left: 0;
+  margin-right: 0;
   align-items: stretch;
 }
 
@@ -48,12 +49,13 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 500px;
+  /* let card height be flexible for small screens */
+  height: 460px;
 }
 
 .product-card-image {  /*image */
   position: relative;
-  height: 360px;
+  height: 320px;
   overflow: hidden;
   border-radius: 0.75rem;
 }
@@ -199,15 +201,15 @@
   width: 100%;
   background: none;
   border-radius: 2rem;
-  padding: 2.5rem;
-  margin-left: 5rem;
+  padding: 2rem;
+  margin-left: 0;
 }
 
 .product-detail-image {
   display: flex;
   align-items: center;
   justify-content: center;
-   min-height: 600px;
+   min-height: 360px;
    max-height: 600px;
    width: 90%;
    overflow: hidden;
