@@ -52,8 +52,8 @@
 @media (max-width: 768px) {
   .section-heading-bg {
     height: 700px;
-    width: 100%;
-    margin-left: 0;
+    width: 150%;
+    margin-left: -25%;
     background-size: contain;
     box-shadow: none;
     background: transparent;
@@ -63,8 +63,8 @@
 @media (max-width: 480px) {
   .section-heading-bg {
     height: 650px;
-    width: 100%;
-    margin-left: 0;
+    width: 150%;
+    margin-left: -25%;
     background-size: contain;
     box-shadow: none;
     background: transparent;
