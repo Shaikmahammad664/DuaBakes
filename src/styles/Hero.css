@@ -51,7 +51,7 @@
 
 @media (max-width: 768px) {
   .section-heading-bg {
-    height: 700px;
+    height: 850px;
     width: 100%;
     margin-left: 0;
     background-size: contain;
@@ -64,7 +64,7 @@
 
 @media (max-width: 480px) {
   .section-heading-bg {
-    height: 650px;
+    height: 750px;
     width: 100%;
     margin-left: 0;
     background-size: contain;
