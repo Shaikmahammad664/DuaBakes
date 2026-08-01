@@ -51,11 +51,12 @@
 
 @media (max-width: 768px) {
   .section-heading-bg {
-    height: 500px;
+    height: 400px;
     width: 100%;
     margin-left: 0;
+    margin-right: 0;
     background-size: contain;
-    background-position: top;
+    background-position: center;
     background-repeat: no-repeat;
     box-shadow: none;
     background-color: none;
@@ -66,11 +67,12 @@
 
 @media (max-width: 480px) {  /*for iphone X*/
   .section-heading-bg {
-    height: 450px;
+    height: 350px;
     width: 100%;
     margin-left: 0;
+    margin-right: 0;
     background-size: contain;
-    background-position: top;
+    background-position: center;
     background-repeat: no-repeat;
     box-shadow: none;
     background-color: none;
