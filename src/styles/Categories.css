@@ -84,6 +84,14 @@
     display: none;
 }
 
+@media (max-width: 768px) {
+    .categories-row {
+        margin-left: 0;
+        margin-right: 0;
+        padding-right: 0.5rem;
+    }
+}
+
 .cat-scroll {
     position: absolute;
     top: 50%;
@@ -100,6 +108,12 @@
     cursor: pointer;
     box-shadow: none;
     z-index: 20;
+}
+
+@media (max-width: 768px) {
+    .cat-scroll {
+        display: none;
+    }
 }
 
 .cat-scroll svg { 

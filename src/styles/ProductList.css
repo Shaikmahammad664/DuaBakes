@@ -43,6 +43,20 @@
   align-items: stretch;
 }
 
+@media (max-width: 768px) {
+  .product-grid {
+    margin-left: 0;
+    margin-right: 0;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .product-card { /*home page cards*/
   background: none;
   overflow: hidden;
@@ -63,6 +77,18 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+@media (max-width: 768px) {
+  .product-card-image img {
+    margin-left: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card-image img {
+    margin-left: 0.75rem;
+  }
 }
 
 .product-card-image img:hover {

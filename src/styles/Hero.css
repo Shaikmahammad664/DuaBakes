@@ -41,6 +41,18 @@
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
 }
 
+@media (max-width: 768px) {
+  .section-heading-bg {
+    height: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-heading-bg {
+    height: 220px;
+  }
+}
+
 @media (max-width: 1024px) {
   .hero {
         grid-template-columns: 1fr;
