@@ -22,11 +22,9 @@
     align-items: center;
     gap: 0rem;
     padding: 2rem 0;
-    margin: 0 5rem;
+    margin: 1rem auto 3rem;
     max-width: 1425px;
     width: 100%;
-    margin-top: 1rem;
-    margin-bottom: 3rem;
 }
 
 @media (max-width: 768px) {
@@ -37,10 +35,9 @@
 }
 
 .section-heading-bg {
-  width: 102%;
+  width: 100%;
   height: 500px;
-  margin-left: -1em;
-  margin-top: -1em;
+  margin: 0;
   border-radius: 0rem;
   background-size: contain;
   background-position: center;
@@ -68,9 +65,8 @@
 @media (max-width: 480px) {  /*for iphone X*/
   .section-heading-bg {
     height: 150px;
-    width: 120%;
-    margin-left: -1rem;
-    margin-right: 0;
+    width: 100%;
+    margin: 0;
     background-size: contain;
     background-position: top;
     background-repeat: no-repeat;
@@ -162,8 +158,14 @@
     box-shadow: 0 40px 80px rgba(32, 34, 49, 0.12);
     background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,245,238,0.95));
     opacity: 0;
-    transform: translateX(60px);
+    transform: translateX(0);
     transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+@media (min-width: 769px) {
+    .hero-image-card {
+        transform: translateX(60px);
+    }
 }
 
 @media (max-width: 768px) {
