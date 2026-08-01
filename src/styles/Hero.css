@@ -68,9 +68,8 @@
 @media (max-width: 480px) {  /*for iphone X*/
   .section-heading-bg {
     height: 150px;
-    width: 150%;
-    margin-left: -1rem;
-    margin-right: 0;
+    width: 100%;
+    margin: 0;
     background-size: contain;
     background-position: top;
     background-repeat: no-repeat;
