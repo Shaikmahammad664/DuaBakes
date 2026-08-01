@@ -89,13 +89,13 @@
 
 @media (max-width: 768px) {
   .product-card-image img {
-    margin-left: 0.5rem;
+    margin-left: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .product-card-image img {
-    margin-left: 0.75rem;
+    margin-left: 2rem;
   }
 }
 
