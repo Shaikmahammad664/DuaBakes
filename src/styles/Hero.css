@@ -45,7 +45,7 @@
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 }
 
 @media (max-width: 768px) {
@@ -54,6 +54,8 @@
     width: 100%;
     margin-left: 0;
     background-size: contain;
+    box-shadow: none;
+    background: transparent;
   }
 }
 
@@ -63,6 +65,8 @@
     width: 100%;
     margin-left: 0;
     background-size: contain;
+    box-shadow: none;
+    background: transparent;
   }
 }
 
