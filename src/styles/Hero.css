@@ -22,9 +22,11 @@
     align-items: center;
     gap: 0rem;
     padding: 2rem 0;
-    margin: 1rem auto 3rem;
+    margin: 0 5rem;
     max-width: 1425px;
     width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
 }
 
 @media (max-width: 768px) {
@@ -35,9 +37,10 @@
 }
 
 .section-heading-bg {
-  width: 100%;
+  width: 102%;
   height: 500px;
-  margin: 0;
+  margin-left: -1em;
+  margin-top: -1em;
   border-radius: 0rem;
   background-size: contain;
   background-position: center;
@@ -65,8 +68,9 @@
 @media (max-width: 480px) {  /*for iphone X*/
   .section-heading-bg {
     height: 150px;
-    width: 100%;
-    margin: 0;
+    width: 120%;
+    margin-left: -1rem;
+    margin-right: 0;
     background-size: contain;
     background-position: top;
     background-repeat: no-repeat;
