@@ -141,7 +141,6 @@
     max-width: 620px;
     aspect-ratio: 17 / 10;
     border-radius: 2rem;
-    overflow: hidden;
     box-shadow: 0 40px 80px rgba(32, 34, 49, 0.12);
     background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,245,238,0.95));
     opacity: 0;
@@ -151,16 +150,22 @@
 
 @media (max-width: 768px) {
     .hero-image-card {
+        overflow: hidden;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-image-card {
         max-width: 100%;
         aspect-ratio: auto;
-        height: 600px;
+        height: 900px;
         width: 100%;
     }
 }
 
 @media (max-width: 480px) {
     .hero-image-card {
-        height: 520px;
+        height: 800px;
         width: 100%;
         border-radius: 1.5rem;
     }
