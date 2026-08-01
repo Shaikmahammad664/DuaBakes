@@ -51,7 +51,7 @@
 
 @media (max-width: 768px) {
   .product-grid {
-    margin-left: 2rem;
+    margin-left: 3rem;
     margin-right: 0;
     gap: 1.5rem;
   }
@@ -60,7 +60,7 @@
 @media (max-width: 480px) {
   .product-grid {
     grid-template-columns: 1fr;
-    margin-left: 2rem;
+    margin-left: 3rem;
     margin-right: 0;
   }
 }
