@@ -9,6 +9,12 @@
   margin-bottom: 1.25rem;
 }
 
+@media (max-width: 480px) {
+  .product-list-header {
+    margin-top: -1rem;
+  }
+}
+
 .product-list-header .eyebrow {
   display: inline-block;
   margin-bottom: 0.75rem;
@@ -45,7 +51,7 @@
 
 @media (max-width: 768px) {
   .product-grid {
-    margin-left: 0;
+    margin-left: 2rem;
     margin-right: 0;
     gap: 1.5rem;
   }
@@ -54,6 +60,8 @@
 @media (max-width: 480px) {
   .product-grid {
     grid-template-columns: 1fr;
+    margin-left: 2rem;
+    margin-right: 0;
   }
 }
 
