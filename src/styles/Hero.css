@@ -161,7 +161,6 @@
     opacity: 0;
     transform: translateX(60px);
     transition: opacity 0.5s ease, transform 0.5s ease;
-    border-radius: 2rem;
 }
 
 @media (max-width: 768px) {
@@ -190,6 +189,7 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    border-radius: 1.5rem;
 }
 
 .hero-image-badge {
