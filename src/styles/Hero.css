@@ -45,8 +45,8 @@
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
-  background: rgba(255,255,255,0.95);
+  box-shadow: none;
+  background: none;
 }
 
 @media (max-width: 768px) {
@@ -64,7 +64,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 480px) {  /*for iphone X*/
   .section-heading-bg {
     height: 450px;
     width: 100%;
