@@ -162,14 +162,8 @@
     box-shadow: 0 40px 80px rgba(32, 34, 49, 0.12);
     background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,245,238,0.95));
     opacity: 0;
-    transform: translateX(0);
+    transform: translateX(60px);
     transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-@media (min-width: 769px) {
-    .hero-image-card {
-        transform: translateX(60px);
-    }
 }
 
 @media (max-width: 768px) {
