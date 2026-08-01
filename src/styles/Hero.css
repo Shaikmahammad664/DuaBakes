@@ -52,22 +52,26 @@
 @media (max-width: 768px) {
   .section-heading-bg {
     height: 700px;
-    width: 150%;
-    margin-left: -25%;
+    width: 100%;
+    margin-left: 0;
     background-size: contain;
-    box-shadow: none;
-    background: transparent;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
+    background: rgba(255,255,255,0.95);
+    border-radius: 0.75rem;
+    overflow: hidden;
   }
 }
 
 @media (max-width: 480px) {
   .section-heading-bg {
     height: 650px;
-    width: 150%;
-    margin-left: -25%;
+    width: 100%;
+    margin-left: 0;
     background-size: contain;
-    box-shadow: none;
-    background: transparent;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
+    background: rgba(255,255,255,0.95);
+    border-radius: 0.75rem;
+    overflow: hidden;
   }
 }
 
