@@ -238,6 +238,10 @@
     
     .categories-row {
         gap: 0.65rem;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
     }
     
     .category-item {

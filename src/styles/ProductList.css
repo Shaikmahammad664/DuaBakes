@@ -123,6 +123,13 @@
     padding-right: 0.65rem;
   }
 
+  .product-card {
+    min-width: 0;
+    width: 100%;
+    min-height: 360px;
+    height: auto;
+  }
+
   .product-card-image {
     height: 180px;
   }
