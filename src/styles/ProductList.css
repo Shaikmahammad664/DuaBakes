@@ -118,55 +118,58 @@
   .product-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     margin: 0;
-    gap: 0.35rem;
+    gap: 0.2rem;
     width: 100%;
-    padding-left: 0.35rem;
-    padding-right: 0.35rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
   }
 
   .product-card {
     min-width: 0;
     width: 100%;
     min-height: auto;
-    height: auto;
+    height: 100%;
   }
 
   .product-card-image {
-    height: 190px;
+    height: 210px;
     aspect-ratio: 4 / 3;
     border-radius: 0.85rem;
   }
 
   .product-card-body {
-    padding: 0.65rem 0.55rem 0.45rem;
-    gap: 0.5rem;
+    padding: 0.65rem 0.5rem 0.4rem;
+    gap: 0.45rem;
   }
 
   .product-card-body h3 {
-    font-size: 0.78rem;
-    line-height: 1.3;
+    font-size: 0.76rem;
+    line-height: 1.28;
   }
 
   .product-price {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
   }
 
   .product-badge {
-    top: 0.55rem;
-    right: 0.55rem;
-    padding: 0.35rem 0.65rem;
-    font-size: 0.68rem;
+    top: 0.45rem;
+    right: 0.45rem;
+    padding: 0.32rem 0.6rem;
+    font-size: 0.66rem;
   }
 
   .product-sold-out {
-    top: 0.9rem;
-    padding: 0.45rem 0.9rem;
-    font-size: 0.78rem;
+    top: auto;
+    bottom: 0.85rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.4rem 0.75rem;
+    font-size: 0.72rem;
   }
 
   .product-add-button {
-    padding: 0.45rem 0.55rem;
-    font-size: 0.72rem;
+    padding: 0.42rem 0.52rem;
+    font-size: 0.7rem;
   }
 }
 

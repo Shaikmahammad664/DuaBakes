@@ -403,7 +403,7 @@
     }
 
     .hero-image-card {
-        height: 240px;
+        height: 280px;
         border-radius: 1rem;
     }
 
@@ -411,6 +411,6 @@
         left: 0.65rem;
         bottom: 0.65rem;
         font-size: 0.72rem;
-        padding: 0.55rem 0.75rem;
+        padding: 0.48rem 0.7rem;
     }
 }
