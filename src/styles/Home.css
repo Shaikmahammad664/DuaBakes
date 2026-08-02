@@ -166,13 +166,36 @@
 @media (max-width: 900px) {
   .footer-contact-summary {
     grid-template-columns: 1fr;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 1rem;
   }
 
   .footer-links-row {
     grid-template-columns: 1fr 1fr;
+    justify-items: start;
+    text-align: left;
+    gap: 1rem;
   }
 
   .footer-newsletter-form {
     grid-template-columns: 1fr;
+  }
+
+  .footer-newsletter-copy,
+  .footer-newsletter-message,
+  .footer-social-row,
+  .footer-copyright {
+    text-align: left;
+  }
+
+  .footer-social-row {
+    justify-content: flex-start;
+  }
+
+  .home-footer {
+    justify-items: start;
+    align-items: flex-start;
   }
 }

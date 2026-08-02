@@ -3,6 +3,8 @@
     box-sizing: border-box;
     padding-left: 0.75rem;
     padding-right: 0.75rem;
+    padding-top: 0.25rem;
+    margin-top: 0rem;
 }
 
 .section-heading {
@@ -62,7 +64,8 @@
 .categories-carousel {
     position: relative;
     max-width: 100%;
-    margin: 0 auto 2rem;
+    margin: 0 auto 0.75rem;
+    padding-top: 0.5rem;
     /* padding: 0 1rem; */
 }
 
@@ -231,33 +234,62 @@
     .cat-scroll {
         display: none;
     }
-    
-    /* .categories-carousel {
-        padding: 0 0.75rem;
-    } */
+
+    .categories-carousel {
+        padding: 0 0.5rem;
+    }
     
     .categories-row {
-        gap: 0.65rem;
+        gap: 0.6rem;
         margin-left: 0;
         margin-right: 0;
-        padding-left: 0.65rem;
-        padding-right: 0.65rem;
+        padding-left: 0.55rem;
+        padding-right: 0.55rem;
     }
     
     .category-item {
-        min-width: 95px;
-        padding: 0.3rem 0.2rem;
-        gap: 0.3rem;
+        min-width: 100px;
+        padding: 0.3rem 0.22rem;
+        gap: 0.32rem;
     }
     
     .category-item img,
     .category-item .category-icon {
-        width: 72px;
-        height: 72px;
+        width: 74px;
+        height: 74px;
         border-width: 3px;
     }
     
     .category-item p {
-        font-size: 0.72rem;
+        font-size: 0.74rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .categories-carousel {
+        padding: 0 0.35rem;
+    }
+
+    .categories-row {
+        gap: 0.5rem;
+        padding-left: 0.4rem;
+        padding-right: 0.4rem;
+    }
+
+    .category-item {
+        min-width: 88px;
+        padding: 0.25rem 0.18rem;
+        gap: 0.28rem;
+    }
+
+    .category-item img,
+    .category-item .category-icon {
+        width: 64px;
+        height: 64px;
+        border-width: 3px;
+    }
+
+    .category-item p {
+        font-size: 0.68rem;
     }
 }
