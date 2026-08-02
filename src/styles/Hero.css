@@ -316,16 +316,47 @@
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 767px) {
+    .page-content {
+        padding: 8rem 0.7rem 1.25rem;
+    }
+
+    .section-heading-bg {
+        height: 220px;
+        width: 100vw;
+        margin: 0 calc(50% - 50vw);
+        border-radius: 0 0 1.25rem 1.25rem;
+    }
+
     .hero {
-        padding: 1rem 0;
-        margin: 0;
+        padding: 1rem 0 1.25rem;
+        margin: 0 0 1rem;
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
+        gap: 0.85rem;
     }
 
-    .hero-copy,
+    .hero-copy {
+        max-width: 100%;
+        text-align: left;
+    }
+
+    .hero-copy .eyebrow {
+        font-size: 0.78rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .hero-copy h1 {
+        font-size: 1.6rem;
+        line-height: 1.12;
+    }
+
+    .hero-text {
+        font-size: 0.95rem;
+        margin-top: 0.6rem;
+    }
+
     .hero-visual,
     .hero-image-card {
         width: 100%;
@@ -334,14 +365,52 @@
     }
 
     .hero-image-card {
-        height: 280px;
-        border-radius: 1.5rem;
+        height: 240px;
+        border-radius: 1rem;
         transform: translateX(0);
+        box-shadow: 0 18px 40px rgba(32, 34, 49, 0.12);
     }
 
     .hero-image-badge {
-        left: 1rem;
-        bottom: 1rem;
-        font-size: 0.82rem;
+        left: 0.8rem;
+        bottom: 0.8rem;
+        font-size: 0.78rem;
+        padding: 0.7rem 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-content {
+        padding: 7.6rem 0.65rem 1rem;
+    }
+
+    .section-heading-bg {
+        height: 170px;
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    .hero {
+        padding: 0.75rem 0 1rem;
+        margin: 0 0 0.75rem;
+    }
+
+    .hero-copy h1 {
+        font-size: 1.45rem;
+    }
+
+    .hero-text {
+        font-size: 0.9rem;
+    }
+
+    .hero-image-card {
+        height: 200px;
+        border-radius: 0.9rem;
+    }
+
+    .hero-image-badge {
+        left: 0.65rem;
+        bottom: 0.65rem;
+        font-size: 0.72rem;
+        padding: 0.6rem 0.8rem;
     }
 }
