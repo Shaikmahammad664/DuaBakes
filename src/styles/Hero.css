@@ -1,98 +1,93 @@
 .page-content {
-        max-width: 100%;
-        margin: 0;
-        padding: 8.5rem 1rem 2.5rem;
+    max-width: 100%;
+    margin: 0;
+    padding: 8.5rem 1rem 2.5rem;
 }
 
 @media (max-width: 768px) {
-        .page-content {
-                padding: 8.8rem 1rem 2rem;
-        }
+    .page-content {
+        padding: 8.8rem 1rem 2rem;
+    }
 }
 
 @media (max-width: 480px) {
-        .page-content {
-                padding: 8.2rem 0.75rem 1.5rem;
-        }
+    .page-content {
+        padding: 8.2rem 0.75rem 1.5rem;
+    }
 }
 
 .hero {   /*gap above the hero section*/
-        display: grid;
-        grid-template-columns: minmax(320px, 1fr) minmax(420px, 760px);
-        align-items: center;
-        gap: 0rem;
-        padding: 2rem 0;
-        margin: 0 5rem;
-        max-width: 1425px;
-        width: 100%;
-        margin-top: 1rem;
-        margin-bottom: 3rem;
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(420px, 760px);
+    align-items: center;
+    gap: 0rem;
+    padding: 2rem 0;
+    margin: 0 5rem;
+    max-width: 1425px;
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
 }
 
 @media (max-width: 768px) {
-        .hero {
-                margin: 0;
-                padding: 1.5rem 0;
-        }
+    .hero {
+        margin: 0;
+        padding: 1.5rem 0;
+    }
 }
 
 .section-heading-bg {
-    width: 102%;
-    height: 500px;
-    margin-left: -1em;
-    margin-top: -1em;
-    border-radius: 0rem;
+  width: 102%;
+  height: 500px;
+  margin-left: -1em;
+  margin-top: -1em;
+  border-radius: 0rem;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: none;
+  background: none;
+}
+
+@media (max-width: 768px) {
+  .section-heading-bg {
+    height: 300px;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     box-shadow: none;
-    background: none;
-}
-
-@media (max-width: 768px) {
-    .section-heading-bg {
-        height: 300px;
-        width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        box-shadow: none;
-        background-color: none;
-        border-radius: 0 rem;
-        overflow: hidden;
-    }
+    background-color: none;
+    border-radius: 0 rem;
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 480px) {  /*for iphone X*/
-    .section-heading-bg {
-        height: 360px;
-        width: 100%;
-        margin: 0;
-        background-size: contain;
-        background-position: top;
-        background-repeat: no-repeat;
-        box-shadow: none;
-        background-color: none;
-        border-radius: 0rem;
-        overflow: hidden;
-    }
-
-    .section-heading-bg img {
-        width: 100%;
-        height: 100%;
-    }
+  .section-heading-bg {
+    height: 360px;
+    width: 100%;
+    margin: 0;
+    background-size: contain;
+    background-position: top;
+    background-repeat: no-repeat;
+    box-shadow: none;
+    background-color: none;
+    border-radius: 0rem;
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 1024px) {
-    .hero {
-                grid-template-columns: 1fr;
-                max-width: 980px;
-        }
-        .hero-visual {
-                margin-top: 1rem;
-        }
+  .hero {
+        grid-template-columns: 1fr;
+        max-width: 980px;
+    }
+    .hero-visual {
+        margin-top: 1rem;
+    }
 }
 
 @media (max-width: 768px) {
@@ -113,7 +108,7 @@
     }
     .hero-image-card {
         height: 280px;
-        border-radius: 0rem;
+        border-radius: 1.5rem;
     }
     .hero-image-badge {
         left: 1rem;
@@ -140,8 +135,6 @@
 @media (max-width: 480px) {
     .hero {
         padding: 1rem 0;
-        margin-left: 0.5rem;
-        margin-right: 0.5rem;
     }
     
     .hero h1 {
@@ -157,14 +150,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: none;
 }
 .hero-image-card {
     position: relative;
     width: 100%;
     max-width: 620px;
     box-shadow: 0 40px 80px rgba(32, 34, 49, 0.12);
-    background: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,245,238,0.95));
     opacity: 0;
     transform: translateX(60px);
     transition: opacity 0.5s ease, transform 0.5s ease;
@@ -182,8 +174,6 @@
     .hero-image-card {
         height: 280px;
         border-radius: 1.5rem;
-        transform: translateX(60px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
     }
 }
 .hero-image-card.loaded {
@@ -198,7 +188,7 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 1rem;
+    border-radius: 1.5rem;
 }
 
 .hero-image-badge {
@@ -270,8 +260,6 @@
 @media (max-width: 480px) {
     .hero {
         padding: 1rem 0;
-        margin-left: 0.5rem;
-        margin-right: 0.5rem;
     }
     
     .hero h1 {
@@ -279,7 +267,7 @@
     }
     
     .hero-text {
-        font-size: 0.5rem;
+        font-size: 0.95rem;
     }
 }
 
@@ -393,16 +381,17 @@
 
 @media (max-width: 480px) {
     .page-content {
-        padding: 7.6rem 0.65rem 0.5rem;
+        padding: 7.6rem 0.65rem 1rem;
     }
 
     .section-heading-bg {
-        border-radius: none;
+        height: 270px;
+        border-radius: 0 0 1rem 1rem;
     }
 
     .hero {
-        padding: 0.1rem 0 0.1rem;
-        margin: 0 0 0.5rem;
+        padding: 0.5rem 0 1rem;
+        margin: 0 0 0.75rem;
     }
 
     .hero-copy h1 {
@@ -414,10 +403,8 @@
     }
 
     .hero-image-card {
-        height: 250px;
+        height: 280px;
         border-radius: 1rem;
-        margin-left: 0.5rem;
-        margin-right: 0.5rem;
     }
 
     .hero-image-badge {
