@@ -102,7 +102,7 @@
   }
 
   .hero-text {
-    font-size: 0.95rem;
+    font-size: 0.5rem;
     margin-top: 0.2rem;
     line-height: 1.25;
   }
@@ -136,7 +136,7 @@
     }
     .hero-image-card {
         height: 280px;
-        border-radius: 1.5rem;
+        border-radius: 0rem;
     }
     .hero-image-badge {
         left: 1rem;
@@ -180,13 +180,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    background: none;
 }
 .hero-image-card {
     position: relative;
     width: 100%;
     max-width: 620px;
     box-shadow: 0 40px 80px rgba(32, 34, 49, 0.12);
-    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,245,238,0.95));
+    background: none;
     opacity: 0;
     transform: translateX(60px);
     transition: opacity 0.5s ease, transform 0.5s ease;
@@ -220,7 +221,7 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 1.5rem;
+    border-radius: 1rem;
 }
 
 .hero-image-badge {
@@ -301,7 +302,7 @@
     }
     
     .hero-text {
-        font-size: 0.95rem;
+        font-size: 0.5rem;
     }
 }
 
