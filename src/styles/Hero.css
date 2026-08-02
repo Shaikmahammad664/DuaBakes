@@ -67,7 +67,7 @@
 
 @media (max-width: 480px) {  /*for iphone X*/
   .section-heading-bg {
-    height: 420px;
+    height: 300px;
     width: 100%;
     margin: 0;
     background-size: contain;
@@ -77,6 +77,11 @@
     background-color: none;
     border-radius: 0rem;
     overflow: hidden;
+  }
+
+  .section-heading-bg img {
+    width: 100%;
+    height: 100%;
   }
 }
 
