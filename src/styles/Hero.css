@@ -65,23 +65,21 @@
   }
 }
 
-@media (max-width: 480px) {  /*for iphone X*/
+@media (max-width: 480px) {
   .section-heading-bg {
-    height: 420px;
     width: 100%;
+    height: 480px;
     margin: 0;
-    background-size: contain;
-    background-position: top;
-    background-repeat: no-repeat;
     box-shadow: none;
-    background-color: none;
     border-radius: 0rem;
     overflow: hidden;
   }
 
   .section-heading-bg img {
+    display: block;
     width: 100%;
     height: 100%;
+    object-fit: cover;
   }
 }
 
@@ -179,6 +177,8 @@
     .hero-image-card {
         height: 280px;
         border-radius: 1.5rem;
+        transform: translateX(60px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
     }
 }
 .hero-image-card.loaded {
@@ -390,13 +390,12 @@
     }
 
     .section-heading-bg {
-        height: 420px;
-        border-radius: 0 0 1rem 1rem;
+        border-radius: none;
     }
 
     .hero {
-        padding: 0.5rem 0 0.5rem;
-        margin: 0 0 0.25rem;
+        padding: 0.1rem 0 0.1rem;
+        margin: 0 0 0.1rem;
     }
 
     .hero-copy h1 {
