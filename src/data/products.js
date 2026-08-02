@@ -100,7 +100,7 @@ export const products = [
   },
   {
     id: 11,
-    name:'Double Chocolate Chip Cookies',
+    name:'Double Chocolate Chip',
     price: 350,
     image: '/products/doubleChocolateCookie.png',
     available: true,

@@ -68,13 +68,13 @@
 @media (max-width: 480px) {
   .section-heading-bg {
     width: 100%;
-    height: 100px;
+    height: 480px;
     margin: 0;
     box-shadow: none;
     border-radius: 0rem;
     overflow: hidden;
-    background-position: top;
-
+    background-size: cover;
+    background-position: center top;
   }
 
   .section-heading-bg img {
@@ -82,6 +82,29 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-content {
+    padding: 6rem 0.75rem 0.8rem;
+  }
+
+  .hero {
+    padding: 0.2rem 0 0.25rem;
+    margin: 0 0.6rem 0.4rem;
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+    line-height: 1.05;
+    margin-bottom: 0.1rem;
+  }
+
+  .hero-text {
+    font-size: 0.95rem;
+    margin-top: 0.2rem;
+    line-height: 1.25;
   }
 }
 
