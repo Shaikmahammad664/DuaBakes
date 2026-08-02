@@ -2,6 +2,7 @@
     width: 100%;
     box-sizing: border-box;
     padding-left: 0.75rem;
+    padding-right: 0.75rem;
 }
 
 .section-heading {
@@ -88,7 +89,9 @@
     .categories-row {
         margin-left: 0;
         margin-right: 0;
-        padding-right: 0rem;
+        padding-left: 0.65rem;
+        padding-right: 0.75rem;
+        gap: 0.75rem;
     }
 }
 
@@ -209,14 +212,14 @@
 @media (max-width: 768px) {
     .category-item {
         min-width: 120px;
-        padding: 0.4rem 0.25rem;
+        padding: 0.35rem 0.3rem;
         gap: 0.55rem;
     }
     
     .category-item img,
     .category-item .category-icon {
-        width: 100px;
-        height: 100px;
+        width: 90px;
+        height: 90px;
     }
     
     .category-item p {
@@ -229,9 +232,9 @@
         display: none;
     }
     
-    .categories-carousel {
+    /* .categories-carousel {
         padding: 0 0.75rem;
-    }
+    } */
     
     .categories-row {
         gap: 0.65rem;
