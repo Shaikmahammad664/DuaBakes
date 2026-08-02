@@ -45,4 +45,33 @@ a {
     font-weight: 600;
 }
 
+/* Mobile page content alignment like the navbar */
+@media (max-width: 768px) {
+    html,
+    body,
+    #root {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .page-content,
+    .signup-page .page-content,
+    .profile-page .page-content,
+    .payment-page.page-content,
+    .product-detail-page.page-content,
+    .cart-page.page-content {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+        overflow-x: hidden;
+    }
+
+    .page-content > * {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
 
