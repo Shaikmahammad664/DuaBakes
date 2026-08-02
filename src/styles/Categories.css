@@ -267,7 +267,7 @@
 
 @media (max-width: 480px) {
     .categories-section {
-        margin-top: -1rem;
+        margin: 0;
         padding: 0;
     }
 

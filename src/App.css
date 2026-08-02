@@ -45,7 +45,7 @@ a {
     font-weight: 600;
 }
 
-/* Mobile page content alignment like the navbar */
+/* Mobile page content alignment */
 @media (max-width: 768px) {
     html,
     body,
@@ -63,8 +63,8 @@ a {
         width: 100%;
         max-width: 100%;
         margin: 0;
-        padding-left: 0.85rem;
-        padding-right: 0.85rem;
+        padding-left: 0.1rem;
+        padding-right: 0.1rem;
         overflow-x: hidden;
     }
 
