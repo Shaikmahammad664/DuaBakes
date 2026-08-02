@@ -1,121 +1,98 @@
 .page-content {
-    max-width: 100%;
-    margin: 0;
-    padding: 8.5rem 1rem 2.5rem;
+        max-width: 100%;
+        margin: 0;
+        padding: 8.5rem 1rem 2.5rem;
 }
 
 @media (max-width: 768px) {
-    .page-content {
-        padding: 8.8rem 1rem 2rem;
-    }
+        .page-content {
+                padding: 8.8rem 1rem 2rem;
+        }
 }
 
 @media (max-width: 480px) {
-    .page-content {
-        padding: 8.2rem 0.75rem 1.5rem;
-    }
+        .page-content {
+                padding: 8.2rem 0.75rem 1.5rem;
+        }
 }
 
 .hero {   /*gap above the hero section*/
-    display: grid;
-    grid-template-columns: minmax(320px, 1fr) minmax(420px, 760px);
-    align-items: center;
-    gap: 0rem;
-    padding: 2rem 0;
-    margin: 0 5rem;
-    max-width: 1425px;
-    width: 100%;
-    margin-top: 1rem;
-    margin-bottom: 3rem;
+        display: grid;
+        grid-template-columns: minmax(320px, 1fr) minmax(420px, 760px);
+        align-items: center;
+        gap: 0rem;
+        padding: 2rem 0;
+        margin: 0 5rem;
+        max-width: 1425px;
+        width: 100%;
+        margin-top: 1rem;
+        margin-bottom: 3rem;
 }
 
 @media (max-width: 768px) {
-    .hero {
-        margin: 0;
-        padding: 1.5rem 0;
-    }
+        .hero {
+                margin: 0;
+                padding: 1.5rem 0;
+        }
 }
 
 .section-heading-bg {
-  width: 102%;
-  height: 560px;
-  margin-left: -1em;
-  margin-top: 1rem;
-  border-radius: 0rem;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  box-shadow: none;
-  background: none;
+    width: 102%;
+    height: 500px;
+    margin-left: -1em;
+    margin-top: -1em;
+    border-radius: 0rem;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: none;
+    background: none;
 }
 
 @media (max-width: 768px) {
-  .section-heading-bg {
-    height: 340px;
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    background-size: contain;
-    background-position: top;
-    background-repeat: no-repeat;
-    box-shadow: none;
-    background-color: none;
-    border-radius: 0 rem;
-    overflow: hidden;
-  }
+    .section-heading-bg {
+        height: 300px;
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        box-shadow: none;
+        background-color: none;
+        border-radius: 0 rem;
+        overflow: hidden;
+    }
 }
 
-@media (max-width: 480px) {
-  .section-heading-bg {
-    width: 100%;
-    height: 480px;
-    margin: 0;
-    box-shadow: none;
-    border-radius: 0rem;
-    overflow: hidden;
-    background-size: cover;
-    background-position: center top;
-  }
+@media (max-width: 480px) {  /*for iphone X*/
+    .section-heading-bg {
+        height: 360px;
+        width: 100%;
+        margin: 0;
+        background-size: contain;
+        background-position: top;
+        background-repeat: no-repeat;
+        box-shadow: none;
+        background-color: none;
+        border-radius: 0rem;
+        overflow: hidden;
+    }
 
-  .section-heading-bg img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-@media (max-width: 480px) {
-  .page-content {
-    padding: 6rem 0.75rem 0.8rem;
-  }
-
-  .hero {
-    padding: 0.2rem 0 0.25rem;
-    margin: 0 0.6rem 0.4rem;
-  }
-
-  .hero h1 {
-    font-size: 1.8rem;
-    line-height: 1.05;
-    margin-bottom: 0.1rem;
-  }
-
-  .hero-text {
-    font-size: 0.5rem;
-    margin-top: 0.2rem;
-    line-height: 1.25;
-  }
+    .section-heading-bg img {
+        width: 100%;
+        height: 100%;
+    }
 }
 
 @media (max-width: 1024px) {
-  .hero {
-        grid-template-columns: 1fr;
-        max-width: 980px;
-    }
-    .hero-visual {
-        margin-top: 1rem;
-    }
+    .hero {
+                grid-template-columns: 1fr;
+                max-width: 980px;
+        }
+        .hero-visual {
+                margin-top: 1rem;
+        }
 }
 
 @media (max-width: 768px) {
