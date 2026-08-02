@@ -266,30 +266,37 @@
 }
 
 @media (max-width: 480px) {
+    .categories-section {
+        margin: 0;
+        padding: 0;
+    }
+
     .categories-carousel {
-        padding: 0 0.35rem;
+        padding: 0 0.2rem;
     }
 
     .categories-row {
-        gap: 0.5rem;
-        padding-left: 0.4rem;
-        padding-right: 0.4rem;
+        gap: 0.4rem;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0.35rem;
+        padding-right: 0.35rem;
     }
 
     .category-item {
-        min-width: 88px;
+        min-width: 86px;
         padding: 0.25rem 0.18rem;
-        gap: 0.28rem;
+        gap: 0.26rem;
     }
 
     .category-item img,
     .category-item .category-icon {
-        width: 64px;
-        height: 64px;
+        width: 62px;
+        height: 62px;
         border-width: 3px;
     }
 
     .category-item p {
-        font-size: 0.68rem;
+        font-size: 0.66rem;
     }
 }
