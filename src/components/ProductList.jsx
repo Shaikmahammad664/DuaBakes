@@ -39,7 +39,7 @@ export default function ProductList({ selectedCategory, searchQuery = '', startI
             <div className="product-card-image">
               <img src={product.image} alt={product.name} />
               {product.badge && <span className="product-badge">{product.badge}</span>}
-              {!product.available && <span className="product-sold-out">Sold Out</span>}
+              {!product.available && <span className="product-sold-out">SOLD OUT</span>}
             </div>
 
             <div className="product-card-body">
@@ -60,7 +60,7 @@ export default function ProductList({ selectedCategory, searchQuery = '', startI
                   setAddedItems((current) => current.includes(product.id) ? current : [...current, product.id]);
                 }}
               >
-                {product.available ? (addedItems.includes(product.id) ? 'Added' : 'ADD') : 'Sold Out'}
+                {product.available ? (addedItems.includes(product.id) ? 'Added' : 'ADD') : ''}
               </button>
             </div>
           </article>
