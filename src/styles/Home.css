@@ -163,6 +163,28 @@
   font-weight: 500;
 }
 
+
+@media (max-width: 480px) {
+  .footer-contact-summary {
+    gap: 1rem;
+  }
+
+  .footer-links-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .footer-newsletter-form {
+    grid-template-columns: 1fr;
+  }
+
+  .home-footer-social-row {
+    justify-content: center;
+    margin-left: 5rem;
+
+  }
+}
+
 @media (max-width: 900px) {
   .footer-contact-summary {
     grid-template-columns: 1fr;
