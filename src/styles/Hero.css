@@ -10,11 +10,6 @@
     }
 }
 
-@media (max-width: 480px) {
-    .page-content {
-        padding: 8.2rem 0.75rem 1.5rem;
-    }
-}
 
 .hero {   /*gap above the hero section*/
     display: grid;
@@ -67,7 +62,6 @@
 
 @media (max-width: 480px) {  /*for iphone X*/
   .section-heading-bg {
-    height: 360px;
     width: 100%;
     margin: 0;
     background-size: contain;
@@ -75,7 +69,7 @@
     background-repeat: no-repeat;
     box-shadow: none;
     background-color: none;
-    border-radius: 0rem;
+    border-radius: none;
     overflow: hidden;
   }
 }
@@ -132,19 +126,7 @@
     }
 }
 
-@media (max-width: 480px) {
-    .hero {
-        padding: 1rem 0;
-    }
-    
-    .hero h1 {
-        font-size: 1.8rem;
-    }
-    
-    .hero-text {
-        font-size: 0.95rem;
-    }
-}
+
 
 .hero-visual {
     display: flex;
@@ -155,8 +137,8 @@
     position: relative;
     width: 100%;
     max-width: 620px;
-    box-shadow: 0 40px 80px rgba(32, 34, 49, 0.12);
-    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,245,238,0.95));
+    box-shadow: none;
+    background: none;
     opacity: 0;
     transform: translateX(60px);
     transition: opacity 0.5s ease, transform 0.5s ease;
@@ -170,12 +152,7 @@
     }
 }
 
-@media (max-width: 480px) {
-    .hero-image-card {
-        height: 280px;
-        border-radius: 1.5rem;
-    }
-}
+
 .hero-image-card.loaded {
     opacity: 1;
     transform: translateX(0);
@@ -257,19 +234,7 @@
     }
 }
 
-@media (max-width: 480px) {
-    .hero {
-        padding: 1rem 0;
-    }
-    
-    .hero h1 {
-        font-size: 1.8rem;
-    }
-    
-    .hero-text {
-        font-size: 0.95rem;
-    }
-}
+
 
 .hero-copy {
     max-width: 680px;
@@ -312,7 +277,7 @@
     .hero-image-card {
         width: 100%;
         max-width: 100%;
-        transform: translateX(0);
+        transform: translateX(60px);
     }
 }
 
@@ -367,8 +332,8 @@
     .hero-image-card {
         height: 240px;
         border-radius: 1rem;
-        transform: translateX(0);
-        box-shadow: 0 18px 40px rgba(32, 34, 49, 0.12);
+        transform: translateX(60px);
+        box-shadow: none;
     }
 
     .hero-image-badge {
@@ -381,34 +346,52 @@
 
 @media (max-width: 480px) {
     .page-content {
-        padding: 7.6rem 0.65rem 1rem;
+        padding: 5.5rem 0.65rem 1rem;
     }
 
     .section-heading-bg {
-        height: 270px;
-        border-radius: 0 0 1rem 1rem;
+        height: 150px;
+        border-radius: none;
         margin-bottom: 0.2rem;
     }
 
     .hero {
         padding: 0.35rem 0 0.9rem;
         margin: 0 0 0.4rem;
+        margin-left: 0.3rem;
     }
 
     .hero-copy h1 {
-        font-size: 1.45rem;
+        font-size: 1.4rem;
         line-height: 1.08;
+        margin-left: 0.7rem;
     }
 
     .hero-text {
-        font-size: 0.86rem;
+        font-size: 1.25rem;
         line-height: 1.35;
         margin-top: 0.45rem;
+        margin-left: 0.7rem;
+    }
+    .hero .eyebrow {
+        margin-left: 0.7rem;
+    }
+
+    .hero-visual {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding-right: 0.3rem;
+        padding-top: 0.25rem;
+        margin-top: 0rem;
+        background: none;
     }
 
     .hero-image-card {
-        height: 280px;
+        height: 200px;
         border-radius: 1rem;
+        margin-left: 0.3rem;
+        padding-right: 0.3rem;
     }
 
     .hero-image-badge {
