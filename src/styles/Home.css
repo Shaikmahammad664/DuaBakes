@@ -51,10 +51,10 @@
 }
 
 .footer-links-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, auto));
-  justify-content: start;
-  justify-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  justify-items: center;
   gap: 2rem;
   text-transform: uppercase;
   font-size: 0.88rem;

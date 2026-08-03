@@ -226,6 +226,7 @@
 @media (max-width: 480px) {
   .product-card {
     min-height: 0;
+    margin-top: 1.5rem;
   }
 
   .product-detail-page {
@@ -364,6 +365,7 @@
   cursor: pointer;
   text-align: center;
   width: 100%;
+  margin-bottom: 0.5rem;
 }
 
 .product-add-button:hover {
