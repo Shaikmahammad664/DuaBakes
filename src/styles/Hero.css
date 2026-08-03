@@ -387,19 +387,23 @@
     .section-heading-bg {
         height: 270px;
         border-radius: 0 0 1rem 1rem;
+        margin-bottom: 0.2rem;
     }
 
     .hero {
-        padding: 0.5rem 0 1rem;
-        margin: 0 0 0.75rem;
+        padding: 0.35rem 0 0.9rem;
+        margin: 0 0 0.4rem;
     }
 
     .hero-copy h1 {
         font-size: 1.45rem;
+        line-height: 1.08;
     }
 
     .hero-text {
-        font-size: 0.9rem;
+        font-size: 0.86rem;
+        line-height: 1.35;
+        margin-top: 0.45rem;
     }
 
     .hero-image-card {
