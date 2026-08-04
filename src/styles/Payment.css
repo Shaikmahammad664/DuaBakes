@@ -606,7 +606,7 @@ summary-card {
   .two-columns,
   .upi-grid,
   .name-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 0.6fr 1fr;
   }
 
   .field-label input,
@@ -765,6 +765,11 @@ summary-card {
   }
 
   .delivery-top {
+    grid-template-columns: 0.55fr 1fr;
+  }
+
+  .two-columns,
+  .upi-grid {
     grid-template-columns: 0.55fr 1fr;
   }
 

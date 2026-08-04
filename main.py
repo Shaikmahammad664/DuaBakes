@@ -373,10 +373,13 @@ def send_reset_link(email, reset_link):
         ],
         "subject": "Password Reset Request",
         "htmlContent": (
-            f"<p>Hi,</p>"
-            # f"<p>Click the link below to reset your password:</p>"
-            # f"<p><a href=\"{reset_link}\">Reset Password</a></p>"
-            # f"<p>This link expires in 30 minutes.</p>"
+            f"<p>Hi, Greetings from DuaBakes. We received a request to reset your password associated with this email address.</p>"
+            f"<p>If you made this request, please click the link below to reset your password:</p>"
+            f"<p>If you did not request a password reset, you can safely ignore this email.</p>"
+            f"<p><a href=\"{reset_link}\">Reset Password</a></p>"
+            f"<p>This link expires in 30 minutes.</p>"
+            f"<p> If you have any questions, feel free to contact our support team.</p>"
+            f"<p>Thank you for being the part of our family,<br/>DuaBakes Team</p>"
         )
     }
 

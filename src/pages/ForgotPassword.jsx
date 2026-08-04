@@ -18,7 +18,7 @@ export default function ForgotPassword() {
     try {
       const response = await authAPI.forgotPassword(email);
       if (response.data.status) {
-        setStatusMessage('If the email exists, a reset link has been sent.');
+        setStatusMessage('Reset link has been sent...');
       } else {
         setError(response.data.message || response.data.detail || 'Unable to send reset link.');
       }
