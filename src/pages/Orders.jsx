@@ -83,7 +83,7 @@ export default function Orders() {
                 <ul>
                   {(order.Items || []).map((item, itemIndex) => (
                     <li key={`${order.Order_Id || index}-${itemIndex}`}>
-                      {item.name} × {item.quantity}
+                      {item.name} {item.size ? `(${item.size})` : ''} × {item.quantity}
                     </li>
                   ))}
                 </ul>

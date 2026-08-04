@@ -20,14 +20,14 @@ export default function ProductDetail({ onAddToCart }) {
         { id: '1kg', label: '1kg', mult: 2 },
       ];
   const [size, setSize] = useState(isWeightProduct ? sizes[0].id : '500g');
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState('1');
   const [location, setLocation] = useState('');
   const [deliveryDate, setDeliveryDate] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
   const [cakeText, setCakeText] = useState('');
 
   const sizeMultiplier = isWeightProduct ? sizes.find((s) => s.id === size)?.mult || 1 : 1;
-  const computedPrice = product ? product.price * sizeMultiplier * Math.max(1, Number(quantity)) : 0;
+  const computedPrice = product ? product.price * sizeMultiplier * Math.max(1, Number(quantity) || 1) : 0;
   const isFormComplete = product?.available && location && deliveryDate && deliveryTime && cakeText.trim().length > 0;
 
   if (!product) {
@@ -76,10 +76,16 @@ export default function ProductDetail({ onAddToCart }) {
             <label htmlFor="qty">Quantity</label>
             <input
               id="qty"
-              type="number"
-              min="1"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder="1"
               value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+              onChange={(e) => {
+                // allow only digits, keep empty when cleared
+                const cleaned = e.target.value.replace(/\D/g, '');
+                setQuantity(cleaned);
+              }}
               style={{ width: 80, padding: '0.5rem', borderRadius: 6 }}
             />
           </div>
@@ -132,7 +138,8 @@ export default function ProductDetail({ onAddToCart }) {
               disabled={!isFormComplete}
               onClick={() => {
                 if (isFormComplete && onAddToCart) {
-                  onAddToCart(product, { size: isWeightProduct ? size : null, quantity, delivery: { location, deliveryDate, deliveryTime, cakeText } });
+                  const qty = Number(quantity) || 1;
+                  onAddToCart(product, { size: isWeightProduct ? size : null, quantity: qty, delivery: { location, deliveryDate, deliveryTime, cakeText } });
                 }
               }}
             >

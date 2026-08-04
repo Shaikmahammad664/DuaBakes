@@ -113,7 +113,7 @@ export default function Profile() {
                   <div className="order-items">
                     {(order.Items || []).map((item, itemIndex) => (
                       <div key={`${order.Order_Id || index}-${itemIndex}`} className="order-item">
-                        {item.name} × {item.quantity}
+                        {item.name} {item.size ? `(${item.size})` : ''} × {item.quantity}
                       </div>
                     ))}
                   </div>
