@@ -35,6 +35,7 @@ export default function Payment({ cartItems }) {
   const [upiRedirect, setUpiRedirect] = useState('');
   const [discountCode, setDiscountCode] = useState('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
   const [message, setMessage] = useState('');
   const [canPay, setCanPay] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -739,6 +740,7 @@ export default function Payment({ cartItems }) {
               try {
                 await ordersAPI.create(orderPayload);
                 setPaymentConfirmed(true);
+                setOrderSuccess(true);
                 setMessage('Order placed successfully.');
               } catch (error) {
                 const serverMsg = error?.response?.data?.detail || error?.message || 'Could not place order right now.';
@@ -749,12 +751,6 @@ export default function Payment({ cartItems }) {
             </button>
             {message && <p className="payment-confirmation">{message}</p>}
             {saveError && <p className="error-message">{saveError}</p>}
-            {paymentConfirmed && form.paymentMethod !== 'UPI' && (
-              <p className="payment-confirmation">Payment method selected: {form.paymentMethod}</p>
-            )}
-            {paymentConfirmed && form.paymentMethod === 'UPI' && upiRedirect && (
-              <p className="payment-confirmation">Redirecting to: {upiRedirect}</p>
-            )}
           </div>
         </section>
 
@@ -822,6 +818,15 @@ export default function Payment({ cartItems }) {
           </div>
         </aside>
       </div>
+      {orderSuccess && (
+        <div className="order-success-overlay" role="status" aria-live="polite">
+          <div className="order-success-card">
+            <div className="order-success-icon">✓</div>
+            <h2>Order placed!</h2>
+            <p>Your order has been placed successfully.</p>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
