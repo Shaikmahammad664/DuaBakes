@@ -417,23 +417,39 @@ def build_admin_order_notification_payload(order_data: dict, order_id: str) -> d
         for item in items:
             name = item.get('name') or item.get('ProductName') or 'Item'
             quantity = item.get('quantity') or 1
-            item_lines.append(f"<li>{name} × {quantity}</li>")
+            size = item.get('size')
+            size_label = f" ({size})" if size else ''
+            item_lines.append(f"<li>{name}{size_label} × {quantity}</li>")
         item_summary = f"<ul>{''.join(item_lines)}</ul>"
     else:
         item_summary = '<p>No item details were provided.</p>'
 
     address = order_data.get('ShippingAddress') or {}
     city = address.get('city') or address.get('City') or 'N/A'
+    full_address = ', '.join(
+        part for part in [address.get('address') or address.get('Address'), address.get('apartment') or address.get('Apartment'), address.get('city') or address.get('City'), address.get('state') or address.get('State'), address.get('pinCode') or address.get('PinCode')] if part
+    ) or 'N/A'
     payment_method = order_data.get('PaymentMethod') or 'Unknown'
     total_amount = order_data.get('TotalAmount') or 0
+    delivery_date = order_data.get('DeliveryDate') or address.get('deliveryDate') or 'N/A'
+    delivery_time = order_data.get('DeliveryTime') or address.get('deliveryTime') or 'N/A'
+    cake_text = order_data.get('CakeText') or address.get('cakeText') or 'N/A'
+    customer_name = order_data.get('CustomerName') or 'Unknown'
+    phone_number = order_data.get('PhoneNumber') or 'N/A'
 
     return {
         'subject': f'New order received - {order_id}',
         'htmlContent': (
             f"<h3>New order received</h3>"
             f"<p>Order ID: <strong>{order_id}</strong></p>"
+            f"<p>Customer: <strong>{customer_name}</strong></p>"
+            f"<p>Phone number: <strong>{phone_number}</strong></p>"
             f"<p>Payment method: <strong>{payment_method}</strong></p>"
             f"<p>Delivery City: <strong>{city}</strong></p>"
+            f"<p>Delivery address: <strong>{full_address}</strong></p>"
+            f"<p>Delivery date: <strong>{delivery_date}</strong></p>"
+            f"<p>Delivery time: <strong>{delivery_time}</strong></p>"
+            f"<p>Message on cake: <strong>{cake_text}</strong></p>"
             f"<p>Total amount: <strong>Rs. {total_amount}</strong></p>"
             f"<h4>Items</h4>{item_summary}"
         ),
@@ -740,8 +756,13 @@ async def create_order(item: OrderCreateModel):
             logger.warning(f"Order creation failed: user exists but has no PhoneNumber: {existing_user}")
             raise HTTPException(status_code=400, detail="User phone number is missing")
 
+        first_name = existing_user.get('FirstName') if isinstance(existing_user, dict) else existing_user.get('FirstName')
+        last_name = existing_user.get('LastName') if isinstance(existing_user, dict) else existing_user.get('LastName')
+        customer_name = f"{(first_name or '').strip()} {(last_name or '').strip()}".strip() or None
+
         order_id = store_order({
             "PhoneNumber": phone,
+            "CustomerName": customer_name,
             "Order_Id": item.Order_Id,
             "PaymentMethod": item.PaymentMethod or 'Unknown',
             "ShippingAddress": item.ShippingAddress or {},
@@ -749,6 +770,9 @@ async def create_order(item: OrderCreateModel):
             "Items": item.Items,
             "TotalAmount": item.TotalAmount,
             "CreatedAt": item.CreatedAt,
+            "DeliveryDate": item.DeliveryDate,
+            "DeliveryTime": item.DeliveryTime,
+            "CakeText": item.CakeText,
             "Order_Status": item.Order_Status,
             "TrackingNote": item.TrackingNote,
         })
@@ -759,6 +783,7 @@ async def create_order(item: OrderCreateModel):
         logger.info(f"Order stored for user {phone} with order id {order_id}")
         try:
             send_admin_order_notification({
+                'CustomerName': customer_name,
                 'PhoneNumber': phone,
                 'Order_Id': order_id,
                 'PaymentMethod': item.PaymentMethod or 'Unknown',
@@ -766,6 +791,9 @@ async def create_order(item: OrderCreateModel):
                 'BillingAddress': item.BillingAddress or {},
                 'Items': item.Items,
                 'TotalAmount': item.TotalAmount,
+                'DeliveryDate': item.DeliveryDate,
+                'DeliveryTime': item.DeliveryTime,
+                'CakeText': item.CakeText,
             }, order_id)
         except Exception as notify_error:
             logger.warning(f"Order notification skipped: {notify_error}")

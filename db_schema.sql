@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS products (
 
 CREATE TABLE IF NOT EXISTS orders (
     PhoneNumber VARCHAR(20) NOT NULL,
+    CustomerName VARCHAR(255),
     Order_Id VARCHAR(32) NOT NULL,
     PaymentMethod VARCHAR(100),
     ShippingAddress TEXT,
@@ -51,5 +52,8 @@ CREATE TABLE IF NOT EXISTS orders (
     Items TEXT NOT NULL,
     TotalAmount DECIMAL(10,2) DEFAULT 0.00,
     CreatedAt TEXT NOT NULL,
+    DeliveryDate VARCHAR(50),
+    DeliveryTime VARCHAR(50),
+    CakeText TEXT,
     PRIMARY KEY (PhoneNumber, Order_Id)
 );

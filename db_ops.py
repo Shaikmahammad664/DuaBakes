@@ -86,12 +86,16 @@ def ensure_mysql_tables():
             CREATE TABLE IF NOT EXISTS orders (
                 Order_Id VARCHAR(32) NOT NULL,
                 PhoneNumber VARCHAR(20),
+                CustomerName VARCHAR(255),
                 PaymentMethod VARCHAR(100),
                 ShippingAddress TEXT,
                 BillingAddress TEXT,
                 Items TEXT NOT NULL,
                 TotalAmount DECIMAL(10,2) DEFAULT 0.00,
                 CreatedAt TEXT NOT NULL,
+                DeliveryDate VARCHAR(50),
+                DeliveryTime VARCHAR(50),
+                CakeText TEXT,
                 Order_Status VARCHAR(50) DEFAULT 'placed',
                 TrackingNote TEXT,
                 PRIMARY KEY (Order_Id)
@@ -101,6 +105,10 @@ def ensure_mysql_tables():
         mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'PhoneNumber'")
         if mysql_cursor.fetchone() is None:
             mysql_cursor.execute("ALTER TABLE orders ADD COLUMN PhoneNumber VARCHAR(20) NULL")
+
+        mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'CustomerName'")
+        if mysql_cursor.fetchone() is None:
+            mysql_cursor.execute("ALTER TABLE orders ADD COLUMN CustomerName VARCHAR(255) NULL")
 
         mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'PaymentMethod'")
         if mysql_cursor.fetchone() is None:
@@ -113,6 +121,18 @@ def ensure_mysql_tables():
         mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'BillingAddress'")
         if mysql_cursor.fetchone() is None:
             mysql_cursor.execute("ALTER TABLE orders ADD COLUMN BillingAddress TEXT NULL")
+
+        mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'DeliveryDate'")
+        if mysql_cursor.fetchone() is None:
+            mysql_cursor.execute("ALTER TABLE orders ADD COLUMN DeliveryDate VARCHAR(50) NULL")
+
+        mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'DeliveryTime'")
+        if mysql_cursor.fetchone() is None:
+            mysql_cursor.execute("ALTER TABLE orders ADD COLUMN DeliveryTime VARCHAR(50) NULL")
+
+        mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'CakeText'")
+        if mysql_cursor.fetchone() is None:
+            mysql_cursor.execute("ALTER TABLE orders ADD COLUMN CakeText TEXT NULL")
 
         mysql_cursor.execute("SHOW COLUMNS FROM orders LIKE 'Order_Status'")
         if mysql_cursor.fetchone() is None:
@@ -176,7 +196,7 @@ def ensure_default_admin():
         return False
 
     try:
-        admin_email = os.getenv('DEFAULT_ADMIN_EMAIL', 'admin@bakes.com')
+        admin_email = os.getenv('DEFAULT_ADMIN_EMAIL', 'duabakesofficial@gmail.com')
         placeholder = get_placeholder()
         cursor.execute(f"SELECT 1 FROM Admin WHERE Email = {placeholder}", (admin_email,))
         if cursor.fetchone():
@@ -533,7 +553,7 @@ def store_order(order_data):
 
         order_id = (order_data.get('Order_Id') or '').strip() or uuid.uuid4().hex[:12]
         placeholder = get_placeholder()
-        query = f"INSERT INTO orders (PhoneNumber, Order_Id, PaymentMethod, ShippingAddress, BillingAddress, Items, TotalAmount, CreatedAt, Order_Status, TrackingNote) VALUES ({', '.join([placeholder]*10)})"
+        query = f"INSERT INTO orders (PhoneNumber, CustomerName, Order_Id, PaymentMethod, ShippingAddress, BillingAddress, Items, TotalAmount, CreatedAt, DeliveryDate, DeliveryTime, CakeText, Order_Status, TrackingNote) VALUES ({', '.join([placeholder]*14)})"
         # prefer CreatedAt from caller but normalize to local timezone-aware ISO string
         created = order_data.get('CreatedAt')
         if created:
@@ -551,6 +571,7 @@ def store_order(order_data):
 
         values = (
             order_data['PhoneNumber'],
+            order_data.get('CustomerName'),
             order_id,
             order_data.get('PaymentMethod'),
             json.dumps(order_data.get('ShippingAddress', {})),
@@ -558,6 +579,9 @@ def store_order(order_data):
             json.dumps(order_data.get('Items', [])),
             float(order_data.get('TotalAmount', 0)),
             created_at,
+            order_data.get('DeliveryDate'),
+            order_data.get('DeliveryTime'),
+            order_data.get('CakeText'),
             order_data.get('Order_Status') or 'placed',
             order_data.get('TrackingNote') or '',
         )
