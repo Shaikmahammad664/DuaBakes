@@ -16,14 +16,35 @@ export default function Orders() {
     }
 
     const user = JSON.parse(storedUser);
-    const identifier = user.PhoneNumber || user.phone || user.Email || user.email;
+    const phoneId = user.PhoneNumber || user.phone;
+    const emailId = user.Email || user.email;
 
-    ordersAPI.getByUser(identifier)
-      .then((response) => {
-        setOrders(response.data.orders || []);
-      })
-      .catch(() => setOrders([]))
-      .finally(() => setLoading(false));
+    const loadUserOrders = async () => {
+      try {
+        let ordersList = [];
+
+        // Prefer phone lookup when available
+        if (phoneId) {
+          const resp = await ordersAPI.getByUser(phoneId);
+          ordersList = resp?.data?.orders || [];
+        }
+
+        // If nothing found by phone, try email (if different)
+        if ((ordersList.length === 0 || !phoneId) && emailId) {
+          const resp2 = await ordersAPI.getByUser(emailId);
+          ordersList = resp2?.data?.orders || [];
+        }
+
+        setOrders(ordersList);
+      } catch (err) {
+        console.warn('Failed to fetch user orders', err);
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserOrders();
   }, [navigate]);
 
   return (
