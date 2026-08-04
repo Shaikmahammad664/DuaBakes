@@ -224,6 +224,25 @@ def create_db_cursor(connection):
     return connection.cursor()
 
 
+def row_to_dict(row, cursor_obj=None):
+    if isinstance(row, dict):
+        return row
+    if hasattr(row, '_mapping'):
+        try:
+            return dict(row._mapping)
+        except Exception:
+            pass
+    if cursor_obj is not None and getattr(cursor_obj, 'description', None):
+        try:
+            return {col[0]: row[idx] for idx, col in enumerate(cursor_obj.description)}
+        except Exception:
+            pass
+    try:
+        return dict(row)
+    except Exception:
+        return {}
+
+
 def create_engine_connection(database_url):
     global engine, connection, cursor
     engine = create_engine(database_url, pool_pre_ping=True)
@@ -599,7 +618,7 @@ def fetch_all_orders():
         orders = cursor.fetchall()
         result = []
         for row in orders:
-            item = dict(row) if not isinstance(row, dict) else row
+            item = row_to_dict(row, cursor)
             item['Items'] = json.loads(item.get('Items', '[]')) if isinstance(item.get('Items'), str) else item.get('Items', [])
             if isinstance(item.get('ShippingAddress'), str) and item.get('ShippingAddress'):
                 try:
@@ -682,7 +701,7 @@ def fetch_orders(user_identifier):
 
         result = []
         for row in orders:
-            item = dict(row) if not isinstance(row, dict) else row
+            item = row_to_dict(row, cursor)
             item['Items'] = json.loads(item.get('Items', '[]')) if isinstance(item.get('Items'), str) else item.get('Items', [])
             if isinstance(item.get('ShippingAddress'), str) and item.get('ShippingAddress'):
                 try:
