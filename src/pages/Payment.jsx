@@ -750,7 +750,7 @@ export default function Payment({ cartItems }) {
             {message && <p className="payment-confirmation">{message}</p>}
             {saveError && <p className="error-message">{saveError}</p>}
             {paymentConfirmed && form.paymentMethod !== 'UPI' && (
-              // <p className="payment-confirmation">Payment method selected: {form.paymentMethod}</p>
+              <p className="payment-confirmation">Payment method selected: {form.paymentMethod}</p>
             )}
             {paymentConfirmed && form.paymentMethod === 'UPI' && upiRedirect && (
               <p className="payment-confirmation">Redirecting to: {upiRedirect}</p>
