@@ -683,6 +683,7 @@ summary-card {
     margin-left: 0;
     margin-right: 0;
     margin-bottom: 1rem;
+    align-items: flex-end;
   }
 
   .discount-box input {
