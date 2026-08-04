@@ -87,9 +87,11 @@ export default function Orders() {
                     </li>
                   ))}
                 </ul>
-                <button type="button" className="profile-action-button" onClick={() => navigate(`/track-order/${order.Order_Id || order.id || index + 1}`)}>
-                  Track Order
-                </button>
+                {((order.Order_Status || order.status || '').toString().toLowerCase() !== 'delivered') && (
+                  <button type="button" className="profile-action-button" onClick={() => navigate(`/track-order/${order.Order_Id || order.id || index + 1}`)}>
+                    Track Order
+                  </button>
+                )}
               </li>
             ))}
           </ul>
