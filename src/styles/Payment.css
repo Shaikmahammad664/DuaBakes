@@ -507,24 +507,126 @@ summary-card {
   }
 }
 
-@media (max-width: 640px) {
-  .checkout-card,
-  .summary-card {
-    padding: 1.5rem;
+@media (max-width: 768px) {
+  .payment-page {
+    margin-left: 0;
+    margin-right: 0;
   }
 
-  .two-columns,
-  .upi-grid {
+  .checkout-panel {
+    padding: 1rem;
+  }
+
+  .summary-panel {
+    padding: 1rem;
+    border-left: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .name-grid,
+  .two-columns {
     grid-template-columns: 1fr;
   }
 
-  .summary-item-card {
-    grid-template-columns: 80px 1fr;
+  .pay-now-button,
+  .cart-summary-button {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .payment-page {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
   }
 
-  .summary-item-card > strong {
-    align-self: flex-start;
-    margin-top: 0.35rem;
+  .payment-grid {
+    gap: 0;
+  }
+
+  .checkout-panel,
+  .summary-panel {
+    padding: 0.8rem;
+    margin: 0;
+  }
+
+  .checkout-header {
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+
+  .checkout-header h1 {
+    font-size: 1.1rem;
+  }
+
+  .checkout-header p {
+    margin: 0.3rem 0 0;
+    font-size: 0.9rem;
+  }
+
+  .section-block {
+    margin-bottom: 1.25rem;
+  }
+
+  .section-block h2 {
+    font-size: 0.95rem;
+  }
+
+  .checkout-card,
+  .summary-card {
+    padding: 0;
+  }
+
+  .two-columns,
+  .upi-grid,
+  .name-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-label input,
+  .field-label select,
+  .discount-box input {
+    height: 2.4rem;
+    padding: 0.7rem 0.8rem;
+    font-size: 0.95rem;
+  }
+
+  .summary-item-card {
+    grid-template-columns: 70px 1fr;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .summary-item-image-wrap {
+    min-width: 70px;
+    min-height: 70px;
+  }
+
+  .summary-item-image-wrap img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .pay-now-button,
+  .discount-box button,
+  .cart-summary-button {
+    width: 100%;
+    margin-left: 0;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .pay-now-button:hover,
+  .cart-summary-button:hover {
+    background: #0c3b3a;
+  }
+
+  .summary-row,
+  .summary-total-row {
+    margin: 0;
+    padding: 0 0.5rem;
   }
 
   .summary-title-row,
@@ -540,6 +642,20 @@ summary-card {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-    margin: 0;
+  }
+
+  .summary-card {
+    position: static;
+    width: 100%;
+    max-height: none;
+    background: #f8f9f9;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-left: none;
+    padding: 1rem 0;
+    margin-top: 1rem;
+  }
+
+  .summary-title-row {
+    margin-top: 0;
   }
 }
