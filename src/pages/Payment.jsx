@@ -741,8 +741,8 @@ export default function Payment({ cartItems }) {
                           console.warn('Could not update local user orders', e);
                         }
 
-                        // brief redirect to My Orders so user can view the saved order
-                        setTimeout(() => navigate('/orders'), 1500);
+                        // show success state after order placement, without forcing redirect
+                        // the overlay will stay visible until the user navigates manually
                       } catch (error) {
                         const serverMsg = error?.response?.data?.detail || error?.message || 'Payment verification failed.';
                         setMessage(serverMsg);
@@ -810,8 +810,7 @@ export default function Payment({ cartItems }) {
                   console.warn('Could not update local user orders', e);
                 }
 
-                // brief redirect to My Orders so user can view the saved order
-                setTimeout(() => navigate('/orders'), 1500);
+                // show success state after order placement, without forcing redirect
               } catch (error) {
                 const serverMsg = error?.response?.data?.detail || error?.message || 'Could not place order right now.';
                 setMessage(serverMsg);
