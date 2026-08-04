@@ -49,10 +49,31 @@ function App() {
   const handleAddToCart = (product, options = {}) => {
     if (!product) return;
 
+    // compute size multiplier consistent with ProductDetail behavior
+    const weightCategories = ['Cakes', 'Eggless', 'Breads', 'Chocolates', 'Ice Creams', 'hampers'];
+    const isWeightProduct = weightCategories.includes(product?.category);
+    const sizes = product?.category === 'Breads' || product?.category === 'Chocolates' || product?.category === 'Ice Creams'
+      ? [
+          { id: '250g', label: '250g', mult: 1 },
+          { id: '500g', label: '500g', mult: 2 },
+        ]
+      : [
+          { id: '500g', label: '500g', mult: 1 },
+          { id: '1kg', label: '1kg', mult: 2 },
+        ];
+
+    let sizeMultiplier = 1;
+    if (isWeightProduct && options.size) {
+      const found = sizes.find((s) => s.id === options.size || s.label === options.size);
+      if (found) sizeMultiplier = found.mult || 1;
+    }
+
+    const unitPrice = Math.round((product.price || 0) * sizeMultiplier);
+
     const newItem = {
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: unitPrice,
       badge: product.badge,
       image: product.image,
       category: product.category,
