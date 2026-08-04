@@ -531,6 +531,7 @@ summary-card {
 
   .name-grid {
     grid-template-columns: 1fr 0.6fr;
+    display: none;
   }
 
   .two-columns {
@@ -603,10 +604,18 @@ summary-card {
     gap: 0.7rem;
   }
 
-  .two-columns,
+  .two-columns:first-of-type {
+    grid-template-columns: 0.6fr 1fr;
+    gap: 0.7rem;
+  }
+
+  .two-columns:nth-of-type(2) {
+    grid-template-columns: 1fr;
+  }
+
   .upi-grid,
   .name-grid {
-    grid-template-columns: 0.6fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .field-label input,
@@ -768,7 +777,11 @@ summary-card {
     grid-template-columns: 0.55fr 1fr;
   }
 
-  .two-columns,
+  .two-columns:first-of-type {
+    grid-template-columns: 0.55fr 1fr;
+  }
+
+  .two-columns:nth-of-type(2),
   .upi-grid {
     grid-template-columns: 0.55fr 1fr;
   }
