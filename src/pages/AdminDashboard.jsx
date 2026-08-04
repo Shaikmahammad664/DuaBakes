@@ -23,13 +23,18 @@ export default function AdminDashboard() {
   const [success, setSuccess] = useState('');
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [allOrders, setAllOrders] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const d = new Date();
+    return d.toISOString().split('T')[0];
+  });
   const [loading, setLoading] = useState(false);
   const [productForm, setProductForm] = useState(emptyProductForm);
   const [editingProductId, setEditingProductId] = useState('');
 
   const newOrdersCount = useMemo(
-    () => orders.filter((order) => (order.Order_Status || order.status || 'placed') === 'placed').length,
-    [orders],
+    () => allOrders.filter((order) => (order.Order_Status || order.status || 'placed') === 'placed').length,
+    [allOrders],
   );
 
   useEffect(() => {
@@ -50,21 +55,31 @@ export default function AdminDashboard() {
   const loadOrders = async () => {
     try {
       const response = await ordersAPI.getAdminOrders();
-      const allOrders = response.data.orders || [];
-      const today = new Date();
-      const todayOrders = allOrders.filter((order) => {
-        const createdAt = order.CreatedAt || order.createdAt || '';
-        if (!createdAt) return false;
-        const created = new Date(createdAt);
-        if (Number.isNaN(created.getTime())) return false;
-        return created.getFullYear() === today.getFullYear()
-          && created.getMonth() === today.getMonth()
-          && created.getDate() === today.getDate();
-      });
-      setOrders(todayOrders);
+      const fetched = response.data.orders || [];
+      setAllOrders(fetched);
+      // apply currently selected date filter
+      applyDateFilter(fetched, selectedDate);
     } catch (err) {
       setError('Unable to load orders.');
     }
+  };
+
+  const applyDateFilter = (ordersList, dateString) => {
+    if (!dateString) {
+      setOrders([]);
+      return;
+    }
+    const target = new Date(dateString);
+    const filtered = (ordersList || allOrders || []).filter((order) => {
+      const createdAt = order.CreatedAt || order.createdAt || '';
+      if (!createdAt) return false;
+      const created = new Date(createdAt);
+      if (Number.isNaN(created.getTime())) return false;
+      return created.getFullYear() === target.getFullYear()
+        && created.getMonth() === target.getMonth()
+        && created.getDate() === target.getDate();
+    });
+    setOrders(filtered);
   };
 
   const handleLogin = async (event) => {
@@ -220,6 +235,35 @@ export default function AdminDashboard() {
 
         <div className="admin-grid">
           <section className="admin-card">
+            <h2>New Orders</h2>
+            {allOrders.filter((o) => (o.Order_Status || o.status || 'placed') === 'placed').length === 0 ? (
+              <p>No new orders.</p>
+            ) : (
+              <div className="admin-orders-list">
+                {allOrders.filter((o) => (o.Order_Status || o.status || 'placed') === 'placed').map((order) => (
+                  <div key={`new-${order.Order_Id}`} className="admin-order-item">
+                    <div className="admin-order-details">
+                      <div className="admin-order-header">
+                        <strong>Order #{order.Order_Id}</strong>
+                        <span>{order.Items?.length || 0} items</span>
+                      </div>
+                      <div>Total: Rs. {Number(order.TotalAmount || 0).toLocaleString()}</div>
+                      <div>Placed: {order.CreatedAt ? new Date(order.CreatedAt).toLocaleString() : 'N/A'}</div>
+                    </div>
+                    <div className="admin-order-actions">
+                      <select value={order.Order_Status || order.status || 'placed'} onChange={(event) => handleStatusChange(order.Order_Id, event.target.value)}>
+                        {statusOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+
+        <div className="admin-grid">
+          <section className="admin-card">
             <h2>{editingProductId ? 'Edit product' : 'Add product'}</h2>
             <form onSubmit={handleProductSubmit} className="admin-form">
               <input type="text" placeholder="Product name" value={productForm.ProductName} onChange={(event) => setProductForm({ ...productForm, ProductName: event.target.value })} required />
@@ -254,6 +298,18 @@ export default function AdminDashboard() {
 
         <section className="admin-card admin-orders-card">
           <h2>Orders</h2>
+          <div style={{ marginBottom: '0.75rem' }}>
+            <label style={{ marginRight: 8 }}>Filter by date:</label>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => {
+                setSelectedDate(e.target.value);
+                applyDateFilter(allOrders, e.target.value);
+              }}
+            />
+            <button type="button" style={{ marginLeft: 8 }} onClick={() => { setSelectedDate(''); setOrders(allOrders); }}>Clear</button>
+          </div>
           {orders.length === 0 ? <p>No orders yet.</p> : (
             <div className="admin-orders-list">
               {orders.map((order) => (
