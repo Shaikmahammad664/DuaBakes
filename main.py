@@ -456,7 +456,7 @@ def send_admin_order_notification(order_data: dict, order_id: str) -> None:
     }
     email_payload = {
         "sender": {"name": sender_name, "email": sender_email},
-        "to": [{"email": os.getenv("ADMIN_NOTIFICATION_EMAIL", "admin@bakes.com"), "name": "Admin"}],
+        "to": [{"email": os.getenv("ADMIN_NOTIFICATION_EMAIL", "duabakesofficial@gmail.com"), "name": "Admin"}],
         "subject": payload['subject'],
         "htmlContent": payload['htmlContent'],
     }
