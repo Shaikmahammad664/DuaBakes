@@ -193,6 +193,12 @@ export default function Payment({ cartItems }) {
   };
 
   useEffect(() => {
+    if (!orderSuccess) return;
+    const timer = setTimeout(() => setOrderSuccess(false), 5000);
+    return () => clearTimeout(timer);
+  }, [orderSuccess]);
+
+  useEffect(() => {
     if (form.paymentMethod !== 'UPI') {
       setUpiQrValue('');
       setUpiDeepLink('');
@@ -337,6 +343,7 @@ export default function Payment({ cartItems }) {
             <div className="section-block payment-block">
               <h2>Payment</h2>
               <p className="payment-note">All transactions are secure and encrypted.</p>
+              <p>We are accepting only cash on delivery right now.</p>
 
               <label className={`payment-card ${form.paymentMethod === 'Razorpay Secure' ? 'selected' : ''}`}>
                 <input
@@ -751,6 +758,12 @@ export default function Payment({ cartItems }) {
             </button>
             {message && <p className="payment-confirmation">{message}</p>}
             {saveError && <p className="error-message">{saveError}</p>}
+            {paymentConfirmed && form.paymentMethod !== 'UPI' && (
+              <p className="payment-confirmation">Payment method selected: {form.paymentMethod}</p>
+            )}
+            {paymentConfirmed && form.paymentMethod === 'UPI' && upiRedirect && (
+              <p className="payment-confirmation">Redirecting to: {upiRedirect}</p>
+            )}
           </div>
         </section>
 
