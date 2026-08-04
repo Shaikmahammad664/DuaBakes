@@ -86,7 +86,6 @@ export default function Cart({ cartItems, setCartItems }) {
                     }
                     navigate('/payment');
                   }}
-                  disabled={!isSignedIn}
                 >
                   {isSignedIn ? 'CHECK OUT' : 'SIGN IN TO CHECK OUT'}
                 </button>

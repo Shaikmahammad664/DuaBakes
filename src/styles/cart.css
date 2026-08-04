@@ -234,4 +234,17 @@
   .cart-summary-panel {
     justify-content: center;
   }
+
+  .cart-header-row h1 {
+    margin-left: 0;
+    font-size: 1.2rem;
+  }
+  .cart-header-row p {
+    font-size: 0.8rem;
+  }
+
+  .cart-clear {
+    font-size: 0.8rem;
+    margin-top: 2rem;
+  }
 }
