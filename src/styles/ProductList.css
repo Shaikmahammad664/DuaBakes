@@ -686,3 +686,18 @@
   }
 }
 
+@media (max-width: 480px) {
+  .product-detail-card {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    margin-left: 0;
+    margin-top: 4rem;
+  }
+
+  .product-detail-image {
+    min-height: 340px;
+    max-height: 340px;
+    width: 100%;
+  }
+}
