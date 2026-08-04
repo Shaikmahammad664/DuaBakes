@@ -658,6 +658,52 @@ form > div {
     color: white;
 }
 
+.admin-order-item {
+    flex-direction: column;
+    align-items: stretch;
+    border: 1px solid #eef1f4;
+    border-radius: 14px;
+    padding: 1rem;
+    background: #ffffff;
+}
+
+.admin-order-details {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.admin-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-order-address-section {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.admin-address-block {
+    padding: 0.75rem 0;
+    line-height: 1.5;
+}
+
+.admin-order-products {
+    list-style: disc;
+    margin: 0.5rem 0 0 1rem;
+    padding: 0;
+}
+
+.admin-order-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
 .admin-orders-list {
     display: grid;
     gap: 0.75rem;
@@ -677,6 +723,14 @@ form > div {
     .admin-order-item {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .admin-order-address-section {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-order-actions {
+        width: 100%;
     }
 }
 

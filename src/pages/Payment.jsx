@@ -708,9 +708,41 @@ export default function Payment({ cartItems }) {
                           paymentId: razorpayResponse.razorpay_payment_id,
                           signature: razorpayResponse.razorpay_signature,
                         });
-                        await ordersAPI.create(orderPayload);
+                        const response = await ordersAPI.create(orderPayload);
+                        const newOrderId = response?.data?.order_id;
                         setPaymentConfirmed(true);
-                        setMessage('Payment successful and order placed.');
+                        setOrderSuccess(true);
+                        setMessage(newOrderId ? `Payment successful and order placed. Order ID: ${newOrderId}` : 'Payment successful and order placed.');
+
+                        // Add the new order to local user object for immediate visibility in My Orders
+                        try {
+                          const createdOrder = {
+                            Order_Id: newOrderId,
+                            TotalAmount: orderPayload.TotalAmount,
+                            Items: orderPayload.Items,
+                            CreatedAt: new Date().toISOString(),
+                            ShippingAddress: orderPayload.ShippingAddress,
+                            BillingAddress: orderPayload.BillingAddress,
+                            Order_Status: 'placed',
+                          };
+                          const stored = localStorage.getItem('user');
+                          if (stored) {
+                            const parsed = JSON.parse(stored);
+                            const userObj = parsed.user || parsed;
+                            userObj.orders = [createdOrder].concat(userObj.orders || []);
+                            if (parsed.user) {
+                              parsed.user = userObj;
+                              localStorage.setItem('user', JSON.stringify(parsed));
+                            } else {
+                              localStorage.setItem('user', JSON.stringify(userObj));
+                            }
+                          }
+                        } catch (e) {
+                          console.warn('Could not update local user orders', e);
+                        }
+
+                        // brief redirect to My Orders so user can view the saved order
+                        setTimeout(() => navigate('/orders'), 1500);
                       } catch (error) {
                         const serverMsg = error?.response?.data?.detail || error?.message || 'Payment verification failed.';
                         setMessage(serverMsg);
@@ -745,10 +777,41 @@ export default function Payment({ cartItems }) {
               }
 
               try {
-                await ordersAPI.create(orderPayload);
+                const response = await ordersAPI.create(orderPayload);
+                const newOrderId = response?.data?.order_id;
                 setPaymentConfirmed(true);
                 setOrderSuccess(true);
-                setMessage('Order placed successfully.');
+                setMessage(newOrderId ? `Order placed successfully. Order ID: ${newOrderId}` : 'Order placed successfully.');
+
+                // Add the new order to local user object for immediate visibility in My Orders
+                try {
+                  const createdOrder = {
+                    Order_Id: newOrderId,
+                    TotalAmount: orderPayload.TotalAmount,
+                    Items: orderPayload.Items,
+                    CreatedAt: new Date().toISOString(),
+                    ShippingAddress: orderPayload.ShippingAddress,
+                    BillingAddress: orderPayload.BillingAddress,
+                    Order_Status: 'placed',
+                  };
+                  const stored = localStorage.getItem('user');
+                  if (stored) {
+                    const parsed = JSON.parse(stored);
+                    const userObj = parsed.user || parsed;
+                    userObj.orders = [createdOrder].concat(userObj.orders || []);
+                    if (parsed.user) {
+                      parsed.user = userObj;
+                      localStorage.setItem('user', JSON.stringify(parsed));
+                    } else {
+                      localStorage.setItem('user', JSON.stringify(userObj));
+                    }
+                  }
+                } catch (e) {
+                  console.warn('Could not update local user orders', e);
+                }
+
+                // brief redirect to My Orders so user can view the saved order
+                setTimeout(() => navigate('/orders'), 1500);
               } catch (error) {
                 const serverMsg = error?.response?.data?.detail || error?.message || 'Could not place order right now.';
                 setMessage(serverMsg);

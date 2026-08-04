@@ -254,11 +254,18 @@ class ProfileUpdateModel(BaseModel):
 class OrderCreateModel(BaseModel):
     PhoneNumber: str | None = None
     Email: str | None = None
+    Order_Id: str | None = None
     PaymentMethod: str | None = None
     ShippingAddress: dict | None = None
     BillingAddress: dict | None = None
     Items: list[dict]
     TotalAmount: float
+    CreatedAt: str | None = None
+    Order_Status: str | None = None
+    TrackingNote: str | None = None
+    DeliveryDate: str | None = None
+    DeliveryTime: str | None = None
+    CakeText: str | None = None
 
 class RazorpayCreateOrderModel(BaseModel):
     Amount: float
@@ -735,11 +742,15 @@ async def create_order(item: OrderCreateModel):
 
         order_id = store_order({
             "PhoneNumber": phone,
+            "Order_Id": item.Order_Id,
             "PaymentMethod": item.PaymentMethod or 'Unknown',
             "ShippingAddress": item.ShippingAddress or {},
             "BillingAddress": item.BillingAddress or {},
             "Items": item.Items,
             "TotalAmount": item.TotalAmount,
+            "CreatedAt": item.CreatedAt,
+            "Order_Status": item.Order_Status,
+            "TrackingNote": item.TrackingNote,
         })
         if not order_id:
             logger.error(f"Failed to store order for user {phone}")
@@ -749,14 +760,16 @@ async def create_order(item: OrderCreateModel):
         try:
             send_admin_order_notification({
                 'PhoneNumber': phone,
+                'Order_Id': order_id,
                 'PaymentMethod': item.PaymentMethod or 'Unknown',
                 'ShippingAddress': item.ShippingAddress or {},
+                'BillingAddress': item.BillingAddress or {},
                 'Items': item.Items,
                 'TotalAmount': item.TotalAmount,
             }, order_id)
         except Exception as notify_error:
             logger.warning(f"Order notification skipped: {notify_error}")
-        return {"status": "Success", "message": "Order saved successfully"}
+        return {"status": "Success", "message": "Order saved successfully", "order_id": order_id}
     except HTTPException:
         raise
     except Exception as e:

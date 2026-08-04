@@ -24,6 +24,9 @@ except ImportError:
 
 load_dotenv()
 
+DEFAULT_ADMIN_EMAIL = os.getenv('DEFAULT_ADMIN_EMAIL')
+DEFAULT_ADMIN_PASSWORD = os.getenv('DEFAULT_ADMIN_PASSWORD')
+
 engine = None
 connection = None
 cursor = None
@@ -560,7 +563,7 @@ def store_order(order_data):
         )
         cursor.execute(query, values)
         connection.commit()
-        return True
+        return order_id
     except Exception as e:
         logger.error(f"Error storing order: {e}")
         return False

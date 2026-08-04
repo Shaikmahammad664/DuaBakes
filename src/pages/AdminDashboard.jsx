@@ -247,14 +247,63 @@ export default function AdminDashboard() {
             <div className="admin-orders-list">
               {orders.map((order) => (
                 <div key={order.Order_Id} className="admin-order-item">
-                  <div>
-                    <strong>Order #{order.Order_Id}</strong>
-                    <div>{order.Items?.length || 0} items · Total: Rs. {Number(order.TotalAmount || 0).toLocaleString()}</div>
+                  <div className="admin-order-details">
+                    <div className="admin-order-header">
+                      <strong>Order #{order.Order_Id}</strong>
+                      <span>{order.Items?.length || 0} items</span>
+                    </div>
+                    <div>Total: Rs. {Number(order.TotalAmount || 0).toLocaleString()}</div>
+                    <div>Payment: {order.PaymentMethod || 'N/A'}</div>
                     <div>Status: {order.Order_Status || order.status || 'placed'}</div>
+                    <div>Placed: {order.CreatedAt ? new Date(order.CreatedAt).toLocaleString() : 'N/A'}</div>
+
+                    <div className="admin-order-address-section">
+                      <div>
+                        <strong>Shipping Address</strong>
+                        {order.ShippingAddress && order.ShippingAddress.address ? (
+                          <div className="admin-address-block">
+                            <div>{order.ShippingAddress.firstName || ''} {order.ShippingAddress.lastName || ''}</div>
+                            <div>{order.ShippingAddress.address}{order.ShippingAddress.apartment ? `, ${order.ShippingAddress.apartment}` : ''}</div>
+                            <div>{order.ShippingAddress.city}, {order.ShippingAddress.state} {order.ShippingAddress.pinCode}</div>
+                            <div>{order.ShippingAddress.country || 'India'}</div>
+                            <div>Phone: {order.ShippingAddress.phone || order.PhoneNumber || 'N/A'}</div>
+                          </div>
+                        ) : (
+                          <div>N/A</div>
+                        )}
+                      </div>
+                      <div>
+                        <strong>Billing Address</strong>
+                        {order.BillingAddress && order.BillingAddress.address ? (
+                          <div className="admin-address-block">
+                            <div>{order.BillingAddress.firstName || ''} {order.BillingAddress.lastName || ''}</div>
+                            <div>{order.BillingAddress.address}{order.BillingAddress.apartment ? `, ${order.BillingAddress.apartment}` : ''}</div>
+                            <div>{order.BillingAddress.city}, {order.BillingAddress.state} {order.BillingAddress.pinCode}</div>
+                            <div>{order.BillingAddress.country || 'India'}</div>
+                            <div>Phone: {order.BillingAddress.phone || 'N/A'}</div>
+                          </div>
+                        ) : (
+                          <div>Same as shipping</div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <strong>Products</strong>
+                      <ul className="admin-order-products">
+                        {(order.Items || []).map((item, itemIndex) => (
+                          <li key={`${order.Order_Id}-${itemIndex}`}>
+                            {item.name} × {item.quantity} · Rs. {Number(item.price || 0).toLocaleString()}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                  <select value={order.Order_Status || order.status || 'placed'} onChange={(event) => handleStatusChange(order.Order_Id, event.target.value)}>
-                    {statusOptions.map((option) => <option key={option} value={option}>{option}</option>)}
-                  </select>
+                  <div className="admin-order-actions">
+                    <select value={order.Order_Status || order.status || 'placed'} onChange={(event) => handleStatusChange(order.Order_Id, event.target.value)}>
+                      {statusOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </div>
                 </div>
               ))}
             </div>
