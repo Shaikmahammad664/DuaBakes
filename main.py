@@ -24,6 +24,7 @@ from db_ops import (
     delete_product,
     store_order,
     fetch_orders,
+    fetch_order_by_id,
     fetch_all_orders,
     update_order_status,
     backfill_orders_from_users,
@@ -809,6 +810,14 @@ async def create_order(item: OrderCreateModel):
 async def get_orders(identifier: str):
     orders = fetch_orders(identifier)
     return {"status": "Success", "orders": orders}
+
+
+@app.get("/orders/id/{order_id}")
+async def get_order_by_id(order_id: str):
+    order = fetch_order_by_id(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {"status": "Success", "order": order}
 
 
 @app.post("/admin/login")

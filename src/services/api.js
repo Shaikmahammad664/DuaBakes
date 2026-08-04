@@ -90,7 +90,7 @@ export const ordersAPI = {
   
   getAll: () => apiClient.get('/orders'),
   
-  getById: (id) => apiClient.get(`/orders/${id}`),
+  getById: (id) => apiClient.get(`/orders/id/${id}`),
   
   getByUser: (identifier) => apiClient.get(`/orders/${identifier}`),
 

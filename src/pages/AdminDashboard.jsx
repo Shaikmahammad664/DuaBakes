@@ -50,7 +50,18 @@ export default function AdminDashboard() {
   const loadOrders = async () => {
     try {
       const response = await ordersAPI.getAdminOrders();
-      setOrders(response.data.orders || []);
+      const allOrders = response.data.orders || [];
+      const today = new Date();
+      const todayOrders = allOrders.filter((order) => {
+        const createdAt = order.CreatedAt || order.createdAt || '';
+        if (!createdAt) return false;
+        const created = new Date(createdAt);
+        if (Number.isNaN(created.getTime())) return false;
+        return created.getFullYear() === today.getFullYear()
+          && created.getMonth() === today.getMonth()
+          && created.getDate() === today.getDate();
+      });
+      setOrders(todayOrders);
     } catch (err) {
       setError('Unable to load orders.');
     }
@@ -293,7 +304,7 @@ export default function AdminDashboard() {
                       <ul className="admin-order-products">
                         {(order.Items || []).map((item, itemIndex) => (
                           <li key={`${order.Order_Id}-${itemIndex}`}>
-                            {item.name} × {item.quantity} · Rs. {Number(item.price || 0).toLocaleString()}
+                            {item.name}{item.size ? ` (${item.size})` : ''} × {item.quantity} · Rs. {Number(item.price || 0).toLocaleString()}
                           </li>
                         ))}
                       </ul>

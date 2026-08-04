@@ -720,6 +720,32 @@ def fetch_orders(user_identifier):
         return []
 
 
+def fetch_order_by_id(order_id):
+    try:
+        placeholder = get_placeholder()
+        cursor.execute(f"SELECT * FROM orders WHERE Order_Id = {placeholder}", (order_id,))
+        row = cursor.fetchone()
+        if not row:
+            return None
+
+        item = row_to_dict(row, cursor)
+        item['Items'] = json.loads(item.get('Items', '[]')) if isinstance(item.get('Items'), str) else item.get('Items', [])
+        if isinstance(item.get('ShippingAddress'), str) and item.get('ShippingAddress'):
+            try:
+                item['ShippingAddress'] = json.loads(item['ShippingAddress'])
+            except Exception:
+                pass
+        if isinstance(item.get('BillingAddress'), str) and item.get('BillingAddress'):
+            try:
+                item['BillingAddress'] = json.loads(item['BillingAddress'])
+            except Exception:
+                pass
+        return item
+    except Exception as e:
+        logger.error(f"Error fetching order by id: {e}")
+        return None
+
+
 def backfill_orders_from_users():
     """Backfill PhoneNumber on orders from users table for MySQL."""
     try:

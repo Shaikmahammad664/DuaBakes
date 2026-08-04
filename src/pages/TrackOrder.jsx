@@ -33,35 +33,32 @@ export default function TrackOrder() {
   const [currentStage, setCurrentStage] = useState(0);
 
   useEffect(() => {
+    let mounted = true;
     const fetchOrder = async () => {
       try {
         const response = await ordersAPI.getById(id);
         const orderData = response.data.order || response.data;
+        if (!mounted) return;
         setOrder(orderData);
         const stage = getStageFromStatus(orderData.Order_Status || orderData.status) >= 0
           ? getStageFromStatus(orderData.Order_Status || orderData.status)
           : getStageFromDate(orderData.CreatedAt);
         setCurrentStage(stage);
       } catch (err) {
+        if (!mounted) return;
         setError('Unable to load order details.');
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     fetchOrder();
+    const interval = setInterval(fetchOrder, 5000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [id]);
-
-  useEffect(() => {
-    if (!order) return undefined;
-
-    const interval = setInterval(() => {
-      const stage = getStageFromStatus(order.Order_Status || order.status);
-      setCurrentStage(stage >= 0 ? stage : getStageFromDate(order.CreatedAt));
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [order]);
 
   return (
     <main className="page-content signup-page">
