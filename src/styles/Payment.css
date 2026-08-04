@@ -598,7 +598,7 @@ summary-card {
   }
 
   .delivery-top {
-    grid-template-columns: 0.5fr 1fr;
+    grid-template-columns: 0.6fr 1fr;
     gap: 0.7rem;
   }
 
@@ -762,7 +762,7 @@ summary-card {
   }
 
   .delivery-top {
-    grid-template-columns: 0.45fr 1fr;
+    grid-template-columns: 0.55fr 1fr;
   }
 
   .field-label input,
