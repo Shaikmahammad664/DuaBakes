@@ -700,4 +700,11 @@
     max-height: 340px;
     width: 100%;
   }
+
+  .select-control select,
+  .select-control input[type="date"],
+  .select-control input[type="time"] {
+   /* padding-right: 2.5rem; */
+  }
+
 }
